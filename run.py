@@ -30,3 +30,6 @@ variables = {'filter': {'pid': {'like': includedPids}}, 'orderby': {}}
 
 r = session_a.query(cohorts, variables)
 print(r)
+
+dr = session_a.delete(table='AgeGroups', keyColumn='name', key='test')
+print(dr)

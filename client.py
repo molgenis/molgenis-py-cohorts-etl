@@ -11,6 +11,7 @@ class Client:
         self.email = email
         self.password = password
         self.session = requests.Session()
+        self.apiEndpoint = self.url + '/' + self.database + '/graphql'
         
         self.signin(self.email, self.password)
 
@@ -49,7 +50,7 @@ class Client:
     def query(self, query, variables = {}):
         """Query backend"""
 
-        response = self.session.post(self.url + '/' + self.database + '/graphql',
+        response = self.session.post(self.apiEndpoint,
                                  json={'query': query, 'variables': variables}
                                  )
                                 
@@ -62,25 +63,26 @@ class Client:
         data = responseJson['data']
         return data
 
-    def delete(self, table, keyColumn='name', key=[]):
+    def delete(self, table, keyColumn='name', key=''):
         """Delete row by key"""
 
-        query = """
-            mutation delete($pkey:String, $password: String) {
-                signin(email: $email, password: $password) {
-                    status
-                    message
-                }
-            }
-        """
+        query = (""
+            "mutation delete($pkey:[" + table + "Input]) {"
+                "delete(" + table + ":$pkey){message}"
+            "}"
+        "")
 
-        variables = {keyColumn: key}
+        variables =  {'pkey': [{keyColumn: key}]}
 
-#         {query: "mutation delete($pkey:[StatusInput]){delete(Status:$pkey){message}}",…}
-# query: "mutation delete($pkey:[StatusInput]){delete(Status:$pkey){message}}"
-# variables: {pkey: [{name: "foo"}]}
-# pkey: [{name: "foo"}]
+        response = self.session.post(self.apiEndpoint,
+                            json={'query': query, 'variables': variables}
+                            )
 
-        
+        if response.status_code != 200:
+            print(f"Error while deleting, status code {response.status_code}")
+            print(response)
+            exit()
 
-    
+        return response
+
+
