@@ -32,7 +32,6 @@ class Client:
                                  json={'query': query, 'variables': variables}
                                  )
                                 
-        print(response)
         responseJson = response.json()
      
         status = responseJson['data']['signin']['status']
@@ -85,4 +84,27 @@ class Client:
 
         return response
 
+    def add(self, table, data={}, draft=False):
+        """Add record"""
+
+        query = (""
+            "mutation insert($value:[" + table + "Input]) {"
+                "insert(" + table + ":$value){message}"
+            "}"
+        "")
+
+        data['mg_draft'] = draft
+
+        variables = {"value": [data]}
+
+        response = self.session.post(self.apiEndpoint,
+                    json={'query': query, 'variables': variables}
+                    )
+
+        if response.status_code != 200:
+            print(f"Error while adding record, status code {response.status_code}")
+            print(response)
+            exit()
+
+        return response
 

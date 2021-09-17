@@ -1,0 +1,5 @@
+query Cohorts($filter: CohortsFilter) {
+  Cohorts(filter: $filter) {
+    pid
+  }
+}
