@@ -1,4 +1,5 @@
 import requests
+from pathlib import Path
 
 class Client:
     """
@@ -11,7 +12,8 @@ class Client:
         self.email = email
         self.password = password
         self.session = requests.Session()
-        self.apiEndpoint = self.url + '/' + self.database + '/graphql'
+        self.graphqlEndpoint = self.url + '/' + self.database + '/graphql'
+        self.apiEndpoint = self.url + '/' + self.database + '/api'
         
         self.signin(self.email, self.password)
 
@@ -49,7 +51,7 @@ class Client:
     def query(self, query, variables = {}):
         """Query backend"""
 
-        response = self.session.post(self.apiEndpoint,
+        response = self.session.post(self.graphqlEndpoint,
                                  json={'query': query, 'variables': variables}
                                  )
                                 
@@ -73,7 +75,7 @@ class Client:
 
         variables =  {'pkey': [{keyColumn: key}]}
 
-        response = self.session.post(self.apiEndpoint,
+        response = self.session.post(self.graphqlEndpoint,
                             json={'query': query, 'variables': variables}
                             )
 
@@ -97,7 +99,7 @@ class Client:
 
         variables = {"value": [data]}
 
-        response = self.session.post(self.apiEndpoint,
+        response = self.session.post(self.graphqlEndpoint,
                     json={'query': query, 'variables': variables}
                     )
 
@@ -107,4 +109,36 @@ class Client:
             exit()
 
         return response
+    
+    def fields(self, table): 
+        """ Fetch a field list as json array of name value pairs"""
+
+        query = '{__type(name:"' + table + '") {fields { name } } }'
+
+        response = self.session.post(self.graphqlEndpoint, json={'query': query} )
+
+        if response.status_code != 200:
+            print(f"Error while fetching table fields, status code {response.status_code}")
+            print(response)
+            exit()
+
+        return response.json()['data']['__type']['fields']
+
+    def uploadCSV(self, table, data):
+        """ Upload csv data ( string ) to table """
+        return self.session.post(
+            self.apiEndpoint + '/csv/'+ table,
+            headers={"Content-Type": 'text/csv'},
+            data=data
+        )
+
+    def downLoadCSV(self, table):
+        """ Download csv data from table """
+        resp = self.session.get(self.apiEndpoint + '/csv/'+ table, allow_redirects=True)
+        print(resp.headers.get('content-type'))
+        if resp.content:
+            return resp.content
+        else:
+            print('Error: download failed')
+            exit()
 
