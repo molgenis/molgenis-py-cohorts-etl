@@ -6,18 +6,16 @@ class Job:
     
     """
 
-    def __init__(self, url, email, password, stagingDB, catalogueDB):
+    def __init__(self, url, email, password, catalogueDB):
         self.url = url
         self.email = email
         self.password = password
-        self.stagingDB = stagingDB
         self.catalogueDB = catalogueDB
 
-    def sync(self):
+    def sync(self, sourceDB):
         """Sync staging with catalogue"""
         
-        print('*** START SYNC STAGING(' + self.stagingDB + ') WITH CATALOGUE (' + self.catalogueDB + ') ***')
-        staging = Client(url=self.url, database=self.stagingDB, email=self.email, password=self.password)
+        staging = Client(url=self.url, database=sourceDB, email=self.email, password=self.password)
         catalogue = Client(url=self.url, database=self.catalogueDB, email=self.email, password=self.password)
 
         # 1) Query from staging 
@@ -39,5 +37,3 @@ class Job:
 
         # 4) Upload to catalog
         r = catalogue.uploadCSV('Cohorts', newData)
-
-        print('*** END SYNC STAGING(' + self.stagingDB + ') WITH CATALOGUE (' + self.catalogueDB + ') ***')
