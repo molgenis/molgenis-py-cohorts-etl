@@ -20,7 +20,7 @@ class Job:
 
         # 1) Query from staging 
         cohorts = Path('cohorts.gql').read_text()
-        variables = {'filter': {'name': {'like': 'cohort a'}}}
+        variables = {'filter': {'name': {'like': sourceDB}}}
         cohortsResp = staging.query(cohorts, variables)
         cohorts = []
         if "Cohorts" in cohortsResp:
