@@ -1,4 +1,3 @@
-from requests.sessions import default_headers
 from job import Job
 from decouple import config
 
