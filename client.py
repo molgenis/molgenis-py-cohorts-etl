@@ -135,7 +135,6 @@ class Client:
     def downLoadCSV(self, table):
         """ Download csv data from table """
         resp = self.session.get(self.apiEndpoint + '/csv/'+ table, allow_redirects=True)
-        print(resp.headers.get('content-type'))
         if resp.content:
             return resp.content
         else:
