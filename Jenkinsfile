@@ -35,10 +35,10 @@ pipeline {
                 }
             }
         }
-        stage('Release: [ master ]') {
+        stage('Release: [ main ]') {
             when {
                 allOf {
-                    branch 'master'
+                    branch 'main'
                     not {
                         changelog '.*\\[skip ci\\]$'
                     }
@@ -56,7 +56,7 @@ pipeline {
                 milestone 1
                 container('python') {
                     sh "git remote set-url origin https://${GH_TOKEN}@github.com/${REPOSITORY}.git"
-                    sh "git checkout -f master"
+                    sh "git checkout -f main"
                     sh "git fetch --tags"
                     script {
                         env.TAG = sh(script: 'semantic-release print-version', returnStdout: true)
