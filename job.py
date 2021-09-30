@@ -1,5 +1,6 @@
 from client import Client
-from pathlib import Path
+from catalogueClient import CatalogueClient
+
 
 class Job:
     """
@@ -18,22 +19,28 @@ class Job:
         staging = Client(url=self.url, database=sourceDB, email=self.email, password=self.password)
         catalogue = Client(url=self.url, database=self.catalogueDB, email=self.email, password=self.password)
 
-        # 1) Query from staging 
-        cohorts = Path('cohorts.gql').read_text()
-        variables = {'filter': {'name': {'like': sourceDB}}}
-        cohortsResp = staging.query(cohorts, variables)
-        cohorts = []
-        if "Cohorts" in cohortsResp:
-            cohorts = cohortsResp['Cohorts']
-        pids = list(map(lambda cohort: cohort['pid'], cohorts))
+        # 1) Delete in catalogue
+        cohortPid = sourceDB
+        catalogueClient = CatalogueClient(staging, catalogue)
 
-        # 2) Delete from catalog
-        print('cohorts to delete: ' + ",".join(pids))
-        for pid in pids:
-            dr = catalogue.delete(table='Cohorts', keyColumn='pid', key=pid)
+        catalogueClient.deleteDocumentationsByCohort(cohortPid)
+        catalogueClient.deleteContributionsByCohort(cohortPid)
+        catalogueClient.deleteContactsByCohort(cohortPid)
+        dr = catalogue.delete('Cohorts', [{'pid': cohortPid}])
+        # print(dr)
 
-        # 3) Download from staging
-        newData = staging.downLoadCSV('Cohorts')
+        # # 3) Download from staging
+        newCohorts = staging.downLoadCSV('Cohorts')
+        newDocumentation = staging.downLoadCSV('Documentation')
+        newContacts = staging.downLoadCSV('Contacts')
+        # newContributions = staging.downLoadCSV('Contributions')
+        # newCollectionEvents = staging.downLoadCSV('CollectionEvents')
+        # newSubcohorts = staging.downLoadCSV('Subcohorts')
 
-        # 4) Upload to catalog
-        r = catalogue.uploadCSV('Cohorts', newData)
+        # # 4) Upload to catalog
+        r = catalogue.uploadCSV('Cohorts', newCohorts)
+        r = catalogue.uploadCSV('Documentation', newDocumentation)
+        r = catalogue.uploadCSV('Contacts', newContacts)
+        # r = catalogue.uploadCSV('CollectionEvents', newCollectionEvents)
+        # r = catalogue.uploadCSV('Subcohorts', newSubcohorts)
+               

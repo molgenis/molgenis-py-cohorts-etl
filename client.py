@@ -64,7 +64,7 @@ class Client:
         data = responseJson['data']
         return data
 
-    def delete(self, table, keyColumn='name', key=''):
+    def delete(self, table, pkey):
         """Delete row by key"""
 
         query = (""
@@ -73,7 +73,7 @@ class Client:
             "}"
         "")
 
-        variables =  {'pkey': [{keyColumn: key}]}
+        variables =  {'pkey': pkey}
 
         response = self.session.post(self.graphqlEndpoint,
                             json={'query': query, 'variables': variables}

@@ -1,7 +1,7 @@
 from job import Job
 from decouple import config
 
-CATALOG_URL = config('MG_CATALOGUE_URL', default='https://catalog-acc.molgeniscloud.org')
+CATALOG_URL = config('MG_CATALOGUE_URL', default='https://catalogue-acc.molgeniscloud.org')
 ETL_USERNAME = config('MG_ETL_USERNAME', default='admin')
 ETL_PASSWORD = config('MG_ETL_PASSWORD')
 SYNC_SOURCES = config('MG_SYNC_SOURCES', default='')

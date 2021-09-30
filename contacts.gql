@@ -1,0 +1,5 @@
+query Contacts($filter: ContactsFilter) {
+  Contacts(filter: $filter) {
+    name
+  }
+}
