@@ -26,21 +26,22 @@ class Job:
         catalogueClient.deleteDocumentationsByCohort(cohortPid)
         catalogueClient.deleteContributionsByCohort(cohortPid)
         catalogueClient.deleteContactsByCohort(cohortPid)
-        dr = catalogue.delete('Cohorts', [{'pid': cohortPid}])
-        # print(dr)
+        catalogueClient.deleteCollectionEventsByCohort(cohortPid)
+        catalogue.delete('Cohorts', [{'pid': cohortPid}])
 
         # # 3) Download from staging
         newCohorts = staging.downLoadCSV('Cohorts')
         newDocumentation = staging.downLoadCSV('Documentation')
         newContacts = staging.downLoadCSV('Contacts')
-        # newContributions = staging.downLoadCSV('Contributions')
-        # newCollectionEvents = staging.downLoadCSV('CollectionEvents')
-        # newSubcohorts = staging.downLoadCSV('Subcohorts')
+        newContributions = staging.downLoadCSV('Contributions')
+        newCollectionEvents = staging.downLoadCSV('CollectionEvents')
+        newSubcohorts = staging.downLoadCSV('Subcohorts')
 
         # # 4) Upload to catalog
         r = catalogue.uploadCSV('Cohorts', newCohorts)
         r = catalogue.uploadCSV('Documentation', newDocumentation)
         r = catalogue.uploadCSV('Contacts', newContacts)
-        # r = catalogue.uploadCSV('CollectionEvents', newCollectionEvents)
-        # r = catalogue.uploadCSV('Subcohorts', newSubcohorts)
+        r = catalogue.uploadCSV('Contributions', newContributions)
+        r = catalogue.uploadCSV('CollectionEvents', newCollectionEvents)
+        r = catalogue.uploadCSV('Subcohorts', newSubcohorts)
                

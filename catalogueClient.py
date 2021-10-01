@@ -51,4 +51,32 @@ class CatalogueClient:
         for row in rowsToDelete:
             self.catalogClient.delete('Contacts', row)
 
+    def deleteCollectionEventsByCohort(self, cohortPid):
+        """delete al collectionEvents from catalog belonging to staging cohort"""
+
+        query = Path('collectionEvents.gql').read_text()
+        variables = {"filter": { "resource": { "equals": [{"pid": cohortPid }]}}}
+
+        resp = self.stagingClient.query(query, variables)
+        rowsToDelete = []
+        if "CollectionEvents" in resp:
+            rowsToDelete = resp['CollectionEvents']
+
+        for row in rowsToDelete:
+            self.catalogClient.delete('CollectionEvents', row)
+
+    def deleteSubcohortsByCohort(self, cohortPid):
+        """delete al subCohorts from catalog belonging to staging cohort"""
+
+        query = Path('subcohorts.gql').read_text()
+        variables = {"filter": { "resource": { "equals": [{"pid": cohortPid }]}}}
+
+        resp = self.stagingClient.query(query, variables)
+        rowsToDelete = []
+        if "Subcohorts" in resp:
+            rowsToDelete = resp['Subcohorts']
+
+        for row in rowsToDelete:
+            self.catalogClient.delete('Subcohorts', row)
+
 
