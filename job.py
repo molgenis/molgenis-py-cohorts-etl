@@ -1,5 +1,6 @@
 from client import Client
 from catalogueClient import CatalogueClient
+from pathlib import Path
 
 
 class Job:
@@ -16,13 +17,15 @@ class Job:
     def sync(self, sourceDB):
         """Sync staging with catalogue"""
         
+        ## Client serves as a general exm2 api client 
         staging = Client(url=self.url, database=sourceDB, email=self.email, password=self.password)
         catalogue = Client(url=self.url, database=self.catalogueDB, email=self.email, password=self.password)
-
-        # 1) Delete in catalogue
-        cohortPid = sourceDB
+        ## CatalogueClient serves client specific for use with the catalog model
         catalogueClient = CatalogueClient(staging, catalogue)
 
+        cohortPid = self.__fetchCohortPid(staging, sourceDB)
+
+        # 1) Delete in catalogue
         catalogueClient.deleteDocumentationsByCohort(cohortPid)
         catalogueClient.deleteContributionsByCohort(cohortPid)
         catalogueClient.deleteContactsByCohort(cohortPid)
@@ -44,4 +47,17 @@ class Job:
         r = catalogue.uploadCSV('Contributions', newContributions)
         r = catalogue.uploadCSV('CollectionEvents', newCollectionEvents)
         r = catalogue.uploadCSV('Subcohorts', newSubcohorts)
+    
+    def __fetchCohortPid(self, staging, schemaName):
+        """ fetch first cohort and return pid or else fail """
+        cohortsResp = staging.query(Path('cohorts.gql').read_text())
+        if "Cohorts" in cohortsResp:
+            if len(cohortsResp['Cohorts']) != 1:
+                print('Expected a single cohort in stagin area "' + schemaName + '" but found ' + str(len(cohortsResp['Cohorts'])))
+                exit(-1)
+        else:
+            print('Expected a single cohort in stagin area "' + schemaName + '" but found none')
+            exit(0)
+
+        return cohortsResp['Cohorts'][0]['pid']
                
