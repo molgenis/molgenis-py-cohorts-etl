@@ -8,56 +8,76 @@ class Job:
     
     """
 
-    def __init__(self, url, email, password, catalogueDB):
+    def __init__(self, url, email, password, catalogueDB, sourceDB):
         self.url = url
         self.email = email
         self.password = password
         self.catalogueDB = catalogueDB
+        self.sourceDB = sourceDB
 
-    def sync(self, sourceDB):
-        """Sync staging with catalogue"""
-        
         ## Client serves as a general exm2 api client 
-        staging = Client(url=self.url, database=sourceDB, email=self.email, password=self.password)
-        catalogue = Client(url=self.url, database=self.catalogueDB, email=self.email, password=self.password)
+        self.staging = Client(url=self.url, database=sourceDB, email=self.email, password=self.password)
+        self.catalogue = Client(url=self.url, database=self.catalogueDB, email=self.email, password=self.password)
         ## CatalogueClient serves client specific for use with the catalog model
-        catalogueClient = CatalogueClient(staging, catalogue)
+        self.catalogueClient = CatalogueClient(self.staging, self.catalogue)
 
-        cohortPid = self.__fetchCohortPid(staging, sourceDB)
+    def sync(self):
+        """Sync staging with catalogue"""
+        self.cohortPid = self.__fetchCohortPid(self.staging, self.sourceDB)
+        if self.cohortPid is None:
+            print('Skip sync for: ' + self.sourceDB)
 
         # 1) Delete in catalogue
-        catalogueClient.deleteDocumentationsByCohort(cohortPid)
-        catalogueClient.deleteContributionsByCohort(cohortPid)
-        catalogueClient.deleteContactsByCohort(cohortPid)
-        catalogueClient.deleteCollectionEventsByCohort(cohortPid)
-        catalogue.delete('Cohorts', [{'pid': cohortPid}])
+        self.catalogueClient.deleteDocumentationsByCohort(self.cohortPid)
+        self.catalogueClient.deleteContributionsByCohort(self.cohortPid)
+        self.catalogueClient.deleteContactsByCohort()
+        self.catalogueClient.deleteCollectionEventsByCohort(self.cohortPid)
+        self.catalogueClient.deletePublicationsByCohort()
+        self.catalogue.delete('Cohorts', [{'pid': self.cohortPid}])
 
         # # 3) Download from staging
-        newCohorts = staging.downLoadCSV('Cohorts')
-        newDocumentation = staging.downLoadCSV('Documentation')
-        newContacts = staging.downLoadCSV('Contacts')
-        newContributions = staging.downLoadCSV('Contributions')
-        newCollectionEvents = staging.downLoadCSV('CollectionEvents')
-        newSubcohorts = staging.downLoadCSV('Subcohorts')
+        newCohorts = self.__download('Cohorts')
+        newDocumentation = self.__download('Documentation')
+        newContacts = self.__download('Contacts')
+        newContributions = self.__download('Contributions')
+        newCollectionEvents = self.__download('CollectionEvents')
+        newSubcohorts = self.__download('Subcohorts')
+        newPublications = self.__download('Publications')
 
-        # # 4) Upload to catalog
-        r = catalogue.uploadCSV('Cohorts', newCohorts)
-        r = catalogue.uploadCSV('Documentation', newDocumentation)
-        r = catalogue.uploadCSV('Contacts', newContacts)
-        r = catalogue.uploadCSV('Contributions', newContributions)
-        r = catalogue.uploadCSV('CollectionEvents', newCollectionEvents)
-        r = catalogue.uploadCSV('Subcohorts', newSubcohorts)
+        # # 4) Add/Upload to catalog
+        self.__uploadIfSet('Documentation', newDocumentation)
+        self.__uploadIfSet('Publications', newPublications)
+        self.__uploadIfSet('Contacts', newContacts)
+        self.__uploadIfSet('Contributions', newContributions)
+        self.__uploadIfSet('CollectionEvents', newCollectionEvents)
+        self.__uploadIfSet('Subcohorts', newSubcohorts)
+        self.__uploadIfSet('Cohorts', newCohorts)
+
+    def __uploadIfSet(self, table, data):
+        """ Upload staging data to catalogue if staging table contains data (else skip) """
+        if data is None:
+            return
+        uploadResp = self.catalogue.uploadCSV(table, data)
+        print('upload ' + table +' ; ' + str(uploadResp))
+
+    def __download(self, table):
+        """ Download staging data or return None in case of zero rows """
+        countResp = self.staging.query('query Count{' + table + '_agg { count }}')
+        if countResp[table + '_agg']['count'] > 0:
+          return self.staging.downLoadCSV(table)
+        else:
+          return None
     
     def __fetchCohortPid(self, staging, schemaName):
-        """ fetch first cohort and return pid or else fail """
+        """ Fetch first cohort and return pid or else fail """
         cohortsResp = staging.query(Path('cohorts.gql').read_text())
         if "Cohorts" in cohortsResp:
             if len(cohortsResp['Cohorts']) != 1:
                 print('Expected a single cohort in stagin area "' + schemaName + '" but found ' + str(len(cohortsResp['Cohorts'])))
-                exit(-1)
+                return None
         else:
             print('Expected a single cohort in stagin area "' + schemaName + '" but found none')
-            exit(0)
+            return None
 
         return cohortsResp['Cohorts'][0]['pid']
                

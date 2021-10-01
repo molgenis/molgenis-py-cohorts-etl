@@ -38,7 +38,7 @@ class CatalogueClient:
         for row in rowsToDelete:
             self.catalogClient.delete('Contributions', row)
     
-    def deleteContactsByCohort(self, cohortPid):
+    def deleteContactsByCohort(self):
         """delete al contacts from catalog that are set in the staging area"""
 
         query = Path('contacts.gql').read_text()
@@ -78,5 +78,18 @@ class CatalogueClient:
 
         for row in rowsToDelete:
             self.catalogClient.delete('Subcohorts', row)
+
+    def deletePublicationsByCohort(self):
+        """delete all publications from catalog that are set in the staging area"""
+
+        query = Path('publications.gql').read_text()
+
+        resp = self.stagingClient.query(query)
+        rowsToDelete = []
+        if "Publications" in resp:
+            rowsToDelete = resp['Publications']
+
+        for row in rowsToDelete:
+            self.catalogClient.delete('Publications', row)
 
 

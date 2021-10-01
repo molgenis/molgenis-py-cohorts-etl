@@ -16,16 +16,10 @@ print('CATALOG_URL: ' + CATALOG_URL)
 print('SYNC_SOURCES: ' + SYNC_SOURCES)
 print('SYNC_TARGET: ' + SYNC_TARGET)
 
-job = Job(
-    url=CATALOG_URL,
-    email=ETL_USERNAME,
-    password=ETL_PASSWORD,
-    catalogueDB=SYNC_TARGET
-)
-
 for source in soures:
-    print('START SYNC STAGING(' + source + ') WITH CATALOGUE (' + SYNC_TARGET + ')')
-    job.sync(sourceDB=source)
+    print('START SYNC STAGING (' + source + ') WITH CATALOGUE (' + SYNC_TARGET + ')')
+    job = Job(url=CATALOG_URL, email=ETL_USERNAME, password=ETL_PASSWORD, catalogueDB=SYNC_TARGET, sourceDB=source)
+    job.sync()
     print('END SYNC STAGING(' + source + ') WITH CATALOGUE (' + SYNC_TARGET + ')')
 
 print('*** JOB COMPLETED ***')
