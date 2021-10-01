@@ -48,10 +48,10 @@ Resources,,fundingStatement,text,,,,,,,,,Statement listing funding that was obta
 Resources,,acknowledgements,text,,,,,,,,,Acknowledgement statement and citation regulation for this resource
 Resources,,documentation,refback,,,,Documentation,,resource,,,List of documentation available for this resource
 Resources,,collaborations,heading,,,,,,,,,List of relevant collaborations
-Cohorts,,studies,refback,,,UMCG,Studies,,cohorts,,,Listing of studies that used this resource
+Cohorts,,studies,ref_array,,,UMCG,Studies,,cohorts,,,Listing of studies that used this resource
 Resources,,contributors,refback,,,,Contributions,,resource,,,Listing who is/has been involved in the creation and maintenance of this resource
 Resources,,partners,refback,,,UMCG,Partners,,resource,,,Institutions that partnered in the creation of this resource
-Cohorts,,networks,refback,,,UMCG,Networks,,cohorts,,,The consortia or networks that this cohort is involved in
+Cohorts,,networks,ref_array,,,UMCG,Networks,,cohorts,,,The consortia or networks that this cohort is involved in
 Publications,,doi,,1,true,,,,,,,Digital object identifier
 Publications,,title,,,true,,,,,,,Publication title
 Publications,,authors,string_array,,,,,,,,,"List of authors, one entry per author"
@@ -110,15 +110,3 @@ Subcohorts,,mainMedicalCondition,ontology_array,,,UMCG,Diseases,,,,,Disease grou
 Subcohorts,,regions,ontology_array,,,UMCG,Regions,,,,,Countries or geographic regions for this subcohort
 Subcohorts,,inclusionCriteria,text,,,,,,,,,Other inclusion criteria applied to this subcohort
 Subcohorts,,supplementaryInformation,text,,,,,,,,,Any other information that needs to be disclosed for this subcohort
-Networks,Resources,,,,,,,,,,,Collaborations of multiple institutions
-Networks,,datasources,ref_array,,,UMCG,Datasources,,,,,
-Networks,,databanks,ref_array,,,UMCG,Databanks,,,,,
-Networks,,cohorts,ref_array,,,,Cohorts,,,,,
-Networks,,models,ref_array,,,UMCG,Models,,,,,
-Networks,,studies,refback,,,,Studies,,networks,,,
-Studies,Resources,,,,,,,,,,,"Collaborations of multiple institutions, addressing research questions using data sources and/or data banks"
-Studies,,networks,ref_array,,,,Networks,,,,,
-Studies,,datasources,ref_array,,,UMCG,Datasources,,,,,
-Studies,,databanks,ref_array,,,UMCG,Databanks,,,,,Databanks that provided data into this study
-Studies,,cohorts,ref_array,,,,Cohorts,,,,,Cohorts that provided data into this study
-Studies,,leadInstitution,ref,,,UMCG,Institutions,,,,,Name of lead institution that conducted the study
