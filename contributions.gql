@@ -1,0 +1,10 @@
+query Contributions($filter: ContributionsFilter) {
+  Contributions(filter: $filter) {
+    resource {
+      pid
+    }
+    contact {
+      name
+    }
+  }
+}
