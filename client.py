@@ -17,8 +17,6 @@ class Client:
         self.session = requests.Session()
         self.graphqlEndpoint = self.url + '/' + self.database + '/graphql'
         self.apiEndpoint = self.url + '/' + self.database + '/api'
-
-        log.info("Doing something!")
         
         self.signin(self.email, self.password)
 
