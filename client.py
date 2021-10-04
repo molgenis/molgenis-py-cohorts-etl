@@ -80,8 +80,8 @@ class Client:
                             )
 
         if response.status_code != 200:
-            log.error(f"Error while deleting, status code {response.status_code}")
             log.error(response)
+            log.error(f"Error uploading csv, response.text: {response.text}")
 
         return response
 
@@ -130,8 +130,8 @@ class Client:
         )
 
         if response.status_code != 200:
-            log.error(f"Error uploading csv, status code {response.text}")
             log.error(response)
+            log.error(f"Error uploading csv, status code {response.text}")
 
         return response
 

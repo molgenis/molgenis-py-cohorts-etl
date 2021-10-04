@@ -35,6 +35,7 @@ class Job:
         self.catalogueClient.deleteContactsByCohort()
         self.catalogueClient.deleteCollectionEventsByCohort(self.cohortPid)
         self.catalogueClient.deletePublicationsByCohort()
+        self.catalogueClient.deleteSubcohortsByCohort(self.cohortPid)
         self.catalogue.delete('Cohorts', [{'pid': self.cohortPid}])
 
         # # 3) Download from staging
@@ -50,10 +51,10 @@ class Job:
         self.__uploadIfSet('Documentation', newDocumentation)
         self.__uploadIfSet('Publications', newPublications)
         self.__uploadIfSet('Contacts', newContacts)
-        self.__uploadIfSet('Contributions', newContributions)
-        self.__uploadIfSet('CollectionEvents', newCollectionEvents)
-        self.__uploadIfSet('Subcohorts', newSubcohorts)
         self.__uploadIfSet('Cohorts', newCohorts)
+        self.__uploadIfSet('Contributions', newContributions)
+        self.__uploadIfSet('Subcohorts', newSubcohorts)
+        self.__uploadIfSet('CollectionEvents', newCollectionEvents)
 
     def __uploadIfSet(self, table, data):
         """ Upload staging data to catalogue if staging table contains data (else skip) """
