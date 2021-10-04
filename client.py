@@ -1,5 +1,8 @@
 import requests
 from pathlib import Path
+import logging
+
+log = logging.getLogger(__name__)
 
 class Client:
     """
@@ -14,6 +17,8 @@ class Client:
         self.session = requests.Session()
         self.graphqlEndpoint = self.url + '/' + self.database + '/graphql'
         self.apiEndpoint = self.url + '/' + self.database + '/api'
+
+        log.info("Doing something!")
         
         self.signin(self.email, self.password)
 
@@ -40,13 +45,11 @@ class Client:
         message = responseJson['data']['signin']['message']
 
         if status == 'SUCCESS':
-            print(f"Success: Signed into {self.database} as {self.email}")
+            log.debug(f"Success: Signed into {self.database} as {self.email}")
         elif status == 'FAILED':
-            print(message)
-            exit()
+            log.error(message)
         else:
-            print('Error: sign in failed, exiting.')
-            exit()
+            log.error('Error: sign in failed, exiting.')
 
     def query(self, query, variables = {}):
         """Query backend"""
@@ -56,8 +59,7 @@ class Client:
                                  )
                                 
         if response.status_code != 200:
-            print(f"Error while posting query, status code {response.status_code}")
-            exit()
+            log.error(f"Error while posting query, status code {response.status_code}")
 
         responseJson = response.json()
 
@@ -80,9 +82,8 @@ class Client:
                             )
 
         if response.status_code != 200:
-            print(f"Error while deleting, status code {response.status_code}")
-            print(response)
-            exit()
+            log.error(f"Error while deleting, status code {response.status_code}")
+            log.error(response)
 
         return response
 
@@ -104,9 +105,8 @@ class Client:
                     )
 
         if response.status_code != 200:
-            print(f"Error while adding record, status code {response.status_code}")
-            print(response)
-            exit()
+            log.error(f"Error while adding record, status code {response.status_code}")
+            log.error(response)
 
         return response
     
@@ -118,19 +118,24 @@ class Client:
         response = self.session.post(self.graphqlEndpoint, json={'query': query} )
 
         if response.status_code != 200:
-            print(f"Error while fetching table fields, status code {response.status_code}")
-            print(response)
-            exit()
+            log.error(f"Error while fetching table fields, status code {response.status_code}")
+            log.error(response)
 
         return response.json()['data']['__type']['fields']
 
     def uploadCSV(self, table, data):
         """ Upload csv data ( string ) to table """
-        return self.session.post(
+        response = self.session.post(
             self.apiEndpoint + '/csv/'+ table,
             headers={"Content-Type": 'text/csv'},
             data=data
         )
+
+        if response.status_code != 200:
+            log.error(f"Error uploading csv, status code {response.text}")
+            log.error(response)
+
+        return response
 
     def downLoadCSV(self, table):
         """ Download csv data from table """
@@ -138,6 +143,6 @@ class Client:
         if resp.content:
             return resp.content
         else:
-            print('Error: download failed')
-            exit()
+            log.error('Error: download failed')
+            
 

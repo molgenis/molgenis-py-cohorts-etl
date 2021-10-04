@@ -1,7 +1,9 @@
 from client import Client
 from catalogueClient import CatalogueClient
 from pathlib import Path
+import logging
 
+log = logging.getLogger(__name__)
 
 class Job:
     """
@@ -25,7 +27,7 @@ class Job:
         """Sync staging with catalogue"""
         self.cohortPid = self.__fetchCohortPid(self.staging, self.sourceDB)
         if self.cohortPid is None:
-            print('Skip sync for: ' + self.sourceDB)
+            log.info('Skip sync for: ' + self.sourceDB)
 
         # 1) Delete in catalogue
         self.catalogueClient.deleteDocumentationsByCohort(self.cohortPid)
@@ -58,7 +60,7 @@ class Job:
         if data is None:
             return
         uploadResp = self.catalogue.uploadCSV(table, data)
-        print('upload ' + table +' ; ' + str(uploadResp))
+        log.info('upload ' + table +' ; ' + str(uploadResp))
 
     def __download(self, table):
         """ Download staging data or return None in case of zero rows """
@@ -73,10 +75,10 @@ class Job:
         cohortsResp = staging.query(Path('cohorts.gql').read_text())
         if "Cohorts" in cohortsResp:
             if len(cohortsResp['Cohorts']) != 1:
-                print('Expected a single cohort in stagin area "' + schemaName + '" but found ' + str(len(cohortsResp['Cohorts'])))
+                log.error('Expected a single cohort in stagin area "' + schemaName + '" but found ' + str(len(cohortsResp['Cohorts'])))
                 return None
         else:
-            print('Expected a single cohort in stagin area "' + schemaName + '" but found none')
+            log.error('Expected a single cohort in stagin area "' + schemaName + '" but found none')
             return None
 
         return cohortsResp['Cohorts'][0]['pid']
