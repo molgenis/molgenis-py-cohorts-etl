@@ -36,6 +36,7 @@ class Job:
         self.catalogueClient.deleteCollectionEventsByCohort(self.cohortPid)
         self.catalogueClient.deletePublicationsByCohort()
         self.catalogueClient.deleteSubcohortsByCohort(self.cohortPid)
+        # self.catalogueClient.deletePartnersByCohort(self.cohortPid)
         self.catalogue.delete('Cohorts', [{'pid': self.cohortPid}])
 
         # # 3) Download from staging
@@ -45,16 +46,19 @@ class Job:
         newContributions = self.__download('Contributions')
         newCollectionEvents = self.__download('CollectionEvents')
         newSubcohorts = self.__download('Subcohorts')
+        newPartners = self.__download('Partners')
         newPublications = self.__download('Publications')
 
         # # 4) Add/Upload to catalog
-        self.__uploadIfSet('Documentation', newDocumentation)
         self.__uploadIfSet('Publications', newPublications)
-        self.__uploadIfSet('Contacts', newContacts)
         self.__uploadIfSet('Cohorts', newCohorts)
+        self.__uploadIfSet('Documentation', newDocumentation)
+        self.__uploadIfSet('Contacts', newContacts)
         self.__uploadIfSet('Contributions', newContributions)
         self.__uploadIfSet('Subcohorts', newSubcohorts)
         self.__uploadIfSet('CollectionEvents', newCollectionEvents)
+        self.__uploadIfSet('Partners', newPartners)
+        self.__uploadIfSet('Cohorts', newCohorts)
 
     def __uploadIfSet(self, table, data):
         """ Upload staging data to catalogue if staging table contains data (else skip) """
@@ -76,10 +80,10 @@ class Job:
         cohortsResp = staging.query(Path('cohorts.gql').read_text())
         if "Cohorts" in cohortsResp:
             if len(cohortsResp['Cohorts']) != 1:
-                log.error('Expected a single cohort in stagin area "' + schemaName + '" but found ' + str(len(cohortsResp['Cohorts'])))
+                log.error('Expected a single cohort in staging area "' + schemaName + '" but found ' + str(len(cohortsResp['Cohorts'])))
                 return None
         else:
-            log.error('Expected a single cohort in stagin area "' + schemaName + '" but found none')
+            log.error('Expected a single cohort in staging area "' + schemaName + '" but found none')
             return None
 
         return cohortsResp['Cohorts'][0]['pid']

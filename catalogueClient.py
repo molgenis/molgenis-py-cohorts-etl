@@ -93,3 +93,18 @@ class CatalogueClient:
             self.catalogClient.delete('Publications', row)
 
 
+    def deletePartnersByCohort(self, cohortPid):
+        """delete al partners from catalog belonging to staging cohort"""
+
+        query = Path('partners.gql').read_text()
+        variables = {"filter": { "resource": { "equals": [{"pid": cohortPid }]}}}
+
+        resp = self.stagingClient.query(query, variables)
+        rowsToDelete = []
+        if "Partners" in resp:
+            rowsToDelete = resp['Partners']
+
+        for row in rowsToDelete:
+            self.catalogClient.delete('Partners', row)
+
+

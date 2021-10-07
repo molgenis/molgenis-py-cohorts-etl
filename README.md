@@ -1,5 +1,5 @@
 # molgenis-py-cohorts-etl
-Python lib containing scripts to control data flow from staging env to live catalogue 
+Python lib containing scripts to control data flow from staging env to live catalogue for cohort rich or descriptive metadata. 
 
 ## build
 build using venv, activate enviroment ,install requirements;
