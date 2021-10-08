@@ -32,7 +32,7 @@ class Job:
         # 1) Delete in catalogue
         self.catalogueClient.deleteDocumentationsByCohort(self.cohortPid)
         self.catalogueClient.deleteContributionsByCohort(self.cohortPid)
-        self.catalogueClient.deleteContactsByCohort()
+        # self.catalogueClient.deleteContactsByCohort()
         self.catalogueClient.deleteCollectionEventsByCohort(self.cohortPid)
         self.catalogueClient.deletePublicationsByCohort()
         self.catalogueClient.deleteSubcohortsByCohort(self.cohortPid)
