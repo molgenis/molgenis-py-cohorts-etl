@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.0 (2021-10-08)
+### Feature
+* Update staging ([#4](https://github.com/molgenis/molgenis-py-cohorts-etl/issues/4)) ([`265fd0c`](https://github.com/molgenis/molgenis-py-cohorts-etl/commit/265fd0cbaaeacb4ce484025200b273e3bb73d626))
+
 ## v1.1.0 (2021-10-04)
 ### Feature
 * Syns staging model with catalogue ([`7df68a3`](https://github.com/molgenis/molgenis-py-cohorts-etl/commit/7df68a39a8e32c6a753a5b975e4c1a37199fb93d))
