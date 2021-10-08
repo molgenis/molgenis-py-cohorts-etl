@@ -3,6 +3,8 @@ query Partners($filter: PartnersFilter) {
     resource {
       pid
     }
-    institution
+    institution {
+      pid
+    }
   }
 }
