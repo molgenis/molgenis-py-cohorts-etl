@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.0 (2021-10-14)
+### Feature
+* Add Subcohort.countries delete Resources.publications ([#5](https://github.com/molgenis/molgenis-py-cohorts-etl/issues/5)) ([`ced657c`](https://github.com/molgenis/molgenis-py-cohorts-etl/commit/ced657cbb779ef5ddf20abcb3f1818e5a424ff18))
+
 ## v1.2.0 (2021-10-08)
 ### Feature
 * Update staging ([#4](https://github.com/molgenis/molgenis-py-cohorts-etl/issues/4)) ([`265fd0c`](https://github.com/molgenis/molgenis-py-cohorts-etl/commit/265fd0cbaaeacb4ce484025200b273e3bb73d626))
