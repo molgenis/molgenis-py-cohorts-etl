@@ -8,14 +8,14 @@ Resources,,acronym,,,,,,,,,,Resource acronym
 Resources,,website,,,,,,,,,,Link to the website of this resource
 Resources,,description,text,,,,,,,,,Short description of this resource
 Resources,,keywords,text,,,,,,,,,Keywords to increase findability of this resource. Try to use words that are not used in the description.
-Resources,,externalIdentifiers,,,,,,,,,"External identifier for this resource (e.g. EU PAS number, UMCG register number)"
+Resources,,externalIdentifiers,,,,,,,,,,"External identifier for this resource (e.g. EU PAS number, UMCG register number)"
 Cohorts,Resources,,,,,,,,,,,Group of individuals sharing a defining demographic characteristic
 Cohorts,,type,ref_array,,,UMCG,ResourceTypes,,,,,"Type of resource, e.g. registry, cohort, biobank"
 Cohorts,,design,ref,,,UMCG,CohortDesigns,,,,,"The study design of this cohort, e.g. cross-sectional or longitudinal"
 Cohorts,,collectionType,ref_array,,,UMCG,CollectionTypes,,,,,"The data collection type of this cohort, e.g. retrospective or prospective; if both, select both"
 Resources,,institution,ref_array,,,UMCG,Institutions,,,,,Institution providing and/or coordinating access to this resource
 Resources,,logo,file,,,,,,,,,Logo for use on homepages etc.
-Cohorts,,contactEmail,,,,,,,,,Contact e-mail address for this cohort
+Cohorts,,contactEmail,,,,,,,,,,Contact e-mail address for this cohort
 Resources,,contributors,refback,,,,Contributions,,resource,,,Listing who is/has been involved in the creation and maintenance of this resource
 Resources,,population,heading,,,,,,,,,Description of the population that can potentially be captured in the resource
 Resources,,numberOfParticipants,int,,,,,,,,,Total number of individuals for which data is collected
@@ -45,8 +45,8 @@ Resources,,partners,refback,,,UMCG,Partners,,resource,,,Institutions that partne
 Cohorts,,networks,ref_array,,,UMCG,Networks,,cohorts,,,The consortia or networks that this cohort is involved in
 Publications,,,,,,,,,,,,Publications following bibtex format
 Publications,,doi,,1,TRUE,,,,,,,Digital object identifier
-Publications,,title,,,TRUE,,,,,,Publication title
-Partners,,,,,,,,,,,,,Institutions that partnered in the creation of a resource
+Publications,,title,,,TRUE,,,,,,,Publication title
+Partners,,,,,,,,,,,,Institutions that partnered in the creation of a resource
 Partners,,resource,ref,1,TRUE,,Resources,,,,,Resource that is contributed to
 Partners,,institution,ref,1,TRUE,UMCG,Institutions,,,,,institution that contributed
 Partners,,department,text,,,,,,,,,"Optionally, the institutational unit(s) that play a role in this resource"
@@ -85,8 +85,8 @@ CollectionEvents,,numberOfParticipants,int,,,,,,,,,Number of participants sample
 CollectionEvents,,areasOfInformation,ontology_array,,,UMCG,AreasOfInformation,,,,,Areas of information that were extracted in this data collection event
 CollectionEvents,,dataCategories,ontology_array,,,UMCG,DataCategories,,,,,Methods of data collection used in this collection event
 CollectionEvents,,sampleCategories,ontology_array,,,UMCG,SampleCategories,,,,,Samples that were collected in this collection even
-CollectionEvents,,standardizedTools,ontology_array,,,StandardizedTools,,,,,Standardized tools, e.g. surveys, questionnaires, instruments used to collect data for this collection event"
-CollectionEvents,,standardizedToolsOther,,,,,,,,,"If 'other', please specify"
+CollectionEvents,,standardizedTools,ontology_array,,,UMCG,StandardizedTools,,,,,"Standardized tools, e.g. surveys, questionnaires, instruments used to collect data for this collection event"
+CollectionEvents,,standardizedToolsOther,,,,,,,,,,"If 'other', please specify"
 Subcohorts,,,,,,,,,,,,Subcohorts defined for this resource
 Subcohorts,,resource,ref,1,TRUE,,Resources,,,,,Resource this subcohort is part of
 Subcohorts,,name,,1,TRUE,,,,,,,"Subcohort name, e.g. 'mothers in first trimester','newborns'"
