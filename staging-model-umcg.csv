@@ -32,8 +32,10 @@ Cohorts,,subcohorts,refback,,,,Subcohorts,,resource,,,List of subcohorts or subp
 Resources,,contents,heading,,,,,,,,,Data model and contents
 Cohorts,,collectionEvents,refback,,,,CollectionEvents,,resource,,,List of collection events defined for this resource
 Cohorts,,access,heading,,,,,,,,,
-Cohorts,,dataAccessConditions,ontology_array,,,UMCG,Conditions,,,,,Codes defining data access terms and use conditions
+Cohorts,,dataAccessConditions,ontology_array,,,UMCG,DataAccessConditions,,,,,Codes defining data access terms and conditions
+Cohorts,,dataUseConditions,ontology_array,,,UMCG,DataUseConditions,,,,,Codes defining data use terms and conditions
 Cohorts,,dataAccessConditionsDescription,text,,,,,,,,,Description of data access terms and use conditions
+Cohorts,,dataAccessFee,bool,,,,,,,,,Does a fee apply to gain access to data of this cohort?
 Cohorts,,releaseType,ontology,,,UMCG,ReleaseTypes,,,,,"Select whether this resource is a closed dataset or whether new data is released continuously or at a termly basis"
 Cohorts,,releaseDescription,text,,,,,,,,,Description of the release cycle of this resource
 Cohorts,,linkageOptions,text,,,,,,,,,Linkage options with additional data sources that are available for this resource
