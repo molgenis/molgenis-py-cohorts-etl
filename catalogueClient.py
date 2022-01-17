@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 class CatalogueClient:
@@ -11,12 +10,12 @@ class CatalogueClient:
         self.catalogClient = catalogClient
 
     def deleteDocumentationsByCohort(self, cohortPid):
-        """delete al documentation from catalog belonging to staging cohort"""
+        """delete al documentation from catalog belonging to cohort"""
 
         query = Path('documentation.gql').read_text()
         variables = {"filter": { "resource": { "equals": [{"pid": cohortPid }]}}}
     
-        resp = self.stagingClient.query(query, variables)
+        resp = self.catalogClient.query(query, variables)
         rowsToDelete = []
         if "Documentation" in resp:
             rowsToDelete = resp['Documentation']
@@ -25,12 +24,12 @@ class CatalogueClient:
             self.catalogClient.delete('Documentation', row)
 
     def deleteContributionsByCohort(self, cohortPid):
-        """delete al contributions from catalog belonging to staging cohort"""
+        """delete al contributions from catalog belonging to cohort"""
 
         query = Path('contributions.gql').read_text()
         variables = {"filter": { "resource": { "equals": [{"pid": cohortPid }]}}}
 
-        resp = self.stagingClient.query(query, variables)
+        resp = self.catalogClient.query(query, variables)
         rowsToDelete = []
         if "Contributions" in resp:
             rowsToDelete = resp['Contributions']
@@ -52,12 +51,12 @@ class CatalogueClient:
             self.catalogClient.delete('Contacts', row)
 
     def deleteCollectionEventsByCohort(self, cohortPid):
-        """delete al collectionEvents from catalog belonging to staging cohort"""
+        """delete al collectionEvents from catalog belonging to cohort"""
 
         query = Path('collectionEvents.gql').read_text()
         variables = {"filter": { "resource": { "equals": [{"pid": cohortPid }]}}}
 
-        resp = self.stagingClient.query(query, variables)
+        resp = self.catalogClient.query(query, variables)
         rowsToDelete = []
         if "CollectionEvents" in resp:
             rowsToDelete = resp['CollectionEvents']
@@ -66,12 +65,12 @@ class CatalogueClient:
             self.catalogClient.delete('CollectionEvents', row)
 
     def deleteSubcohortsByCohort(self, cohortPid):
-        """delete al subCohorts from catalog belonging to staging cohort"""
+        """delete al subCohorts from catalog belonging to cohort"""
 
         query = Path('subcohorts.gql').read_text()
         variables = {"filter": { "resource": { "equals": [{"pid": cohortPid }]}}}
 
-        resp = self.stagingClient.query(query, variables)
+        resp = self.catalogClient.query(query, variables)
         rowsToDelete = []
         if "Subcohorts" in resp:
             rowsToDelete = resp['Subcohorts']
@@ -99,7 +98,7 @@ class CatalogueClient:
         query = Path('partners.gql').read_text()
         variables = {"filter": { "resource": { "equals": [{"pid": cohortPid }]}}}
 
-        resp = self.stagingClient.query(query, variables)
+        resp = self.catalogClient.query(query, variables)
         rowsToDelete = []
         if "Partners" in resp:
             rowsToDelete = resp['Partners']
