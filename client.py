@@ -53,11 +53,11 @@ class Client:
         """Query backend"""
 
         response = self.session.post(self.graphqlEndpoint,
-                                 json={'query': query, 'variables': variables}
-                                 )
+                                     json={'query': query, 'variables': variables})
                                 
         if response.status_code != 200:
             log.error(f"Error while posting query, status code {response.status_code}")
+            # TODO: add logging content > errors > message
 
         responseJson = response.json()
 

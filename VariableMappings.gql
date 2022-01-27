@@ -1,0 +1,52 @@
+query VariableMappings($filter: VariableMappingsFilter) {
+  VariableMappings(filter: $filter) {
+    fromDataDictionary {
+      resource {
+        pid
+      }
+      version
+    }
+    fromTable {
+      dataDictionary {
+        resource {
+          pid
+        }
+        version
+      }
+      name
+    }
+    toDataDictionary {
+      resource {
+        pid
+      }
+      version
+    }
+    toTable {
+      dataDictionary {
+        resource {
+          pid
+        }
+        version
+      }
+      name
+    }
+    toVariable {
+      dataDictionary {
+        resource {
+          pid
+        }
+        version
+      }
+      table {
+        dataDictionary {
+          resource {
+            pid
+          }
+          version
+        }
+        name
+      }
+      name
+    }
+  }
+}

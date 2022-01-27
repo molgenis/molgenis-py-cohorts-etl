@@ -1,5 +1,0 @@
-query Publications($filter: PublicationsFilter) {
-  Publications(filter: $filter) {
-    doi
-  }
-}

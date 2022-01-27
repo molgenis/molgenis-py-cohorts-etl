@@ -1,6 +1,0 @@
-query Contacts($filter: ContactsFilter) {
-  Contacts(filter: $filter) {
-    firstName
-    surname
-  }
-}

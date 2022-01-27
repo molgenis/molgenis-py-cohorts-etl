@@ -1,0 +1,35 @@
+query TableMappings($filter: TableMappingsFilter) {
+  TableMappings(filter: $filter) {
+    fromDataDictionary {
+      resource {
+        pid
+      }
+      version
+    }
+    fromTable {
+      dataDictionary {
+        resource {
+          pid
+        }
+        version
+      }
+      name
+    }
+    toDataDictionary {
+      resource {
+        pid
+      }
+      version
+    }
+    toTable {
+      dataDictionary {
+        resource {
+          pid
+        }
+        version
+      }
+      name
+    }
+  }
+}
+
