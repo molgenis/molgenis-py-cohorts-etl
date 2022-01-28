@@ -42,7 +42,7 @@ class Job:
 
     def fetchCohortPid(self, staging, schemaName):
         """ Fetch first cohort and return pid or else fail """
-        cohortsResp = staging.query(Path('Cohorts.gql').read_text())
+        cohortsResp = staging.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
         if "Cohorts" in cohortsResp:
             if len(cohortsResp['Cohorts']) != 1:
                 self.log.error('Expected a single cohort in staging area "' + schemaName + '" but found ' + str(len(cohortsResp['Cohorts'])))
@@ -55,7 +55,7 @@ class Job:
 
     def fetchModelPid(self, staging, schemaName):
         """ Fetch first cohort and return pid or else fail """
-        modelsResp = staging.query(Path('Models.gql').read_text())
+        modelsResp = staging.query(Path('./graphql-queries/' + 'Models.gql').read_text())
         if "Models" in modelsResp:
             if len(modelsResp['Models']) != 1:
                 self.log.error('Expected a single model in staging area "' + schemaName + '" but found ' + str(len(modelsResp['Models'])))

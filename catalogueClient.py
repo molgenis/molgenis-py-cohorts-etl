@@ -13,7 +13,7 @@ class CatalogueClient:
     def deleteTableContentsByPid(self, tableName, tableType, pid):
         """delete al documentation from catalogue belonging to cohort"""
 
-        query = Path(tableName + '.gql').read_text()
+        query = Path('./graphql-queries/' + tableName + '.gql').read_text()
         if tableType == 'resource':
             variables = {"filter": {"resource": {"equals": [{"pid": pid}]}}}
         elif tableType == 'mappings':
