@@ -3,6 +3,8 @@ from catalogueClient import CatalogueClient
 from pathlib import Path
 import logging
 
+log = logging.getLogger(__name__)
+
 
 class Job:
     """
@@ -22,15 +24,12 @@ class Job:
         # CatalogueClient serves client specific for use with the catalog model
         self.catalogueClient = CatalogueClient(self.staging, self.catalogue)
 
-        # Create logger
-        self.log = logging.getLogger(__name__)
-
     def uploadIfSet(self, table, data):
         """ Upload staging data to catalogue if staging table contains data (else skip) """
         if data is None:
             return
         uploadResp = self.catalogue.uploadCSV(table, data)
-        self.log.info('upload ' + table + ' ; ' + str(uploadResp))
+        log.info('upload ' + table + ' ; ' + str(uploadResp))
 
     def download(self, table):
         """ Download staging data or return None in case of zero rows """
@@ -42,26 +41,30 @@ class Job:
 
     def fetchCohortPid(self, staging, schemaName):
         """ Fetch first cohort and return pid or else fail """
-        cohortsResp = staging.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
-        if "Cohorts" in cohortsResp:
-            if len(cohortsResp['Cohorts']) != 1:
-                self.log.error('Expected a single cohort in staging area "' + schemaName + '" but found ' + str(len(cohortsResp['Cohorts'])))
+        try:
+            cohortsResp = staging.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
+            if "Cohorts" in cohortsResp:
+                if len(cohortsResp['Cohorts']) != 1:
+                    log.error('Expected a single cohort in staging area "' + schemaName + '" but found ' + str(
+                        len(cohortsResp['Cohorts'])))
+                    return None
+            else:
+                log.error('Expected a single cohort in staging area "' + schemaName + '" but found none')
                 return None
-        else:
-            self.log.error('Expected a single cohort in staging area "' + schemaName + '" but found none')
-            return None
 
-        return cohortsResp['Cohorts'][0]['pid']
+            return cohortsResp['Cohorts'][0]['pid']
+        except KeyError:
+            return None
 
     def fetchModelPid(self, staging, schemaName):
         """ Fetch first cohort and return pid or else fail """
         modelsResp = staging.query(Path('./graphql-queries/' + 'Models.gql').read_text())
         if "Models" in modelsResp:
             if len(modelsResp['Models']) != 1:
-                self.log.error('Expected a single model in staging area "' + schemaName + '" but found ' + str(len(modelsResp['Models'])))
+                log.error('Expected a single model in staging area "' + schemaName + '" but found ' + str(len(modelsResp['Models'])))
                 return None
         else:
-            self.log.error('Expected a single model in staging area "' + schemaName + '" but found none')
+            log.error('Expected a single model in staging area "' + schemaName + '" but found none')
             return None
 
         return modelsResp['Models'][0]['pid']

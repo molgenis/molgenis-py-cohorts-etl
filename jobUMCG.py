@@ -1,4 +1,7 @@
 from job import Job
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class JobUMCGCohorts(Job):
@@ -10,25 +13,23 @@ class JobUMCGCohorts(Job):
         super(Job, self).__init__(url, email, password, catalogueDB, sourceDB)
 
         self.cohortPid = self.fetchCohortPid(self.staging, self.sourceDB)
-        self.tablesToSync = {'Documentation': 'cohorts',
-                             'Contributions': 'cohorts',
-                             'CollectionEvents': 'cohorts',
-                             'Subcohorts': 'cohorts',
-                             'Partners': 'cohorts'}
-
-        # Fetch cohort pid
-        self.cohortPid = self.fetchCohortPid(self.staging, self.sourceDB)
-
-    def sync(self):
-        """Sync staging with catalogue"""
         if self.cohortPid is None:
-            self.log.info('Skip sync for: ' + self.sourceDB)
+            log.info('Skip sync for: ' + self.sourceDB)
+        else:
+            self.syncCohort()
+
+    def syncCohort(self):
+        """Sync staging with catalogue"""
+        tablesToSync = {'Documentation': 'cohorts',
+                        'Contributions': 'cohorts',
+                        'CollectionEvents': 'cohorts',
+                        'Subcohorts': 'cohorts',
+                        'Partners': 'cohorts'}
 
         # 1) Delete from catalogue
-        for tableName in self.tablesToSync:
-            tableType = self.tablesToSync[tableName]
+        for tableName in tablesToSync:
+            tableType = tablesToSync[tableName]
             self.catalogueClient.deleteTableContentsByPid(tableName, tableType, self.cohortPid)
-
         self.catalogue.delete('Cohorts', [{'pid': self.cohortPid}])
 
         # # 2) Download from staging

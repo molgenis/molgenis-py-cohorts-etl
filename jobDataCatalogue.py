@@ -1,9 +1,12 @@
 from job import Job
+import logging
+
+log = logging.getLogger(__name__)
 
 
-class JobDataCatalogueCohorts(Job):
+class JobDataCatalogue(Job):
     """
-    Class to copy cohort rich metadata and variable metadata from data catalogue
+    Class to copy cohort rich metadata and cohort and network cdm metadata from data catalogue
     cohort staging areas to catalogue.
     """
 
@@ -11,27 +14,34 @@ class JobDataCatalogueCohorts(Job):
         super().__init__(url, email, password, catalogueDB, sourceDB)
 
         self.cohortPid = self.fetchCohortPid(self.staging, self.sourceDB)
-        self.tablesToSync = {'VariableMappings': 'mappings',
-                             'TableMappings': 'mappings',
-                             'SourceVariableValues': 'variables',
-                             'RepeatedSourceVariables': 'variables',
-                             'SourceVariables': 'variables',
-                             'SourceTables': 'variables',
-                             'SourceDataDictionaries': 'resource',
-                             'Documentation': 'resource',
-                             'Contributions': 'resource',
-                             'CollectionEvents': 'resource',
-                             'Subcohorts': 'resource',
-                             'Partners': 'resource'}
+        self.modelPid = self.fetchModelPid(self.staging, self.sourceDB)
 
-    def sync(self):
-        """Sync staging with catalogue"""
-        if self.cohortPid is None:
-            self.log.info('Skip sync for: ' + self.sourceDB)
+        if self.cohortPid is None and self.modelPid is None:
+            log.info('Skip sync for: ' + self.sourceDB)
+        elif self.cohortPid:
+            self.syncCohort()
+        elif self.modelPid:
+            self.syncNetwork()
+
+    def syncCohort(self):
+        """Sync cohort staging with catalogue"""
+
+        tablesToSync = {'VariableMappings': 'mappings',
+                        'TableMappings': 'mappings',
+                        'SourceVariableValues': 'variables',
+                        'RepeatedSourceVariables': 'variables',
+                        'SourceVariables': 'variables',
+                        'SourceTables': 'variables',
+                        'SourceDataDictionaries': 'resource',
+                        'Documentation': 'resource',
+                        'Contributions': 'resource',
+                        'CollectionEvents': 'resource',
+                        'Subcohorts': 'resource',
+                        'Partners': 'resource'}
 
         # 1) Delete from catalogue
-        for tableName in self.tablesToSync:
-            tableType = self.tablesToSync[tableName]
+        for tableName in tablesToSync:
+            tableType = tablesToSync[tableName]
             self.catalogueClient.deleteTableContentsByPid(tableName, tableType, self.cohortPid)
         self.catalogue.delete('Cohorts', [{'pid': self.cohortPid}])
 
@@ -69,33 +79,20 @@ class JobDataCatalogueCohorts(Job):
         self.uploadIfSet('TableMappings', newTableMappings)
         self.uploadIfSet('VariableMappings', newVariableMappings)
 
-
-class JobDataCatalogueNetworks(Job):
-    """
-    Class to copy network model variable metadata from data catalogue network staging areas to
-    catalogue.
-    """
-
-    def __init__(self, url, email, password, catalogueDB, sourceDB):
-        super().__init__(url, email, password, catalogueDB, sourceDB)
-
-        self.modelPid = self.fetchModelPid(self.staging, self.sourceDB)
-        self.tablesToSync = {'TargetVariableValues': 'variables',
-                             'RepeatedTargetVariables': 'variables',
-                             'TargetVariables': 'variables',
-                             'TargetTables': 'variables',
-                             'TargetDataDictionaries': 'resource',
-                             'CollectionEvents': 'resource',
-                             'Subcohorts': 'resource'}
-
-    def sync(self):
+    def syncNetwork(self):
         """Sync staging with catalogue"""
-        if self.modelPid is None:
-            self.log.info('Skip sync for: ' + self.sourceDB)
+
+        tablesToSync = {'TargetVariableValues': 'variables',
+                        'RepeatedTargetVariables': 'variables',
+                        'TargetVariables': 'variables',
+                        'TargetTables': 'variables',
+                        'TargetDataDictionaries': 'resource',
+                        'CollectionEvents': 'resource',
+                        'Subcohorts': 'resource'}
 
         # 1) Delete from catalogue
-        for tableName in self.tablesToSync:
-            tableType = self.tablesToSync[tableName]
+        for tableName in tablesToSync:
+            tableType = tablesToSync[tableName]
             self.catalogueClient.deleteTableContentsByPid(tableName, tableType, self.modelPid)
 
         # 2) Download from staging
