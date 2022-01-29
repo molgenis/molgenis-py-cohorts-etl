@@ -4,7 +4,9 @@ from pathlib import Path
 import logging
 
 log = logging.getLogger(__name__)
-
+# TODO: add copying of data from SharedStaging (Institutions and Contacts) trac #8843
+# TODO: add copying of catalogue from data-catalogue-staging to catalogue on data-catalogue to JobDataCatalogue
+# TODO: add more insightful error messages
 
 class Job:
     """
@@ -40,7 +42,10 @@ class Job:
             return None
 
     def fetchCohortPid(self, staging, schemaName):
-        """ Fetch first cohort and return pid or else fail """
+        """ Fetch first cohort and return pid or else fail
+        Not all staging areas (i.e. network staging areas) contain a table 'Cohorts', therefore
+        a try/except is needed here.
+        """
         try:
             cohortsResp = staging.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
             if "Cohorts" in cohortsResp:

@@ -55,7 +55,6 @@ class JobDataCatalogue(Job):
         newSourceDataDictionaries = self.download('SourceDataDictionaries')
         newCohorts = self.download('Cohorts')
         newDocumentation = self.download('Documentation')
-        newContacts = self.download('Contacts')  # TODO: Contacts should be in shared staging area
         newContributions = self.download('Contributions')
         newCollectionEvents = self.download('CollectionEvents')
         newSubcohorts = self.download('Subcohorts')
@@ -66,11 +65,10 @@ class JobDataCatalogue(Job):
         self.uploadIfSet('Publications', newPublications)
         self.uploadIfSet('Cohorts', newCohorts)
         self.uploadIfSet('Documentation', newDocumentation)
-        self.uploadIfSet('Contacts', newContacts)  # TODO: Contacts should be in shared staging area
         self.uploadIfSet('Contributions', newContributions)
         self.uploadIfSet('Subcohorts', newSubcohorts)
         self.uploadIfSet('CollectionEvents', newCollectionEvents)
-        self.uploadIfSet('Partners', newPartners) # TODO: Institutions should be in shared staging area
+        self.uploadIfSet('Partners', newPartners)
         self.uploadIfSet('SourceDataDictionaries', newSourceDataDictionaries)
         self.uploadIfSet('SourceTables', newSourceTables)
         self.uploadIfSet('SourceVariables', newSourceVariables)
