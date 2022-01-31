@@ -16,15 +16,29 @@ class JobDataCatalogue(Job):
         self.cohortPid = self.fetchCohortPid(self.staging, self.sourceDB)
         self.modelPid = self.fetchModelPid(self.staging, self.sourceDB)
 
-        if self.cohortPid is None and self.modelPid is None:
+        if self.sourceDB == 'SharedStaging':
+            self.syncShared()
+        elif self.cohortPid is None and self.modelPid is None:
             log.info('Skip sync for: ' + self.sourceDB)
         elif self.cohortPid:
             self.syncCohort()
         elif self.modelPid:
             self.syncNetwork()
 
+    def syncShared(self):
+        """ Sync shared staging with catalogue.
+        """
+        # 1) Download from staging
+        newContacts = self.download('Contacts')
+        newInstitutions = self.download('Institutions')
+
+        # 2) Add/Upload to catalogue
+        self.uploadIfSet('Contacts', newContacts)
+        self.uploadIfSet('Institutions', newInstitutions)
+
     def syncCohort(self):
-        """Sync cohort staging with catalogue"""
+        """ Sync cohort staging with catalogue
+        """
 
         tablesToSync = {'VariableMappings': 'mappings',
                         'TableMappings': 'mappings',
@@ -61,7 +75,7 @@ class JobDataCatalogue(Job):
         newPartners = self.download('Partners')
         newPublications = self.download('Publications')
 
-        # # 3) Add/Upload to catalogue
+        # 3) Add/Upload to catalogue
         self.uploadIfSet('Publications', newPublications)
         self.uploadIfSet('Cohorts', newCohorts)
         self.uploadIfSet('Documentation', newDocumentation)

@@ -43,33 +43,41 @@ class Job:
 
     def fetchCohortPid(self, staging, schemaName):
         """ Fetch first cohort and return pid or else fail
-        Not all staging areas (i.e. network staging areas) contain a table 'Cohorts', therefore
-        a try/except is needed here.
+        Not all staging areas (network staging areas, SharedStaging) contain a table 'Cohorts',
+        therefore a try/except is used here.
         """
         try:
             cohortsResp = staging.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
             if "Cohorts" in cohortsResp:
                 if len(cohortsResp['Cohorts']) != 1:
-                    log.error('Expected a single cohort in staging area "' + schemaName + '" but found ' + str(
+                    log.warning('Expected a single cohort in staging area "' + schemaName + '" but found ' + str(
                         len(cohortsResp['Cohorts'])))
                     return None
             else:
-                log.error('Expected a single cohort in staging area "' + schemaName + '" but found none')
+                log.warning('Expected a single cohort in staging area "' + schemaName + '" but found none')
                 return None
 
             return cohortsResp['Cohorts'][0]['pid']
         except KeyError:
+            log.info('Staging area "' + schemaName + ' does not contain a table "Cohorts".')
             return None
 
     def fetchModelPid(self, staging, schemaName):
-        """ Fetch first cohort and return pid or else fail """
-        modelsResp = staging.query(Path('./graphql-queries/' + 'Models.gql').read_text())
-        if "Models" in modelsResp:
-            if len(modelsResp['Models']) != 1:
-                log.error('Expected a single model in staging area "' + schemaName + '" but found ' + str(len(modelsResp['Models'])))
+        """ Fetch first model and return pid or else fail.
+        Not all staging areas (SharedStaging) contain a table 'Models', therefore a try/except is used
+        here.
+        """
+        try:
+            modelsResp = staging.query(Path('./graphql-queries/' + 'Models.gql').read_text())
+            if "Models" in modelsResp:
+                if len(modelsResp['Models']) != 1:
+                    log.warning('Expected a single model in staging area "' + schemaName + '" but found ' + str(len(modelsResp['Models'])))
+                    return None
+            else:
+                log.warning('Expected a single model in staging area "' + schemaName + '" but found none')
                 return None
-        else:
-            log.error('Expected a single model in staging area "' + schemaName + '" but found none')
-            return None
 
-        return modelsResp['Models'][0]['pid']
+            return modelsResp['Models'][0]['pid']
+        except KeyError:
+            log.info('Staging area "' + schemaName + '" does not contain a table "Models".')
+            return None
