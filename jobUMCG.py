@@ -13,10 +13,24 @@ class JobUMCGCohorts(Job):
         super(Job, self).__init__(url, email, password, catalogueDB, sourceDB)
 
         self.cohortPid = self.fetchCohortPid(self.staging, self.sourceDB)
-        if self.cohortPid is None:
+
+        if self.sourceDB == 'SharedStaging':
+            self.syncShared()
+        elif self.cohortPid is None:
             log.info('Skip sync for: ' + self.sourceDB)
         else:
             self.syncCohort()
+
+    def syncShared(self):
+        """ Sync shared staging with catalogue.
+        """
+        # 1) Download from staging
+        newContacts = self.download('Contacts')
+        newInstitutions = self.download('Institutions')
+
+        # 2) Add/Upload to catalogue
+        self.uploadIfSet('Contacts', newContacts)
+        self.uploadIfSet('Institutions', newInstitutions)
 
     def syncCohort(self):
         """Sync staging with catalogue"""

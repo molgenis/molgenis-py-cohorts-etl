@@ -11,7 +11,7 @@ class CatalogueClient:
         self.catalogClient = catalogClient
 
     def deleteTableContentsByPid(self, tableName, tableType, pid):
-        """delete al documentation from catalogue belonging to cohort"""
+        """delete al data from table in catalogue belonging to cohort"""
 
         query = Path('./graphql-queries/' + tableName + '.gql').read_text()
         if tableType == 'resource':

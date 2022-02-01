@@ -13,9 +13,8 @@ build using venv, activate enviroment ,install requirements;
 MG_CATALOGUE_URL (server location, for example 'https://mycatalog.com')
 MG_ETL_USERNAME (default ='admin')
 MG_ETL_PASSWORD
-MG_SYNC_COHORTS ( comma separated list of cohorts (schema names) too sync)
-MG_SYNC_NETWORKS ( comma separated list of networks (schema names) too sync)
-MG_SYNC_TARGET ( database name of target schema)
+MG_SYNC_SOURCES (comma separated list of sources (schema names) too sync)
+MG_SYNC_TARGET (database name of target schema)
 ```
 
 ## run script 
