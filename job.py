@@ -6,6 +6,7 @@ import logging
 log = logging.getLogger(__name__)
 # TODO: add copying of catalogue from data-catalogue-staging to catalogue on data-catalogue to JobDataCatalogue
 # TODO: add more insightful error messages
+# TODO add copying of files (logos)
 
 class Job:
     """
