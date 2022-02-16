@@ -1,5 +1,4 @@
 from client import Client
-from catalogueClient import CatalogueClient
 import logging
 from job import Job
 
@@ -39,6 +38,14 @@ class JobFillStaging(Job):
         self.catalogueDB = catalogueDB
         self.targetDB = targetDB
 
+        # set up Client for TARGET (aka STAGING)
+        self.target = Client(
+            url = self.target_url,
+            database = self.targetDB,
+            email = self.target_email,
+            password = self.target_password
+        )
+        print(self.target)
         # Client serves as a general exm2 api client
         #self.staging = Client(url=self.staging_url, database=targetDB, email=self.staging_email, password=self.staging_password)
         #self.catalogue = Client(url=self.catalogue_url, database=self.catalogueDB, email=self.catalogue_email, password=self.catalogue_password)
