@@ -1,5 +1,4 @@
 import requests
-from pathlib import Path
 import logging
 
 log = logging.getLogger(__name__)
@@ -9,7 +8,7 @@ class Client:
     
     """
 
-    def __init__(self, url, database, email, password):
+    def __init__(self, url: str, database: str, email: str, password: str) -> None:
         self.url = url
         self.database = database
         self.email = email
