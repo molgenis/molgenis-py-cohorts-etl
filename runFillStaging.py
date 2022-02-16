@@ -33,8 +33,16 @@ def main():
 
     for target in targets:
         log.info('START SYNC SOURCE (' + SYNC_SOURCE + ') WITH TARGET (' + target + ')')
-        #job = JobFillStaging(
-        # target_url=target_URL, target_email=TARGET_USERNAME, target_password=target_PASSWORD, target_url=target_URL, source_email=SOURCE_USERNAME, source_password=source_PASSWORD, catalogueDB=SYNC_SOURCE, targetDB=target)
+        job = JobFillStaging(
+            target_url=TARGET_URL,
+            target_email=TARGET_USERNAME,
+            target_password=TARGET_PASSWORD,
+            source_url=SOURCE_URL,
+            source_email=SOURCE_USERNAME,
+            source_password=SOURCE_PASSWORD,
+            catalogueDB=SYNC_SOURCE,
+            targetDB=target
+        )
         log.info('END SYNC SOURCE (' + target + ') WITH TARGET (' + SYNC_SOURCE + ')')
 
     log.info('*** JOB COMPLETED ***')

@@ -19,19 +19,29 @@ class JobFillStaging(Job):
     4. Volgorde upload
     """
 
-    def __init__(self, staging_url, staging_email, staging_password, catalogue_url, catalogue_email, catalogue_password, catalogueDB, targetDB):
-        self.staging_url = staging_url
-        self.staging_email = staging_email
-        self.staging_password = staging_password
-        self.catalogue_url = catalogue_url
-        self.catalogue_email = catalogue_email
-        self.catalogue_password = catalogue_password
+    def __init__(
+        self,
+        target_url,
+        target_email,
+        target_password,
+        source_url,
+        source_email,
+        source_password,
+        catalogueDB,
+        targetDB):
+        ''''''
+        self.target_url = target_url
+        self.target_email = target_email
+        self.target_password = target_password
+        self.source_url = source_url
+        self.source_email = source_email
+        self.source_password = source_password
         self.catalogueDB = catalogueDB
         self.targetDB = targetDB
 
         # Client serves as a general exm2 api client
-        self.staging = Client(url=self.staging_url, database=targetDB, email=self.staging_email, password=self.staging_password)
-        self.catalogue = Client(url=self.catalogue_url, database=self.catalogueDB, email=self.catalogue_email, password=self.catalogue_password)
+        #self.staging = Client(url=self.staging_url, database=targetDB, email=self.staging_email, password=self.staging_password)
+        #self.catalogue = Client(url=self.catalogue_url, database=self.catalogueDB, email=self.catalogue_email, password=self.catalogue_password)
         # CatalogueClient serves client specific for use with the catalog model
         # self.catalogueClient = CatalogueClient(self.staging, self.catalogue)
 
