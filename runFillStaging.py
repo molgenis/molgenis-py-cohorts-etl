@@ -8,7 +8,7 @@ def main():
     log = logging.getLogger('run')
 
     TARGET_URL = config('MG_TARGET_URL', default='https://data-catalogue-staging-test.molgeniscloud.org/')
-    CATALOGUE_URL = config('MG_CATALOGUE_URL', default='https://data-catalogue.molgeniscloud.org')
+    SOURCE_URL = config('MG_SOURCE_URL', default='https://data-catalogue.molgeniscloud.org')
     CATALOGUE_USERNAME = config('MG_CATALOGUE_USERNAME', default='admin')
     CATALOGUE_PASSWORD = config('MG_CATALOGUE_PASSWORD')
     STAGING_USERNAME = config('MG_STAGING_USERNAME', default='admin')
@@ -24,14 +24,14 @@ def main():
     log.info('TARGET_URL: ' + TARGET_URL)
     log.info('CATALOGUE_USERNAME: ' + CATALOGUE_USERNAME)
     log.info('CATALOGUE_PASSWORD: ********')
-    log.info('CATALOGUE_URL: ' + CATALOGUE_URL)
+    log.info('SOURCE_URL: ' + SOURCE_URL)
     log.info('SYNC_SOURCE: ' + SYNC_SOURCE)
     log.info('SYNC_TARGETS: ' + SYNC_TARGETS)
 
     for target in targets:
         log.info('START SYNC CATALOGUE (' + SYNC_SOURCE + ') WITH STAGING (' + target + ')')
         #job = JobFillStaging(
-        # target_url=target_URL, staging_email=STAGING_USERNAME, staging_password=STAGING_PASSWORD, catalogue_url=CATALOGUE_URL, catalogue_email=CATALOGUE_USERNAME, catalogue_password=CATALOGUE_PASSWORD, catalogueDB=SYNC_SOURCE, targetDB=target)
+        # target_url=target_URL, staging_email=STAGING_USERNAME, staging_password=STAGING_PASSWORD, target_url=target_URL, catalogue_email=CATALOGUE_USERNAME, catalogue_password=CATALOGUE_PASSWORD, catalogueDB=SYNC_SOURCE, targetDB=target)
         log.info('END SYNC CATALOGUE (' + target + ') WITH TARGET (' + SYNC_SOURCE + ')')
 
     log.info('*** JOB COMPLETED ***')
