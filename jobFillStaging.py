@@ -23,25 +23,27 @@ class JobFillStaging(Job):
         target_url: str,
         target_email: str,
         target_password: str,
+        target_database: str,
         source_url: str,
         source_email: str,
         source_password: str,
-        catalogueDB: str,
-        targetDB: str) -> None:
+        source_database: str) -> None:
         ''''''
         self.target_url = target_url
         self.target_email = target_email
         self.target_password = target_password
+        self.target_database = target_database
         self.source_url = source_url
         self.source_email = source_email
         self.source_password = source_password
-        self.catalogueDB = catalogueDB
-        self.targetDB = targetDB
+        self.source_database = source_database
+        #self.catalogueDB = catalogueDB
+        #self.targetDB = targetDB
 
         # set up Client for TARGET (aka STAGING)
         self.target = Client(
             url = self.target_url,
-            database = self.targetDB,
+            database = self.target_database,
             email = self.target_email,
             password = self.target_password
         )
@@ -50,7 +52,7 @@ class JobFillStaging(Job):
         # set up Client for SOURCE (aka CATALOGUE)
         self.source = Client(
             url = self.source_url,
-            database = self.catalogueDB,
+            database = self.source_database,
             email = self.source_email,
             password = self.source_password
         )
