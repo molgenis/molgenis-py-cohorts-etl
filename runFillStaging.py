@@ -27,9 +27,7 @@ def main():
     log.info('SOURCE_USERNAME: ' + SOURCE_USERNAME)
     log.info('SOURCE_PASSWORD: ********')
     log.info('SOURCE_DATABASE: ' + SOURCE_DATABASE)
-    
-    #log.info('SYNC_SOURCE: ' + SYNC_SOURCE)
-    #log.info('SYNC_TARGETS: ' + SYNC_TARGETS)
+
 
     targets = map(str.strip, TARGET_DATABASE.split(','))
 
@@ -44,8 +42,6 @@ def main():
             source_email=SOURCE_USERNAME,
             source_password=SOURCE_PASSWORD,
             source_database=SOURCE_DATABASE
-            #catalogueDB=SYNC_SOURCE,
-            #targetDB=target
         )
         log.info('END SYNC SOURCE (' + target + ') WITH TARGET (' + SOURCE_DATABASE + ')')
 
