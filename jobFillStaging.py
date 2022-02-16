@@ -21,14 +21,14 @@ class JobFillStaging(Job):
 
     def __init__(
         self,
-        target_url,
-        target_email,
-        target_password,
-        source_url,
-        source_email,
-        source_password,
-        catalogueDB,
-        targetDB):
+        target_url: str,
+        target_email: str,
+        target_password: str,
+        source_url: str,
+        source_email: str,
+        source_password: str,
+        catalogueDB: str,
+        targetDB: str) -> None:
         ''''''
         self.target_url = target_url
         self.target_email = target_email
