@@ -7,32 +7,35 @@ def main():
     logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
     log = logging.getLogger('run')
 
-    TARGET_URL = config('MG_TARGET_URL', default='https://data-catalogue-staging-test.molgeniscloud.org/')
     SOURCE_URL = config('MG_SOURCE_URL', default='https://data-catalogue.molgeniscloud.org')
-    CATALOGUE_USERNAME = config('MG_CATALOGUE_USERNAME', default='admin')
-    CATALOGUE_PASSWORD = config('MG_CATALOGUE_PASSWORD')
-    STAGING_USERNAME = config('MG_STAGING_USERNAME', default='admin')
-    STAGING_PASSWORD = config('MG_STAGING_PASSWORD')
+    SOURCE_USERNAME = config('MG_SOURCE_USERNAME', default='admin')
+    SOURCE_PASSWORD = config('MG_SOURCE_PASSWORD')
+    
+    TARGET_URL = config('MG_TARGET_URL', default='https://data-catalogue-staging-test.molgeniscloud.org/')
+    TARGET_USERNAME = config('MG_TARGET_USERNAME', default='admin')
+    TARGET_PASSWORD = config('MG_TARGET_PASSWORD')
+    
     SYNC_SOURCE = config('MG_SYNC_SOURCE', default='catalogue')
     SYNC_TARGETS = config('MG_SYNC_TARGETS')
 
     targets = map(str.strip, SYNC_TARGETS.split(','))
 
     log.info('*** START SYNC JOB WITH settings: ***')
-    log.info('STAGING_USERNAME: ' + STAGING_USERNAME)
-    log.info('STAGING_PASSWORD: ********')
     log.info('TARGET_URL: ' + TARGET_URL)
-    log.info('CATALOGUE_USERNAME: ' + CATALOGUE_USERNAME)
-    log.info('CATALOGUE_PASSWORD: ********')
+    log.info('TARGET_USERNAME: ' + TARGET_USERNAME)
+    log.info('TARGET_PASSWORD: ********')
     log.info('SOURCE_URL: ' + SOURCE_URL)
+    log.info('SOURCE_USERNAME: ' + SOURCE_USERNAME)
+    log.info('SOURCE_PASSWORD: ********')
+    
     log.info('SYNC_SOURCE: ' + SYNC_SOURCE)
     log.info('SYNC_TARGETS: ' + SYNC_TARGETS)
 
     for target in targets:
-        log.info('START SYNC CATALOGUE (' + SYNC_SOURCE + ') WITH STAGING (' + target + ')')
+        log.info('START SYNC SOURCE (' + SYNC_SOURCE + ') WITH TARGET (' + target + ')')
         #job = JobFillStaging(
-        # target_url=target_URL, staging_email=STAGING_USERNAME, staging_password=STAGING_PASSWORD, target_url=target_URL, catalogue_email=CATALOGUE_USERNAME, catalogue_password=CATALOGUE_PASSWORD, catalogueDB=SYNC_SOURCE, targetDB=target)
-        log.info('END SYNC CATALOGUE (' + target + ') WITH TARGET (' + SYNC_SOURCE + ')')
+        # target_url=target_URL, target_email=TARGET_USERNAME, target_password=target_PASSWORD, target_url=target_URL, source_email=SOURCE_USERNAME, source_password=source_PASSWORD, catalogueDB=SYNC_SOURCE, targetDB=target)
+        log.info('END SYNC SOURCE (' + target + ') WITH TARGET (' + SYNC_SOURCE + ')')
 
     log.info('*** JOB COMPLETED ***')
 
