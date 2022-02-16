@@ -45,7 +45,16 @@ class JobFillStaging(Job):
             email = self.target_email,
             password = self.target_password
         )
-        print(self.target)
+        print('Target ' + str(self.target))
+
+        # set up Client for SOURCE (aka CATALOGUE)
+        self.source = Client(
+            url = self.source_url,
+            database = self.catalogueDB,
+            email = self.source_email,
+            password = self.source_password
+        )
+        print('Source ' + str(self.source))
         # Client serves as a general exm2 api client
         #self.staging = Client(url=self.staging_url, database=targetDB, email=self.staging_email, password=self.staging_password)
         #self.catalogue = Client(url=self.catalogue_url, database=self.catalogueDB, email=self.catalogue_email, password=self.catalogue_password)
