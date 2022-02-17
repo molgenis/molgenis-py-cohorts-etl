@@ -1,4 +1,8 @@
+from operator import index
+from os import sep
 import pandas as pd
+
+from io import BytesIO, StringIO
 
 import client
 import logging
@@ -93,14 +97,33 @@ class JobFillStaging(Job):
             else:
                 return None
         
+        table = 'VariableMappings'
         #data = download_source_data(self, 'SourceTables')
+        data = download_source_data(self, table)
         #print(data)
 
         #data = download_source_data(self, 'Partners')
         #print(data)
 
         # filter csv on target_database
-        
+        df = pd.read_csv(BytesIO(data))
+        #df_filter = df['dataDictionary.resource'] == self.target_database # SourceTables
+        df_filter = df['fromDataDictionary.resource'] == self.target_database # VariableMappings
+        print(df[df_filter])
+        #stream = StringIO()
+        #df[df_filter].to_csv(stream, sep=',', index=False)
+        #print(stream.getvalue())
+
+        # Add/Upload to staging
+        stream = StringIO()
+        df[df_filter].to_csv(stream, sep=',', index=False)
+        #print(stream.getvalue())
+        uploadResponse = client.Client.uploadCSV(
+            self.target, 
+            table, 
+            stream.getvalue()
+        )
+        print(uploadResponse)
         #tablesToSync = {
             #'VariableMappings': 'mappings',
             #'TableMappings': 'mappings',
