@@ -43,7 +43,7 @@ def main():
             source_password=SOURCE_PASSWORD,
             source_database=SOURCE_DATABASE
         )
-        log.info('END SYNC SOURCE (' + target + ') WITH TARGET (' + SOURCE_DATABASE + ')')
+        log.info('END SYNC SOURCE (' + SOURCE_DATABASE + ') WITH TARGET (' + target + ')')
 
     log.info('*** JOB COMPLETED ***')
 
