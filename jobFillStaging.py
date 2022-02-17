@@ -98,6 +98,7 @@ class JobFillStaging(Job):
                 return None
         
         table = 'VariableMappings'
+        #table = 'SourceTables'
         #data = download_source_data(self, 'SourceTables')
         data = download_source_data(self, table)
         #print(data)
@@ -106,22 +107,22 @@ class JobFillStaging(Job):
         #print(data)
 
         # filter csv on target_database
-        df = pd.read_csv(BytesIO(data))
+        df = pd.read_csv(BytesIO(data), encoding='utf-8')
         #df_filter = df['dataDictionary.resource'] == self.target_database # SourceTables
         df_filter = df['fromDataDictionary.resource'] == self.target_database # VariableMappings
-        print(df[df_filter])
+        #print(df[df_filter])
         #stream = StringIO()
         #df[df_filter].to_csv(stream, sep=',', index=False)
         #print(stream.getvalue())
 
         # Add/Upload to staging
         stream = StringIO()
-        df[df_filter].to_csv(stream, sep=',', index=False)
+        df[df_filter].to_csv(stream, sep=',', index=False, encoding='utf-8')
         #print(stream.getvalue())
         uploadResponse = client.Client.uploadCSV(
             self.target, 
             table, 
-            stream.getvalue()
+            stream.getvalue().encode('utf-8')
         )
         print(uploadResponse)
         #tablesToSync = {
