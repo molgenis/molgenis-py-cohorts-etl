@@ -1,4 +1,4 @@
-from client import Client
+import client
 import logging
 from job import Job
 
@@ -39,7 +39,7 @@ class JobFillStaging(Job):
         self.source_database = source_database
 
         # set up Client for TARGET (aka STAGING)
-        self.target = Client(
+        self.target = client.Client(
             url = self.target_url,
             database = self.target_database,
             email = self.target_email,
@@ -49,7 +49,7 @@ class JobFillStaging(Job):
         #print(self.target.session)
 
         # set up Client for SOURCE (aka CATALOGUE)
-        self.source = Client(
+        self.source = client.Client(
             url = self.source_url,
             database = self.source_database,
             email = self.source_email,
@@ -87,22 +87,27 @@ class JobFillStaging(Job):
         """
         self.source_url
         tablesToSync = {
-            'VariableMappings': 'mappings',
-            'TableMappings': 'mappings',
-            'SourceVariableValues': 'variables',
-            'RepeatedSourceVariables': 'variables',
-            'SourceVariables': 'variables',
+            #'VariableMappings': 'mappings',
+            #'TableMappings': 'mappings',
+            #'SourceVariableValues': 'variables',
+            #'RepeatedSourceVariables': 'variables',
+            #'SourceVariables': 'variables',
             'SourceTables': 'variables',
-            'SourceDataDictionaries': 'resource',
-            'Documentation': 'resource',
-            'Contributions': 'resource',
-            'CollectionEvents': 'resource',
-            'Subcohorts': 'resource',
-            'Partners': 'resource'
+            #'SourceDataDictionaries': 'resource',
+            #'Documentation': 'resource',
+            #'Contributions': 'resource',
+            #'CollectionEvents': 'resource',
+            #'Subcohorts': 'resource',
+            #'Partners': 'resource'
+            ## *AllSourceVariables
+            ## Cohorts
+            ## Publications
+            ## *Resources
+            ## Version
         }
 
         # 2a) Download from catalogue
-        newVariableMappings = self.download('VariableMappings')
+        # newVariableMappings = self.download('VariableMappings')
         # newTableMappings = self.download('TableMappings')
         # newSourceVariableValues = self.download('SourceVariableValues')
         # newRepeatedSourceVariables = self.download('RepeatedSourceVariables')
