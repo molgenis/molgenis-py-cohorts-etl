@@ -1,18 +1,14 @@
-from operator import index
-from os import sep
+from csv import QUOTE_ALL, QUOTE_MINIMAL, QUOTE_NONNUMERIC
 import pandas as pd
-
+import logging
 from io import BytesIO, StringIO
 
+import job
 import client
-import logging
-from job import Job
-
 
 log = logging.getLogger(__name__)
 
-
-class JobFillStaging(Job):
+class JobFillStaging(job.Job):
     """
     Class to copy cohort rich metadata and cohort and network cdm metadata from data catalogue
     to staging areas. Should be executed one time only.
@@ -97,34 +93,73 @@ class JobFillStaging(Job):
             else:
                 return None
         
-        table = 'VariableMappings'
+        # order of tables is important, value equals filter
+        tablesToSync = {
+            #'Publications': None,
+            'SourceDataDictionaries': 'resource',
+            #'TableMappings': 'fromDataDictionary.resource',
+            #'SourceTables': 'dataDictionary.resource',
+            #'VariableMappings': 'fromDataDictionary.resource',
+            
+        }
+        for table in tablesToSync:
+            #print(table, tablesToSync[table])
+            filter = tablesToSync[table]
+
+            data = download_source_data(self, table)
+            if data != None:
+                # filter csv on target_database
+                #df = pd.read_csv(BytesIO(data), encoding='utf-8', sep=',', quoting=QUOTE_ALL)
+                df = pd.read_csv(BytesIO(data))
+
+                stream = StringIO()
+                
+                if filter != None:
+                    df_filter = df[filter] == self.target_database
+                    #print(df_filter)
+
+                    #df[df_filter].to_csv(stream, sep=',', index=False, encoding='utf-8')
+                    df[df_filter].to_csv(stream, index=False)
+                else:
+                    #df.to_csv(stream, sep=',', index=False, encoding='utf-8', quoting=QUOTE_ALL)
+                    df.to_csv(stream, index=False)
+                
+                print(stream.getvalue())
+                uploadResponse = client.Client.uploadCSV(
+                    self.target, 
+                    table, 
+                    stream.getvalue().encode('utf-8')
+                )
+                print(uploadResponse)
+
+        #table = 'VariableMappings'
         #table = 'SourceTables'
         #data = download_source_data(self, 'SourceTables')
-        data = download_source_data(self, table)
+        #data = download_source_data(self, table)
         #print(data)
 
         #data = download_source_data(self, 'Partners')
         #print(data)
 
         # filter csv on target_database
-        df = pd.read_csv(BytesIO(data), encoding='utf-8')
+        #df = pd.read_csv(BytesIO(data), encoding='utf-8')
         #df_filter = df['dataDictionary.resource'] == self.target_database # SourceTables
-        df_filter = df['fromDataDictionary.resource'] == self.target_database # VariableMappings
+        #df_filter = df['fromDataDictionary.resource'] == self.target_database # VariableMappings
         #print(df[df_filter])
         #stream = StringIO()
         #df[df_filter].to_csv(stream, sep=',', index=False)
         #print(stream.getvalue())
 
         # Add/Upload to staging
-        stream = StringIO()
-        df[df_filter].to_csv(stream, sep=',', index=False, encoding='utf-8')
+        #stream = StringIO()
+        #df[df_filter].to_csv(stream, sep=',', index=False, encoding='utf-8')
         #print(stream.getvalue())
-        uploadResponse = client.Client.uploadCSV(
-            self.target, 
-            table, 
-            stream.getvalue().encode('utf-8')
-        )
-        print(uploadResponse)
+        # uploadResponse = client.Client.uploadCSV(
+        #     self.target, 
+        #     table, 
+        #     stream.getvalue().encode('utf-8')
+        # )
+        #print(uploadResponse)
         #tablesToSync = {
             #'VariableMappings': 'mappings',
             #'TableMappings': 'mappings',
