@@ -1,4 +1,3 @@
-from csv import QUOTE_ALL, QUOTE_MINIMAL, QUOTE_NONNUMERIC
 import pandas as pd
 import logging
 from io import BytesIO, StringIO
@@ -12,12 +11,6 @@ class JobFillStaging(job.Job):
     """
     Class to copy cohort rich metadata and cohort and network cdm metadata from data catalogue
     to staging areas. Should be executed one time only.
-
-    VRAGEN
-    1. Moet PID worden opgevraagd? Of is deze al gedefinieerd in lijstje met targets
-    2. Is de volgeorde van tables to sync zoals die moet zijn
-    3. Filter stap. (download>filter>upload)
-    4. Volgorde upload
     """
 
     def __init__(
@@ -55,161 +48,54 @@ class JobFillStaging(job.Job):
             email = self.source_email,
             password = self.source_password
         )
-        # Client serves as a general exm2 api client
-        #self.staging = Client(url=self.staging_url, database=targetDB, email=self.staging_email, password=self.staging_password)
-        #self.catalogue = Client(url=self.catalogue_url, database=self.catalogueDB, email=self.catalogue_email, password=self.catalogue_password)
-        # CatalogueClient serves client specific for use with the catalog model
-        # self.catalogueClient = CatalogueClient(self.staging, self.catalogue)
-
-        # self.cohortPid = self.fetchCohortPid(self.staging, self.targetDB)
-
+ 
         self.sync_staging()
 
-    # def uploadIfSet(self, table, data):
-    #     """ Upload catalogue data to staging if staging table contains data (else skip) """
-    #     if data is None:
-    #         return
-    #     uploadResp = self.staging.uploadCSV(table, data)
-    #     log.info('upload ' + table + ' ; ' + str(uploadResp))
-
-    # def download(self, table):
-    #     """ Download catalogue data or return None in case of zero rows """
-    #     countResp = self.source.query('query Count{' + table + '_agg { count }}')
-    #     if countResp[table + '_agg']['count'] > 0:
-    #         return self.source.downLoadCSV(table)
-    #     else:
-    #         return None
-
-    
-
     def sync_staging(self):
-        """ Sync catalogue with staging
+        """ Sync SOURCE (catalogue) with TARGET (staging)
         """
         def download_source_data(self, table: str):
             """ Download catalogue data or return None in case of zero rows """
             result = client.Client.query(self.source, 'query Count{' + table + '_agg { count }}')
             if result[table + '_agg']['count'] > 0:
                 return client.Client.downLoadCSV(self.source, table)
-            else:
-                return None
+            return None
         
         # order of tables is important, value equals filter
         tablesToSync = {
-            #'Publications': None,
+            'Publications': None,
+            'Cohorts': 'pid',
+            'Documentation': 'resource',
+            'Contributions': 'resource',
+            'Subcohorts': 'resource',
+            'CollectionEvents': 'resource',
+            'Partners': 'resource',
             'SourceDataDictionaries': 'resource',
-            #'TableMappings': 'fromDataDictionary.resource',
-            #'SourceTables': 'dataDictionary.resource',
-            #'VariableMappings': 'fromDataDictionary.resource',
-            
+            'SourceTables': 'dataDictionary.resource',
+            'SourceVariables': 'dataDictionary.resource',
+            'RepeatedSourceVariables': 'dataDictionary.resource',
+            'SourceVariableValues': 'dataDictionary.resource',
+            'TableMappings': 'fromDataDictionary.resource',
+            'VariableMappings': 'fromDataDictionary.resource',
         }
         for table in tablesToSync:
-            #print(table, tablesToSync[table])
             filter = tablesToSync[table]
-
             data = download_source_data(self, table)
+            
             if data != None:
-                # filter csv on target_database
-                #df = pd.read_csv(BytesIO(data), encoding='utf-8', sep=',', quoting=QUOTE_ALL)
-                df = pd.read_csv(BytesIO(data))
+                df = pd.read_csv(BytesIO(data), dtype='str') # stype set to string otherwise numbers will be converted to 2015 -> 2015.0 
 
                 stream = StringIO()
                 
                 if filter != None:
                     df_filter = df[filter] == self.target_database
-                    #print(df_filter)
-
-                    #df[df_filter].to_csv(stream, sep=',', index=False, encoding='utf-8')
                     df[df_filter].to_csv(stream, index=False)
                 else:
-                    #df.to_csv(stream, sep=',', index=False, encoding='utf-8', quoting=QUOTE_ALL)
                     df.to_csv(stream, index=False)
                 
-                print(stream.getvalue())
                 uploadResponse = client.Client.uploadCSV(
                     self.target, 
                     table, 
                     stream.getvalue().encode('utf-8')
                 )
-                print(uploadResponse)
-
-        #table = 'VariableMappings'
-        #table = 'SourceTables'
-        #data = download_source_data(self, 'SourceTables')
-        #data = download_source_data(self, table)
-        #print(data)
-
-        #data = download_source_data(self, 'Partners')
-        #print(data)
-
-        # filter csv on target_database
-        #df = pd.read_csv(BytesIO(data), encoding='utf-8')
-        #df_filter = df['dataDictionary.resource'] == self.target_database # SourceTables
-        #df_filter = df['fromDataDictionary.resource'] == self.target_database # VariableMappings
-        #print(df[df_filter])
-        #stream = StringIO()
-        #df[df_filter].to_csv(stream, sep=',', index=False)
-        #print(stream.getvalue())
-
-        # Add/Upload to staging
-        #stream = StringIO()
-        #df[df_filter].to_csv(stream, sep=',', index=False, encoding='utf-8')
-        #print(stream.getvalue())
-        # uploadResponse = client.Client.uploadCSV(
-        #     self.target, 
-        #     table, 
-        #     stream.getvalue().encode('utf-8')
-        # )
-        #print(uploadResponse)
-        #tablesToSync = {
-            #'VariableMappings': 'mappings',
-            #'TableMappings': 'mappings',
-            #'SourceVariableValues': 'variables',
-            #'RepeatedSourceVariables': 'variables',
-            #'SourceVariables': 'variables',
-            #'SourceTables': 'variables',
-            #'SourceDataDictionaries': 'resource',
-            #'Documentation': 'resource',
-            #'Contributions': 'resource',
-            #'CollectionEvents': 'resource',
-            #'Subcohorts': 'resource',
-            #'Partners': 'resource'
-            ## *AllSourceVariables
-            ## Cohorts
-            ## Publications
-            ## *Resources
-            ## Version
-        #}
-
-        # 2a) Download from catalogue
-        # newVariableMappings = self.download('VariableMappings')
-        # newTableMappings = self.download('TableMappings')
-        # newSourceVariableValues = self.download('SourceVariableValues')
-        # newRepeatedSourceVariables = self.download('RepeatedSourceVariables')
-        # newSourceVariables = self.download('SourceVariables')
-        # newSourceTables = self.download('SourceTables')
-        # newSourceDataDictionaries = self.download('SourceDataDictionaries')
-        # newCohorts = self.download('Cohorts')
-        # newDocumentation = self.download('Documentation')
-        # newContributions = self.download('Contributions')
-        # newCollectionEvents = self.download('CollectionEvents')
-        # newSubcohorts = self.download('Subcohorts')
-        # newPartners = self.download('Partners')
-        # newPublications = self.download('Publications')
-
-        # 2b) filter
-
-        # 3) Add/Upload to staging
-        # self.uploadIfSet('Publications', newPublications)
-        # self.uploadIfSet('Cohorts', newCohorts)
-        # self.uploadIfSet('Documentation', newDocumentation)
-        # self.uploadIfSet('Contributions', newContributions)
-        # self.uploadIfSet('Subcohorts', newSubcohorts)
-        # self.uploadIfSet('CollectionEvents', newCollectionEvents)
-        # self.uploadIfSet('Partners', newPartners)
-        # self.uploadIfSet('SourceDataDictionaries', newSourceDataDictionaries)
-        # self.uploadIfSet('SourceTables', newSourceTables)
-        # self.uploadIfSet('SourceVariables', newSourceVariables)
-        # self.uploadIfSet('RepeatedSourceVariables', newRepeatedSourceVariables)
-        # self.uploadIfSet('SourceVariableValues', newSourceVariableValues)
-        # self.uploadIfSet('TableMappings', newTableMappings)
-        # self.uploadIfSet('VariableMappings', newVariableMappings)
+                print(table, str(uploadResponse))
