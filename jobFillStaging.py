@@ -83,7 +83,7 @@ class JobFillStaging(job.Job):
             data = download_source_data(self, table)
             
             if data != None:
-                df = pd.read_csv(BytesIO(data), dtype='str') # stype set to string otherwise numbers will be converted to 2015 -> 2015.0 
+                df = pd.read_csv(BytesIO(data), dtype='str', na_filter=False) # dtype set to string otherwise numbers will be converted to 2015 -> 2015.0
 
                 stream = StringIO()
                 
