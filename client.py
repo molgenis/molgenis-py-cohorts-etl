@@ -1,3 +1,4 @@
+import json
 import requests
 import logging
 
@@ -54,17 +55,14 @@ class Client:
 
         response = self.session.post(
             self.graphqlEndpoint,
-            json={'query': query, 'variables': variables}
+            json={"query": query, "variables": variables}
         )
                                 
         if response.status_code != 200:
             log.error(f"Error while posting query, status code {response.status_code}")
             # TODO: add logging content > errors > message
 
-        responseJson = response.json()
-
-        data = responseJson['data']
-        return data
+        return response.json()['data']
 
     def delete(self, table, pkey):
         """Delete row by key"""
@@ -75,17 +73,17 @@ class Client:
             "}"
         "")
 
-        variables =  '{pkey:' + pkey + '}'
+        variables =  '{"pkey":' + json.dumps(pkey) + '}'
         #print(variables)
-        print({'query': query, 'variables': variables})
+        #print({"query": query, "variables": variables})
         response = self.session.post(
             self.graphqlEndpoint,
-            json={'query': query, 'variables': variables}
+            json={"query": query, "variables": variables}
         )
-
+        
         if response.status_code != 200:
             log.error(response)
-            log.error(f"Error uploading csv, response.text: {response.text}")
+            log.error(f"Error while posting delete mutation, response.text: {response.text}")
 
         return response
 

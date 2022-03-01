@@ -1,4 +1,3 @@
-from ast import Bytes
 import pandas as pd
 from io import BytesIO, StringIO
 from pathlib import Path
@@ -188,7 +187,7 @@ class Job:
         Job.delete_cohort_from_data_catalogue(self, tablesToSync)
         
 
-    def download_source_data(self, table: str) -> Bytes:
+    def download_source_data(self, table: str) -> bytes:
         """ Download catalogue data or return None in case of zero rows """
         result = client.Client.query(self.source, 'query Count{' + table + '_agg { count }}')
         if result[table + '_agg']['count'] > 0:
@@ -278,11 +277,20 @@ class Job:
         
             if tableName in result:
                 #rowsToDelete.append(result[tableName])
-                #print(result)
+                #print(tableName)
+                #print(result[tableName])
                 # query: "mutation delete($pkey:[CohortsInput]){delete(Cohorts:$pkey){message}}"
                 #{pkey: [{pid: "test1"}]}
-                pkey = '[{pid: "' + Job.get_source_cohort_pid(self) + '"}]'
-                #client.Client.delete(self.target, tableName, pkey)
+                #pkey = '[{pid: "' + Job.get_source_cohort_pid(self) + '"}]'
+                client.Client.delete(self.target, tableName, result[tableName])
+
+                # {"query":"mutation delete($pkey:[ContributionsInput])
+                # {delete(Contributions:$pkey){message}}",
+                # "variables":
+                #     {"pkey":
+                #         [{"resource":{"pid":"DFBC"},"contact":{"firstName":"Nic","surname":"Timpson"}}]
+                #     }
+                # }
         
         #for row in rowsToDelete:
         #    print(row[1])
