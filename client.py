@@ -32,9 +32,10 @@ class Client:
 
         variables = {'email': email, 'password': password}
 
-        response = self.session.post(self.url + '/apps/central/graphql',
-                                 json={'query': query, 'variables': variables}
-                                 )
+        response = self.session.post(
+            self.url + '/apps/central/graphql',
+            json={'query': query, 'variables': variables}
+        )
                                 
         responseJson = response.json()
      
@@ -51,8 +52,10 @@ class Client:
     def query(self, query, variables = {}):
         """Query backend"""
 
-        response = self.session.post(self.graphqlEndpoint,
-                                     json={'query': query, 'variables': variables})
+        response = self.session.post(
+            self.graphqlEndpoint,
+            json={'query': query, 'variables': variables}
+        )
                                 
         if response.status_code != 200:
             log.error(f"Error while posting query, status code {response.status_code}")
@@ -72,11 +75,13 @@ class Client:
             "}"
         "")
 
-        variables =  {'pkey': pkey}
-
-        response = self.session.post(self.graphqlEndpoint,
-                            json={'query': query, 'variables': variables}
-                            )
+        variables =  '{pkey:' + pkey + '}'
+        #print(variables)
+        print({'query': query, 'variables': variables})
+        response = self.session.post(
+            self.graphqlEndpoint,
+            json={'query': query, 'variables': variables}
+        )
 
         if response.status_code != 200:
             log.error(response)
@@ -97,9 +102,10 @@ class Client:
 
         variables = {"value": [data]}
 
-        response = self.session.post(self.graphqlEndpoint,
-                    json={'query': query, 'variables': variables}
-                    )
+        response = self.session.post(
+            self.graphqlEndpoint,
+            json={'query': query, 'variables': variables}
+        )
 
         if response.status_code != 200:
             log.error(f"Error while adding record, status code {response.status_code}")
