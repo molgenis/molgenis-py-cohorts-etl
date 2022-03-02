@@ -133,6 +133,10 @@ class Job:
             log.info('Run job strategy: ' + job_strategy)
             if Job.get_source_cohort_pid(self):
                 Job.sync_cohort_staging_to_datacatalogue(self)
+        elif job_strategy == 'NetworkStagingToDataCatalogue':
+            log.info('Run job strategy: ' + job_strategy)
+            print(Job.get_source_model_pid(self))
+            Job.sync_network_staging_to_datacatalogue(self)
         else:
             log.error('Job Strategy not set, please use: FillStaging, SharedStaging, CohortStagingToDataCatalogue')
 
@@ -184,7 +188,33 @@ class Job:
             'Partners': 'resource',
         }
 
-        Job.delete_cohort_from_data_catalogue(self, tablesToSync)
+        Job.delete_cohort_from_data_catalogue(self, tablesToSync) # TODO delete does not function
+        Job.download_filter_upload(self, tablesToSync)
+    
+    def sync_network_staging_to_datacatalogue(self) -> None:
+        # order of tables is important, value equals filter
+        tablesToDelete = {
+            'TargetVariableValues': 'variables',
+            # 'RepeatedTargetVariables': 'variables',
+            # 'TargetVariables': 'variables',
+            # 'TargetTables': 'variables',
+            # 'TargetDataDictionaries': 'resource',
+            # 'CollectionEvents': 'resource',
+            # 'Subcohorts': 'resource',
+        }
+
+        #Job.delete_cohort_from_data_catalogue(self, tablesToDelete) # TODO delete does not function
+
+        tablesToSync = {
+            'TargetVariableValues': None,
+            # 'RepeatedTargetVariables': 'variables',
+            # 'TargetVariables': 'variables',
+            # 'TargetTables': 'variables',
+            # 'TargetDataDictionaries': 'resource',
+            # 'CollectionEvents': 'resource',
+            # 'Subcohorts': 'resource',
+        }
+        Job.download_filter_upload(self, tablesToSync)
         
 
     def download_source_data(self, table: str) -> bytes:
@@ -235,30 +265,29 @@ class Job:
             log.error('Staging area "' + self.source_database + ' does not contain a table "Cohorts".')
             return None
     
+    def get_source_model_pid(self) -> str:
+        """ get PID of SOURCE network, expects to get one PID, return pid.
+        Fetch first model and return pid or else fail.
+        Not all staging areas (SharedStaging) contain a table 'Models', therefore a try/except is used
+        here.
+        """
+        try:
+            result = self.source.query(Path('./graphql-queries/' + 'Models.gql').read_text())
+            if "Models" in result:
+                if len(result['Models']) != 1:
+                    log.warning('Expected a single model in staging area "' + self.source_database + '" but found ' + str(len(result['Models'])))
+                    return None
+            else:
+                log.warning('Expected a single model in staging area "' + self.source_database + '" but found none')
+                return None
+
+            return result['Models'][0]['pid']
+        except KeyError:
+            log.info('Staging area "' + result + '" does not contain a table "Models".')
+            return None
+
     def delete_cohort_from_data_catalogue(self, tablesToSync: dict) -> None:
         """ Delete SOURCE Cohort data from TARGET data catalogue before upload """
-        # def delete_table_contents_by_pid(self, tableName, tableType, pid):
-        #     """delete al data from table in catalogue belonging to cohort"""
-
-        #     query = Path('./graphql-queries/' + tableName + '.gql').read_text()
-        #     if tableType == 'resource':
-        #         variables = {"filter": {"resource": {"equals": [{"pid": pid}]}}}
-        #     elif tableType == 'mappings':
-        #         variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": pid}]}}}}
-        #     elif tableType == 'variables':
-        #         variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": pid}]}}}}
-
-        #     resp = self.catalogClient.query(query, variables)
-        #     rowsToDelete = []
-        #     if tableName in resp:
-        #         rowsToDelete = resp[tableName]
-
-        #     for row in rowsToDelete:
-        #         self.catalogClient.delete(tableName, row)
-        # # 1) Delete from catalogue
-        # Use SOURCE Cohort pid which should be on the TARGET data catalogue
-        #pid = Job.get_source_cohort_pid(self)
-
         rowsToDelete = []
 
         for tableName in tablesToSync:
@@ -283,6 +312,7 @@ class Job:
                 #{pkey: [{pid: "test1"}]}
                 #pkey = '[{pid: "' + Job.get_source_cohort_pid(self) + '"}]'
                 client.Client.delete(self.target, tableName, result[tableName])
+                pass
 
                 # {"query":"mutation delete($pkey:[ContributionsInput])
                 # {delete(Contributions:$pkey){message}}",
@@ -291,20 +321,4 @@ class Job:
                 #         [{"resource":{"pid":"DFBC"},"contact":{"firstName":"Nic","surname":"Timpson"}}]
                 #     }
                 # }
-        
-        #for row in rowsToDelete:
-        #    print(row[1])
-            #client.Client.delete()
-            #self.catalogClient.delete(tableName, row)
-
-            #print(variables)
-            # resp = self.catalogClient.query(query, variables)
-            # rowsToDelete = []
-            # if tableName in resp:
-            #     rowsToDelete = resp[tableName]
-
-            # for row in rowsToDelete:
-            #     self.catalogClient.delete(tableName, row)
-        #     self.catalogueClient.deleteTableContentsByPid(tableName, tableType, self.cohortPid)
-        # self.catalogue.delete('Cohorts', [{'pid': self.cohortPid}])
         
