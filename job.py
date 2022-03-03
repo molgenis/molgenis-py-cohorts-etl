@@ -110,12 +110,12 @@ class Job:
             'Partners': 'resource',
         }
 
-        Job.delete_cohort_from_data_catalogue(self, tablesToSync) # TODO delete does not function
-        Job.download_filter_upload(self, tablesToSync)
+        Job.delete_cohort_from_data_catalogue(self, tablesToSync)
+        Job.download_upload(self, tablesToSync)
     
     def sync_network_staging_to_datacatalogue(self) -> None:
         # order of tables is important, value equals filter
-        tablesToDelete = {
+        tablesToSync = {
             'TargetVariableValues': 'variables',
             # 'RepeatedTargetVariables': 'variables',
             # 'TargetVariables': 'variables',
@@ -125,18 +125,9 @@ class Job:
             # 'Subcohorts': 'resource',
         }
 
-        #Job.delete_cohort_from_data_catalogue(self, tablesToDelete) # TODO delete does not function
+        #Job.delete_cohort_from_data_catalogue(self, tablesToSync)
 
-        tablesToSync = {
-            'TargetVariableValues': None,
-            # 'RepeatedTargetVariables': 'variables',
-            # 'TargetVariables': 'variables',
-            # 'TargetTables': 'variables',
-            # 'TargetDataDictionaries': 'resource',
-            # 'CollectionEvents': 'resource',
-            # 'Subcohorts': 'resource',
-        }
-        Job.download_filter_upload(self, tablesToSync)
+        Job.download_upload(self, tablesToSync)
         
 
     def download_source_data(self, table: str) -> bytes:
@@ -162,7 +153,26 @@ class Job:
                     df[df_filter].to_csv(stream, index=False)
                 else:
                     df.to_csv(stream, index=False)
-                
+
+                uploadResponse = client.Client.uploadCSV(
+                    self.target, 
+                    table, 
+                    stream.getvalue().encode('utf-8')
+                )
+                log.info(str(table) + ' ' + str(uploadResponse))
+    
+    def download_upload(self, tablesToSync: dict) -> None:
+        """ Download SOURCE csv and upload csv to TARGET"""
+        for table in tablesToSync:
+            data = Job.download_source_data(self, table)
+            
+            if data != None:
+                df = pd.read_csv(BytesIO(data), dtype='str', na_filter=False) # dtype set to string otherwise numbers will be converted to 2015 -> 2015.0
+
+                stream = StringIO()
+                              
+                df.to_csv(stream, index=False)
+
                 uploadResponse = client.Client.uploadCSV(
                     self.target, 
                     table, 
@@ -227,20 +237,4 @@ class Job:
             result = self.target.query(query, variables)
         
             if tableName in result:
-                #rowsToDelete.append(result[tableName])
-                #print(tableName)
-                #print(result[tableName])
-                # query: "mutation delete($pkey:[CohortsInput]){delete(Cohorts:$pkey){message}}"
-                #{pkey: [{pid: "test1"}]}
-                #pkey = '[{pid: "' + Job.get_source_cohort_pid(self) + '"}]'
                 client.Client.delete(self.target, tableName, result[tableName])
-                pass
-
-                # {"query":"mutation delete($pkey:[ContributionsInput])
-                # {delete(Contributions:$pkey){message}}",
-                # "variables":
-                #     {"pkey":
-                #         [{"resource":{"pid":"DFBC"},"contact":{"firstName":"Nic","surname":"Timpson"}}]
-                #     }
-                # }
-        

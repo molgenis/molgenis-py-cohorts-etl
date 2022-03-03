@@ -1,4 +1,3 @@
-import json
 import requests
 import logging
 
@@ -73,17 +72,15 @@ class Client:
             "}"
         "")
 
-        variables =  '{"pkey":' + json.dumps(pkey) + '}'
-        #print(variables)
-        #print({"query": query, "variables": variables})
-        response = self.session.post(
-            self.graphqlEndpoint,
-            json={"query": query, "variables": variables}
-        )
-        
+        variables =  {'pkey': pkey}
+
+        response = self.session.post(self.graphqlEndpoint,
+                            json={'query': query, 'variables': variables}
+                            )
+
         if response.status_code != 200:
             log.error(response)
-            log.error(f"Error while posting delete mutation, response.text: {response.text}")
+            log.error(f"Error uploading csv, response.text: {response.text}")
 
         return response
 
