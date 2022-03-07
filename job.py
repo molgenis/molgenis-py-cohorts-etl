@@ -124,6 +124,7 @@ class Job:
             'TargetDataDictionaries': 'resource',
             'CollectionEvents': 'resource',
             'Subcohorts': 'resource',
+            #'Models': 'pid',
         }
 
         tablesToSync = {
@@ -135,8 +136,6 @@ class Job:
             'CollectionEvents': 'resource',
             'TargetVariables': 'variables',
             'TargetVariableValues': 'variables',
-            
-            
         }
 
         Job.delete_network_from_data_catalogue(self, tablesToDelete)
