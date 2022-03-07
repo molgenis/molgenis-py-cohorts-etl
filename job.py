@@ -57,8 +57,9 @@ class Job:
                 Job.sync_cohort_staging_to_datacatalogue(self)
         elif job_strategy == 'NetworkStagingToDataCatalogue':
             log.info('Run job strategy: ' + job_strategy)
-            print(Job.get_source_model_pid(self))
-            Job.sync_network_staging_to_datacatalogue(self)
+            if Job.get_source_model_pid(self):
+                Job.sync_network_staging_to_datacatalogue(self)
+            #Job.sync_network_staging_to_datacatalogue(self)
         else:
             log.error('Job Strategy not set, please use: FillStaging, SharedStaging, CohortStagingToDataCatalogue')
 
@@ -114,19 +115,32 @@ class Job:
         Job.download_upload(self, tablesToSync)
     
     def sync_network_staging_to_datacatalogue(self) -> None:
+        # Models needs to be filled on TARGET
         # order of tables is important, value equals filter
-        tablesToSync = {
+        tablesToDelete = {
             'TargetVariableValues': 'variables',
-            # 'RepeatedTargetVariables': 'variables',
-            # 'TargetVariables': 'variables',
-            # 'TargetTables': 'variables',
-            # 'TargetDataDictionaries': 'resource',
-            # 'CollectionEvents': 'resource',
-            # 'Subcohorts': 'resource',
+            'RepeatedTargetVariables': 'variables',
+            'TargetVariables': 'variables',
+            'TargetTables': 'variables',
+            'TargetDataDictionaries': 'resource',
+            'CollectionEvents': 'resource',
+            'Subcohorts': 'resource',
         }
 
-        #Job.delete_cohort_from_data_catalogue(self, tablesToSync)
+        tablesToSync = {
+            
+            'TargetDataDictionaries': 'resource',
+            'TargetTables': 'variables',
+            'Subcohorts': 'resource',
+            'RepeatedTargetVariables': 'variables',
+            'CollectionEvents': 'resource',
+            'TargetVariables': 'variables',
+            'TargetVariableValues': 'variables',
+            
+            
+        }
 
+        Job.delete_network_from_data_catalogue(self, tablesToDelete)
         Job.download_upload(self, tablesToSync)
         
 
@@ -233,6 +247,27 @@ class Job:
                 variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": Job.get_source_cohort_pid(self)}]}}}}
             elif tableType == 'variables':
                 variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Job.get_source_cohort_pid(self)}]}}}}
+
+            result = self.target.query(query, variables)
+        
+            if tableName in result:
+                client.Client.delete(self.target, tableName, result[tableName])
+
+    def delete_network_from_data_catalogue(self, tablesToSync: dict) -> None:
+        """ Delete SOURCE Network data from TARGET data catalogue before upload """
+        rowsToDelete = []
+
+        for tableName in tablesToSync:
+            tableType = tablesToSync[tableName]
+
+            query = Path('./graphql-queries/' + tableName + '.gql').read_text()
+        
+            if tableType == 'resource':
+                variables = {"filter": {"resource": {"equals": [{"pid": Job.get_source_model_pid(self)}]}}}
+            elif tableType == 'mappings':
+                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": Job.get_source_model_pid(self)}]}}}}
+            elif tableType == 'variables':
+                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Job.get_source_model_pid(self)}]}}}}
 
             result = self.target.query(query, variables)
         
