@@ -60,6 +60,9 @@ class Job:
             if Job.get_source_model_pid(self):
                 Job.sync_network_staging_to_datacatalogue(self)
             #Job.sync_network_staging_to_datacatalogue(self)
+        elif job_strategy == 'UMCGCohorts':
+            log.info('Run job strategy: ' + job_strategy)
+
         else:
             log.error('Job Strategy not set, please use: FillStaging, SharedStaging, CohortStagingToDataCatalogue')
 
@@ -140,7 +143,30 @@ class Job:
 
         Job.delete_network_from_data_catalogue(self, tablesToDelete)
         Job.download_upload(self, tablesToSync)
-        
+
+    def sync_UMCG_cohort_to_UMCG_catalogue(self) -> None:
+        """cohort rich metadata from UMCG cohort staging areas to catalogue."""
+        tablesToDelete = {
+            'Documentation': 'cohorts',
+            'Contributions': 'cohorts',
+            'CollectionEvents': 'cohorts',
+            'Subcohorts': 'cohorts',
+            'Partners': 'cohorts',
+        }
+
+        tablesToSync = {
+            'Publications': None,
+            'Cohorts': None,
+            'Documentation': None,
+            'Contributions': None,
+            'Subcohorts': None,
+            'CollectionEvents': None,
+            'Partners': None,
+        }
+        Job.delete_cohort_from_data_catalogue(self, tablesToDelete)
+        #self.catalogue.delete('Cohorts', [{'pid': self.cohortPid}])
+        #Job.download_upload(self, tablesToSync)
+
 
     def download_source_data(self, table: str) -> bytes:
         """ Download catalogue data or return None in case of zero rows """
