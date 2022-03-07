@@ -115,7 +115,6 @@ class Job:
         Job.download_upload(self, tablesToSync)
     
     def sync_network_staging_to_datacatalogue(self) -> None:
-        # Models needs to be filled on TARGET
         # order of tables is important, value equals filter
         tablesToDelete = {
             'TargetVariableValues': 'variables',
@@ -128,7 +127,7 @@ class Job:
         }
 
         tablesToSync = {
-            
+            'Models': None,
             'TargetDataDictionaries': 'resource',
             'TargetTables': 'variables',
             'Subcohorts': 'resource',
