@@ -60,6 +60,11 @@ class Job:
             if Job.get_source_model_pid(self):
                 Job.sync_network_staging_to_datacatalogue(self)
             #Job.sync_network_staging_to_datacatalogue(self)
+        
+        elif job_strategy == 'DataCatalogueToNetworkStaging':
+            log.info('Run job strategy: ' + job_strategy)
+            Job.sync_datacatalogue_to_network_staging(self)
+
         elif job_strategy == 'UMCGCohorts':
             log.info('Run job strategy: ' + job_strategy)
 
@@ -143,6 +148,21 @@ class Job:
 
         Job.delete_network_from_data_catalogue(self, tablesToDelete)
         Job.download_upload(self, tablesToSync)
+    
+    def sync_datacatalogue_to_network_staging(self) -> None:
+        # order of tables is important, value equals filter
+        tablesToSync = {
+            'Models': 'pid',
+            'TargetDataDictionaries': 'resource',
+            'TargetTables': 'dataDictionary.resource',
+            'Subcohorts': 'resource',
+            'RepeatedTargetVariables': 'dataDictionary.resource',
+            'CollectionEvents': 'resource',
+            'TargetVariables': 'dataDictionary.resource',
+            'TargetVariableValues': 'dataDictionary.resource',
+        }
+
+        Job.download_filter_upload(self, tablesToSync, network = True)
 
     def sync_UMCG_cohort_to_UMCG_catalogue(self) -> None:
         """cohort rich metadata from UMCG cohort staging areas to catalogue."""
@@ -175,8 +195,14 @@ class Job:
             return client.Client.downLoadCSV(self.source, table)
         return None
     
-    def download_filter_upload(self, tablesToSync: dict) -> None:
+    def download_filter_upload(self, tablesToSync: dict, network: bool = False) -> None:
         """ Download SOURCE csv, filter with pandas and upload csv to TARGET"""
+        if network:
+            databases = (self.target_database, self.target_database + '_CDM')
+        else:
+            databases = (self.target_database)
+
+        #print(databases)
         for table in tablesToSync:
             filter = tablesToSync[table]
             data = Job.download_source_data(self, table)
@@ -186,17 +212,20 @@ class Job:
 
                 stream = StringIO()
                 
-                if filter != None:
-                    df_filter = df[filter] == self.target_database
-                    df[df_filter].to_csv(stream, index=False)
-                else:
-                    df.to_csv(stream, index=False)
+                for database in databases:
+                    if filter != None:
+                        df_filter = df[filter] == database
+                        if not df[df_filter].empty:
+                            df[df_filter].to_csv(stream, index=False)
+                    else:
+                        df.to_csv(stream, index=False)
 
-                uploadResponse = client.Client.uploadCSV(
-                    self.target, 
-                    table, 
-                    stream.getvalue().encode('utf-8')
-                )
+                    if stream.getvalue():
+                        uploadResponse = client.Client.uploadCSV(
+                            self.target, 
+                            table, 
+                            stream.getvalue().encode('utf-8')
+                        )
                 log.info(str(table) + ' ' + str(uploadResponse))
     
     def download_upload(self, tablesToSync: dict) -> None:
@@ -245,7 +274,7 @@ class Job:
             result = self.source.query(Path('./graphql-queries/' + 'Models.gql').read_text())
             if "Models" in result:
                 if len(result['Models']) != 1:
-                    log.warning('Expected a single model in staging area "' + self.source_database + '" but found ' + str(len(result['Models'])))
+                    log.warning('Expected a single model in staging area "' + self.source_database + '" but found ' + str(len(result['Models'])) + ': ' + str(result['Models']))
                     return None
             else:
                 log.warning('Expected a single model in staging area "' + self.source_database + '" but found none')
