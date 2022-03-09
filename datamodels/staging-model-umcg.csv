@@ -16,8 +16,8 @@ Cohorts,,designDescription,,,,,,,,,,Short description of the study design of thi
 Cohorts,,designSchematic,file,,,,,,,,,A schematic depiction of the study design of this cohort
 Cohorts,,collectionType,ref_array,,,CatalogueOntologies,CollectionTypes,,,,,"The data collection type of this cohort, i.e. retrospective or prospective; if both, select both"
 Resources,,institution,ref_array,,,SharedStaging,Institutions,,,,,Institution providing and/or coordinating access to this resource
-Resources,,partners,refback,,,CatalogueOntologies,Partners,,resource,,,Institutions that partnered in the creation of this resource
-Cohorts,,networks,ref_array,,,CatalogueOntologies,Networks,,cohorts,,,The consortia or networks that this cohort is involved in
+Resources,,partners,refback,,,,Partners,,resource,,,Institutions that partnered in the creation of this resource
+Cohorts,,networks,ref_array,,,UMCG,Networks,,cohorts,,,The consortia or networks that this cohort is involved in
 Resources,,logo,file,,,,,,,,,"Logo of the resource, for use on homepages etc."
 Cohorts,,contactEmail,,,,,,,,,,Contact e-mail address for this cohort
 Resources,,contributors,refback,,,,Contributions,,resource,,,Listing who is/has been involved in the creation and maintenance of this resource
@@ -28,7 +28,7 @@ Resources,,countries,ontology_array,,,CatalogueOntologies,Countries,,,,,Countrie
 Resources,,regions,ontology_array,,,CatalogueOntologies,Regions,,,,,Geographical regions where data from this resource largely originate from
 Resources,,populationAgeGroups,ontology_array,,,CatalogueOntologies,AgeGroups,,,,,Age groups of the participants of this resource
 Cohorts,,inclusionCriteria,text,,,,,,,,,Inclusion criteria applied to the participants of this resource
-Resources,,startYear,int,,,,,,,,,Year when first data was collected
+Resources,,startYear,int,,,,,,,,,Year when first data was collected (retrospectively)
 Resources,,endYear,int,,,,,,,,,Year when last data was collected. Leave empty if collection is ongoing
 Cohorts,,subcohorts,refback,,,,Subcohorts,,resource,,,List of subcohorts or subpopulations for this resource
 Resources,,contents,heading,,,,,,,,,Data model and contents
@@ -60,21 +60,13 @@ Contributions,,resource,ref,1,TRUE,,Resources,,,,,Resource person has contribute
 Contributions,,contact,ref,1,TRUE,SharedStaging,Contacts,,,,,Person who contributed to a resource
 Contributions,,contributionType,ontology_array,,,CatalogueOntologies,ContributionTypes,,,,,Type of the contribution
 Contributions,,contributionDescription,text,,,,,,,,,Contribution description
-Contacts,,,,,,,,,,,,
-Contacts,,firstName,,1,TRUE,,,,,,,First name of the contact person
-Contacts,,surname,,1,TRUE,,,,,,,Last name of the contact person
-Contacts,,prefix,,,,,,,,,,"Surname prefix, if applicable"
-Contacts,,initials,,,,,,,,,,Initials of the contact person
-Contacts,,title,ref,,,CatalogueOntologies,Titles,,,,,Title of the contact person
-Contacts,,email,,2,,,,,,,,Contact's email address
-Contacts,,homepage,,,,,,,,,,Link to contact's homepage
 Documentation,,,,,,,,,,,,Documentation attached to a resource
 Documentation,,resource,ref,1,TRUE,,Resources,,,,,The resource this documentation is for
 Documentation,,name,,1,TRUE,,,,,,,Document name
 Documentation,,description,text,,,,,,,,,Description of the document
 Documentation,,url,,,,,,,,,,Hyperlink to the source of the documentation
 Documentation,,file,file,,,,,,,,,Optional file attachment containing the documentation
-CollectionEvents,,,,,,,,,,,,Definition of a data collection event for a resource
+CollectionEvents,,,,,,,,,,,,List of collection events defined for this resource (fill in at least one collection event)
 CollectionEvents,,resource,ref,1,TRUE,,Resources,,,,,Resource this collection event is part of
 CollectionEvents,,name,,1,TRUE,,,,,,,Name of the collection event
 CollectionEvents,,description,,,,,,,,,,Description of the collection event
@@ -87,12 +79,11 @@ CollectionEvents,,ageGroups,ontology_array,,,CatalogueOntologies,AgeGroups,,,,,A
 CollectionEvents,,numberOfParticipants,int,,,,,,,,,Number of participants sampled in this data collection event
 CollectionEvents,,areasOfInformation,ontology_array,,,CatalogueOntologies,AreasOfInformation,,,,,Areas of information that were extracted in this data collection event
 CollectionEvents,,dataCategories,ontology_array,,,CatalogueOntologies,DataCategories,,,,,Methods of data collection used in this collection event
-CollectionEvents,,medicalRecords,ontology_array,,,CatalogueOntologies,MedicalRecords,,,,,Medical records used in this collection event
 CollectionEvents,,sampleCategories,ontology_array,,,CatalogueOntologies,SampleCategories,,,,,Samples that were collected in this collection even
 CollectionEvents,,standardizedTools,ref_array,,,CatalogueOntologies,StandardizedTools,,,,,"Standardized tools, e.g. surveys, questionnaires, instruments used to collect data for this collection event"
 CollectionEvents,,standardizedToolsOther,,,,,,,,,,"If 'other', please specify"
 CollectionEvents,,coreVariables,ontology_array,,,CatalogueOntologies,CoreVariables,,,,,Select 10-20 relevant variables that were collected in this collection event 
-Subcohorts,,,,,,,,,,,,Subcohorts defined for this resource
+Subcohorts,,,,,,,,,,,,List of subcohorts or subpopulations for this resource (fill in at least one subcohort, consider a single cohort without subcohorts as one subcohort)
 Subcohorts,,resource,ref,1,TRUE,,Resources,,,,,Resource this subcohort is part of
 Subcohorts,,name,,1,TRUE,,,,,,,"Subcohort name, e.g. 'mothers in first trimester','newborns'"
 Subcohorts,,description,text,,,,,,,,,Subcohort description
