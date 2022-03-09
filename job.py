@@ -156,10 +156,10 @@ class Job:
             'TargetDataDictionaries': 'resource',
             'TargetTables': 'dataDictionary.resource',
             'Subcohorts': 'resource',
-            'RepeatedTargetVariables': 'dataDictionary.resource',
             'CollectionEvents': 'resource',
             'TargetVariables': 'dataDictionary.resource',
             'TargetVariableValues': 'dataDictionary.resource',
+            'RepeatedTargetVariables': 'dataDictionary.resource',
         }
 
         Job.download_filter_upload(self, tablesToSync, network = True)
