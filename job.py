@@ -45,13 +45,13 @@ class Job:
             password = self.target_password
         )
         
-        if job_strategy == 'FillStaging':
+        if job_strategy == 'FillStaging': # FillStagingCohorts
             log.info('Run job strategy: ' + job_strategy)
             Job.sync_fill_staging(self)
         elif job_strategy == 'SharedStaging':
             log.info('Run job strategy: ' + job_strategy)
             Job.sync_shared_staging(self)
-        elif job_strategy == 'CohortStagingToDataCatalogue':
+        elif job_strategy == 'CohortStagingToDataCatalogue': 
             log.info('Run job strategy: ' + job_strategy)
             if Job.get_source_cohort_pid(self):
                 Job.sync_cohort_staging_to_datacatalogue(self)
@@ -61,12 +61,15 @@ class Job:
                 Job.sync_network_staging_to_datacatalogue(self)
             #Job.sync_network_staging_to_datacatalogue(self)
         
-        elif job_strategy == 'DataCatalogueToNetworkStaging':
+        elif job_strategy == 'DataCatalogueToNetworkStaging': # FillStagingNetwork
             log.info('Run job strategy: ' + job_strategy)
             Job.sync_datacatalogue_to_network_staging(self)
 
         elif job_strategy == 'UMCGCohorts':
             log.info('Run job strategy: ' + job_strategy)
+
+        # TODO onotolgies,
+        # TODO files (eerst files dan molgenis)
 
         else:
             log.error('Job Strategy not set, please use: FillStaging, SharedStaging, CohortStagingToDataCatalogue')
@@ -104,7 +107,7 @@ class Job:
     
     def sync_cohort_staging_to_datacatalogue(self) -> None:
         # order of tables is important, value equals filter
-        tablesToSync = {
+        tablesToDelete = {
             'VariableMappings': 'mappings',
             'TableMappings': 'mappings',
             'SourceVariableValues': 'variables',
@@ -117,9 +120,27 @@ class Job:
             'CollectionEvents': 'resource',
             'Subcohorts': 'resource',
             'Partners': 'resource',
+            'Cohorts': 'pid',
         }
 
-        Job.delete_cohort_from_data_catalogue(self, tablesToSync)
+        tablesToSync = {
+            'Cohorts': 'pid',
+            'Partners': 'resource',
+            'Contributions': 'resource',
+            'Subcohorts': 'resource',
+            'CollectionEvents': 'resource',
+            'Documentation': 'resource',
+            'SourceDataDictionaries': 'resource',
+            'SourceTables': 'variables',
+            'SourceVariables': 'variables',
+            'SourceVariableValues': 'variables',
+            'RepeatedSourceVariables': 'variables',
+            'TableMappings': 'mappings',
+            'VariableMappings': 'mappings',
+            
+        }
+
+        Job.delete_cohort_from_data_catalogue(self, tablesToDelete)
         Job.download_upload(self, tablesToSync)
     
     def sync_network_staging_to_datacatalogue(self) -> None:
@@ -132,11 +153,10 @@ class Job:
             'TargetDataDictionaries': 'resource',
             'CollectionEvents': 'resource',
             'Subcohorts': 'resource',
-            #'Models': 'pid',
         }
 
         tablesToSync = {
-            'Models': None,
+            #'Models': None,
             'TargetDataDictionaries': 'resource',
             'TargetTables': 'variables',
             'Subcohorts': 'resource',
@@ -300,7 +320,9 @@ class Job:
                 variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": Job.get_source_cohort_pid(self)}]}}}}
             elif tableType == 'variables':
                 variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Job.get_source_cohort_pid(self)}]}}}}
-
+            elif tableType == 'pid':
+                variables = {"filter": {"equals": [{"pid": Job.get_source_cohort_pid(self)}]}}
+                
             result = self.target.query(query, variables)
         
             if tableName in result:
