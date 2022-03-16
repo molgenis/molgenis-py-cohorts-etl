@@ -67,6 +67,7 @@ class Job:
 
         elif job_strategy == 'UMCGCohorts':
             log.info('Run job strategy: ' + job_strategy)
+            Job.sync_UMCG_cohort_to_UMCG_catalogue(self)
 
         # TODO onotolgies,
         # TODO files (eerst files dan molgenis)
@@ -187,11 +188,12 @@ class Job:
     def sync_UMCG_cohort_to_UMCG_catalogue(self) -> None:
         """cohort rich metadata from UMCG cohort staging areas to catalogue."""
         tablesToDelete = {
-            'Documentation': 'cohorts',
-            'Contributions': 'cohorts',
-            'CollectionEvents': 'cohorts',
-            'Subcohorts': 'cohorts',
-            'Partners': 'cohorts',
+            'Documentation': 'resource',
+            'Contributions': 'resource',
+            'CollectionEvents': 'resource',
+            'Subcohorts': 'resource',
+            'Partners': 'resource',
+            'Cohorts': 'pid',
         }
 
         tablesToSync = {
@@ -204,8 +206,7 @@ class Job:
             'Partners': None,
         }
         Job.delete_cohort_from_data_catalogue(self, tablesToDelete)
-        #self.catalogue.delete('Cohorts', [{'pid': self.cohortPid}])
-        #Job.download_upload(self, tablesToSync)
+        Job.download_upload(self, tablesToSync)
 
 
     def download_source_data(self, table: str) -> bytes:
