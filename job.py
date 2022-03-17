@@ -28,6 +28,7 @@ class Job:
         self.source_email = source_email
         self.source_password = source_password
         self.source_database = source_database
+        self.job_strategy = job_strategy
 
         # set up Client for SOURCE
         self.source = client.Client(
@@ -45,36 +46,44 @@ class Job:
             password = self.target_password
         )
         
-        if job_strategy == 'FillStaging': # FillStagingCohorts
-            log.info('Run job strategy: ' + job_strategy)
-            Job.sync_fill_staging(self)
-        elif job_strategy == 'SharedStaging':
-            log.info('Run job strategy: ' + job_strategy)
-            Job.sync_shared_staging(self)
-        elif job_strategy == 'CohortStagingToDataCatalogue': 
-            log.info('Run job strategy: ' + job_strategy)
+        JobStrategy.strategy(self)
+
+class JobStrategy:
+    def strategy(self) -> None:
+        if self.job_strategy == 'FillStaging': # FillStagingCohorts
+            log.info('Run job strategy: ' + self.job_strategy)
+            JobSync.sync_fill_staging(self)
+        
+        elif self.job_strategy == 'SharedStaging':
+            log.info('Run job strategy: ' + self.job_strategy)
+            JobSync.sync_shared_staging(self)
+        
+        elif self.job_strategy == 'CohortStagingToDataCatalogue': 
+            log.info('Run job strategy: ' + self.job_strategy)
             if Job.get_source_cohort_pid(self):
-                Job.sync_cohort_staging_to_datacatalogue(self)
-        elif job_strategy == 'NetworkStagingToDataCatalogue':
-            log.info('Run job strategy: ' + job_strategy)
+                JobSync.sync_cohort_staging_to_datacatalogue(self)
+        
+        elif self.job_strategy == 'NetworkStagingToDataCatalogue':
+            log.info('Run job strategy: ' + self.job_strategy)
             if Job.get_source_model_pid(self):
-                Job.sync_network_staging_to_datacatalogue(self)
+                JobSync.sync_network_staging_to_datacatalogue(self)
             #Job.sync_network_staging_to_datacatalogue(self)
         
-        elif job_strategy == 'DataCatalogueToNetworkStaging': # FillStagingNetwork
-            log.info('Run job strategy: ' + job_strategy)
-            Job.sync_datacatalogue_to_network_staging(self)
+        elif self.job_strategy == 'DataCatalogueToNetworkStaging': # FillStagingNetwork
+            log.info('Run job strategy: ' + self.job_strategy)
+            JobSync.sync_datacatalogue_to_network_staging(self)
 
-        elif job_strategy == 'UMCGCohorts':
-            log.info('Run job strategy: ' + job_strategy)
-            Job.sync_UMCG_cohort_to_UMCG_catalogue(self)
+        elif self.job_strategy == 'UMCGCohorts':
+            log.info('Run job strategy: ' + self.job_strategy)
+            JobSync.sync_UMCG_cohort_to_UMCG_catalogue(self)
 
         # TODO onotolgies,
         # TODO files (eerst files dan molgenis)
 
         else:
-            log.error('Job Strategy not set, please use: FillStaging, SharedStaging, CohortStagingToDataCatalogue')
+            log.error('Job Strategy not set, please use: FillStaging, SharedStaging, CohortStagingToDataCatalogue, NetworkStagingToDataCatalogue, DataCatalogueToNetworkStaging, UMCGCohorts')
 
+class JobSync:
     def sync_fill_staging(self) -> None:
         """ Sync SOURCE (catalogue) with TARGET (staging)
         """       
@@ -95,7 +104,7 @@ class Job:
             'TableMappings': 'fromDataDictionary.resource',
             'VariableMappings': 'fromDataDictionary.resource',
         }
-        Job.download_filter_upload(self, tablesToSync)
+        JobUtil.download_filter_upload(self, tablesToSync)
 
     def sync_shared_staging(self) -> None:
         """ Sync SOURCE (SharedStaging) with TARGET """
@@ -104,7 +113,7 @@ class Job:
             'Institutions': None,
             'Contacts': None,
         }
-        Job.download_filter_upload(self, tablesToSync)
+        JobUtil.download_filter_upload(self, tablesToSync)
     
     def sync_cohort_staging_to_datacatalogue(self) -> None:
         # order of tables is important, value equals filter
@@ -141,8 +150,8 @@ class Job:
             
         }
 
-        Job.delete_cohort_from_data_catalogue(self, tablesToDelete)
-        Job.download_upload(self, tablesToSync)
+        JobUtil.delete_cohort_from_data_catalogue(self, tablesToDelete)
+        JobUtil.download_upload(self, tablesToSync)
     
     def sync_network_staging_to_datacatalogue(self) -> None:
         # order of tables is important, value equals filter
@@ -167,8 +176,8 @@ class Job:
             'TargetVariableValues': 'variables',
         }
 
-        Job.delete_network_from_data_catalogue(self, tablesToDelete)
-        Job.download_upload(self, tablesToSync)
+        JobUtil.delete_network_from_data_catalogue(self, tablesToDelete)
+        JobUtil.download_upload(self, tablesToSync)
     
     def sync_datacatalogue_to_network_staging(self) -> None:
         # order of tables is important, value equals filter
@@ -183,7 +192,7 @@ class Job:
             'RepeatedTargetVariables': 'dataDictionary.resource',
         }
 
-        Job.download_filter_upload(self, tablesToSync, network = True)
+        JobUtil.download_filter_upload(self, tablesToSync, network = True)
 
     def sync_UMCG_cohort_to_UMCG_catalogue(self) -> None:
         """cohort rich metadata from UMCG cohort staging areas to catalogue."""
@@ -205,10 +214,10 @@ class Job:
             'CollectionEvents': None,
             'Partners': None,
         }
-        Job.delete_cohort_from_data_catalogue(self, tablesToDelete)
-        Job.download_upload(self, tablesToSync)
+        JobUtil.delete_cohort_from_data_catalogue(self, tablesToDelete)
+        JobUtil.download_upload(self, tablesToSync)
 
-
+class JobUtil:
     def download_source_data(self, table: str) -> bytes:
         """ Download catalogue data or return None in case of zero rows """
         result = client.Client.query(self.source, 'query Count{' + table + '_agg { count }}')
@@ -226,7 +235,7 @@ class Job:
         #print(databases)
         for table in tablesToSync:
             filter = tablesToSync[table]
-            data = Job.download_source_data(self, table)
+            data = JobUtil.download_source_data(self, table)
             
             if data != None:
                 df = pd.read_csv(BytesIO(data), dtype='str', na_filter=False) # dtype set to string otherwise numbers will be converted to 2015 -> 2015.0
@@ -252,7 +261,7 @@ class Job:
     def download_upload(self, tablesToSync: dict) -> None:
         """ Download SOURCE csv and upload csv to TARGET"""
         for table in tablesToSync:
-            data = Job.download_source_data(self, table)
+            data = JobUtil.download_source_data(self, table)
             
             if data != None:
                 df = pd.read_csv(BytesIO(data), dtype='str', na_filter=False) # dtype set to string otherwise numbers will be converted to 2015 -> 2015.0
@@ -316,13 +325,13 @@ class Job:
             query = Path('./graphql-queries/' + tableName + '.gql').read_text()
         
             if tableType == 'resource':
-                variables = {"filter": {"resource": {"equals": [{"pid": Job.get_source_cohort_pid(self)}]}}}
+                variables = {"filter": {"resource": {"equals": [{"pid": JobUtil.get_source_cohort_pid(self)}]}}}
             elif tableType == 'mappings':
-                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": Job.get_source_cohort_pid(self)}]}}}}
+                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": JobUtil.get_source_cohort_pid(self)}]}}}}
             elif tableType == 'variables':
-                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Job.get_source_cohort_pid(self)}]}}}}
+                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": JobUtil.get_source_cohort_pid(self)}]}}}}
             elif tableType == 'pid':
-                variables = {"filter": {"equals": [{"pid": Job.get_source_cohort_pid(self)}]}}
+                variables = {"filter": {"equals": [{"pid": JobUtil.get_source_cohort_pid(self)}]}}
                 
             result = self.target.query(query, variables)
         
@@ -339,11 +348,11 @@ class Job:
             query = Path('./graphql-queries/' + tableName + '.gql').read_text()
         
             if tableType == 'resource':
-                variables = {"filter": {"resource": {"equals": [{"pid": Job.get_source_model_pid(self)}]}}}
+                variables = {"filter": {"resource": {"equals": [{"pid": JobUtil.get_source_model_pid(self)}]}}}
             elif tableType == 'mappings':
-                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": Job.get_source_model_pid(self)}]}}}}
+                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": JobUtil.get_source_model_pid(self)}]}}}}
             elif tableType == 'variables':
-                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Job.get_source_model_pid(self)}]}}}}
+                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": JobUtil.get_source_model_pid(self)}]}}}}
 
             result = self.target.query(query, variables)
         
