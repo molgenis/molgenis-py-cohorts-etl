@@ -83,10 +83,11 @@ CollectionEvents,,sampleCategories,ontology_array,,,CatalogueOntologies,SampleCa
 CollectionEvents,,standardizedTools,ref_array,,,CatalogueOntologies,StandardizedTools,,,,,"Standardized tools, e.g. surveys, questionnaires, instruments used to collect data for this collection event"
 CollectionEvents,,standardizedToolsOther,,,,,,,,,,"If 'other', please specify"
 CollectionEvents,,coreVariables,ontology_array,,,CatalogueOntologies,CoreVariables,,,,,Select 10-20 relevant variables that were collected in this collection event 
-Subcohorts,,,,,,,,,,,,List of subcohorts or subpopulations for this resource (fill in at least one subcohort, consider a single cohort without subcohorts as one subcohort)
+Subcohorts,,,,,,,,,,,,"List of subcohorts or subpopulations for this resource (fill in at least one subcohort, consider a single cohort without subcohorts as one subcohort)"
 Subcohorts,,resource,ref,1,TRUE,,Resources,,,,,Resource this subcohort is part of
 Subcohorts,,name,,1,TRUE,,,,,,,"Subcohort name, e.g. 'mothers in first trimester','newborns'"
 Subcohorts,,description,text,,,,,,,,,Subcohort description
+SubCohorts,,counts,refback,,,,SubcohortCounts,,subcohort,,,"Total number of unique individuals per age(group), gender and year"
 Subcohorts,,numberOfParticipants,int,,,,,,,,,Number of participants in this subcohort
 Subcohorts,,inclusionStart,int,,,,,,,,,Year of first included participant
 Subcohorts,,inclusionEnd,int,,,,,,,,,Year of last included participant. Leave empty if collection is ongoing
@@ -96,3 +97,8 @@ Subcohorts,,comorbidity,ontology_array,,,CatalogueOntologies,Diseases,,,,,"Comor
 Subcohorts,,countries,ontology_array,,,CatalogueOntologies,Countries,,,,,Countries where data from this subcohort largely originate from
 Subcohorts,,regions,ontology_array,,,CatalogueOntologies,Regions,,,,,Geographical regions where data from this subcohort largely originate from
 Subcohorts,,inclusionCriteria,text,,,,,,,,,Inclusion criteria applied to this subcohort
+SubcohortCounts,,subcohort,ref,1,TRUE,,Subcohorts,,,,,
+SubcohortCounts,,year,int,1,TRUE,,,,,,,
+SubcohortCounts,,ageband,,1,TRUE,,,,,,,
+SubcohortCounts,,gender,,1,TRUE,,,,,,,
+SubcohortCounts,,N,int,,TRUE,,,,,,,
