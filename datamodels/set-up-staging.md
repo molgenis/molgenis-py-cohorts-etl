@@ -2,9 +2,9 @@
 
 1. Go to an emx2 server
 
-2. Make a schema called SharedStaging and load [shared-staging-model](https://github.com/molgenis/molgenis-py-cohorts-etl/datamodels/shared-staging-model.csv).
+2. Make a schema called CatalogueOntologies. This schema will contain look-up lists. The table metadata is loaded in the next step.
 
-3. Make a schema called CatalogueOntologies. This schema will contain look-up lists. The table metadata is loaded in the next step.
+3. Make a schema called SharedStaging and load [shared-staging-model](https://github.com/molgenis/molgenis-py-cohorts-etl/datamodels/shared-staging-model.csv).
 
 4. Make a schema called DataCatalogue and load the [catalogue model](https://github.com/molgenis/molgenis-emx2/blob/master/data/datacatalogue/molgenis.csv)
  that will contain all the catalogue data. The ontology_array and ontology columnTypes will instantiate tables in 
