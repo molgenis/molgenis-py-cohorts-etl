@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.1 (2022-04-13)
+### Fix
+* Update set-up ([`9671faf`](https://github.com/molgenis/molgenis-py-cohorts-etl/commit/9671faff23b12f1c3c9d1caef1f67df17b627684))
+* Typo in comorbidity ([`a895d92`](https://github.com/molgenis/molgenis-py-cohorts-etl/commit/a895d92d8fb58c654444f61b49d3d4b3d5add91d))
+
 ## v1.3.0 (2021-10-14)
 ### Feature
 * Add Subcohort.countries delete Resources.publications ([#5](https://github.com/molgenis/molgenis-py-cohorts-etl/issues/5)) ([`ced657c`](https://github.com/molgenis/molgenis-py-cohorts-etl/commit/ced657cbb779ef5ddf20abcb3f1818e5a424ff18))
