@@ -1,7 +1,7 @@
 # Jobs
 
 We use the following jobs to migrate data from SOURCE to TARGET:
-> [FillStaging](#fillstaging), SharedStaging, CohortStagingToDataCatalogue, NetworkStagingToDataCatalogue, DataCatalogueToNetworkStaging, UMCGCohorts
+> [FillStaging](#fillstaging), [SharedStaging](#sharedstaging), CohortStagingToDataCatalogue, NetworkStagingToDataCatalogue, DataCatalogueToNetworkStaging, UMCGCohorts
 
 Data is stored in molgenis EMX2 schema's and depending on the job strategy different Flows ([A](#flow-a)/[B](#flow-b)) are used.
 
