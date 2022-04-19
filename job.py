@@ -228,9 +228,9 @@ class JobUtil:
     def download_filter_upload(self, tablesToSync: dict, network: bool = False) -> None:
         """ Download SOURCE csv, filter with pandas and upload csv to TARGET"""
         if network:
-            databases = (self.target_database, self.target_database + '_CDM')
+            databases = [self.target_database, self.target_database + '_CDM']
         else:
-            databases = (self.target_database)
+            databases = [self.target_database]
 
         #print(databases)
         for table in tablesToSync:
