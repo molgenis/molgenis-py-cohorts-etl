@@ -74,9 +74,10 @@ class Client:
 
         variables =  {'pkey': pkey}
 
-        response = self.session.post(self.graphqlEndpoint,
-                            json={'query': query, 'variables': variables}
-                            )
+        response = self.session.post(
+            self.graphqlEndpoint,
+            json={'query': query, 'variables': variables}
+        )
 
         if response.status_code != 200:
             log.error(response)
@@ -143,4 +144,13 @@ class Client:
         else:
             log.error('Error: download failed')
             
+    def upload_zip(self) -> None:
+        pass
 
+    def download_zip(self) -> bytes:
+        """ Download zip data from database """
+        resp = self.session.get(self.apiEndpoint + '/zip', allow_redirects=True)
+        if resp.content:
+            return resp.content
+        else:
+            log.error('Error: download failed')
