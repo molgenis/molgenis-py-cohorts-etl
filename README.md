@@ -71,7 +71,7 @@ Edit the env setting in the docker-compose.yml as needed
     | MG_SOURCE_URL | full url of source server |
     | MG_SOURCE_USERNAME | username on source server |
     | MG_SOURCE_PASSWORD | password on source server |
-    | MG_SOURCE_DATABASE | single or comma separated list of database names |
+    | MG_SOURCE_DATABASE | database name |
     | MG_TARGET_URL | full url of target server |
     | MG_TARGET_USERNAME | username on target server |
     | MG_TARGET_PASSWORD | username on target server |
