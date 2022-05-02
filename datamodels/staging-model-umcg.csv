@@ -87,7 +87,7 @@ Subcohorts,,,,,,,,,,,,"List of subcohorts or subpopulations for this resource (f
 Subcohorts,,resource,ref,1,TRUE,,Resources,,,,,Resource this subcohort is part of
 Subcohorts,,name,,1,TRUE,,,,,,,"Subcohort name, e.g. 'mothers in first trimester','newborns'"
 Subcohorts,,description,text,,,,,,,,,Subcohort description
-SubCohorts,,counts,refback,,,,SubcohortCounts,,subcohort,,,"Total number of unique individuals per age(group), gender and year"
+Subcohorts,,counts,refback,,,,SubcohortCounts,,subcohort,,,"Total number of unique individuals per age(group), gender and year"
 Subcohorts,,numberOfParticipants,int,,,,,,,,,Number of participants in this subcohort
 Subcohorts,,inclusionStart,int,,,,,,,,,Year of first included participant
 Subcohorts,,inclusionEnd,int,,,,,,,,,Year of last included participant. Leave empty if collection is ongoing
