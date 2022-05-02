@@ -1,4 +1,5 @@
 tableName,tableExtends,columnName,columnType,key,required,refSchema,refTable,refLink,refBack,validation,semantics,description
+Version,,,,,,,,,,,,2.6
 Contacts,,firstName,,1,TRUE,,,,,,,First name of the contact person
 Contacts,,surname,,1,TRUE,,,,,,,Last name of the contact person
 Contacts,,prefix,,,,,,,,,,"Surname prefix, if applicable"
@@ -26,3 +27,6 @@ Institutions,,logo,file,,,,,,,,,Institution logo
 Institutions,,roles,ontology_array,,,CatalogueOntologies,InstitutionRoles,,,,,Role(s) of the institution in connection with data sources and data banks in the catalogue
 Institutions,,rolesOther,text,,,,,,,,,"If role is 'other', a description of the primary role"
 Institutions,,expertise,text,,,,,,,,,A short description of the expertise of this institution
+CoreVariables,,,,,,,,,,,,Listing of core variables for cohorts
+CoreVariables,,name,,1,TRUE,,,,,,,Name of core variable for this cohort
+CoreVariables,,definition,,,,,,,,,,Description of core variable
