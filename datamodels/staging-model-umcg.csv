@@ -1,5 +1,5 @@
 tableName,tableExtends,columnName,columnType,key,required,refSchema,refTable,refLink,refBack,validation,semantics,description
-Version,,,,,,,,,,,,2.5
+Version,,,,,,,,,,,,2.6
 Resources,,,,,,,,,,,,"Generic listing of all resources. Should not be used directly, instead use specific types such as Databanks and Studies"
 Resources,,overview,heading,,,,,,,,,General information about this resource
 Resources,,pid,,1,TRUE,,,,,,,Persistent identifier for this resource
@@ -80,9 +80,9 @@ CollectionEvents,,numberOfParticipants,int,,,,,,,,,Number of participants sample
 CollectionEvents,,areasOfInformation,ontology_array,,,CatalogueOntologies,AreasOfInformation,,,,,Areas of information that were extracted in this data collection event
 CollectionEvents,,dataCategories,ontology_array,,,CatalogueOntologies,DataCategories,,,,,Methods of data collection used in this collection event
 CollectionEvents,,sampleCategories,ontology_array,,,CatalogueOntologies,SampleCategories,,,,,Samples that were collected in this collection even
-CollectionEvents,,standardizedTools,ref_array,,,CatalogueOntologies,StandardizedTools,,,,,"Standardized tools, e.g. surveys, questionnaires, instruments used to collect data for this collection event"
+CollectionEvents,,standardizedTools,ontology_array,,,CatalogueOntologies,StandardizedTools,,,,,"Standardized tools, e.g. surveys, questionnaires, instruments used to collect data for this collection event"
 CollectionEvents,,standardizedToolsOther,,,,,,,,,,"If 'other', please specify"
-CollectionEvents,,coreVariables,ontology_array,,,CatalogueOntologies,CoreVariables,,,,,Select 10-20 relevant variables that were collected in this collection event 
+CollectionEvents,,coreVariables,ref_array,,,SharedStaging,CoreVariables,,,,,Enter or select 10-20 relevant variables that were collected in this collection event 
 Subcohorts,,,,,,,,,,,,"List of subcohorts or subpopulations for this resource (fill in at least one subcohort, consider a single cohort without subcohorts as one subcohort)"
 Subcohorts,,resource,ref,1,TRUE,,Resources,,,,,Resource this subcohort is part of
 Subcohorts,,name,,1,TRUE,,,,,,,"Subcohort name, e.g. 'mothers in first trimester','newborns'"
@@ -98,7 +98,7 @@ Subcohorts,,countries,ontology_array,,,CatalogueOntologies,Countries,,,,,Countri
 Subcohorts,,regions,ontology_array,,,CatalogueOntologies,Regions,,,,,Geographical regions where data from this subcohort largely originate from
 Subcohorts,,inclusionCriteria,text,,,,,,,,,Inclusion criteria applied to this subcohort
 SubcohortCounts,,subcohort,ref,1,TRUE,,Subcohorts,,,,,
-SubcohortCounts,,year,int,1,TRUE,,,,,,,
-SubcohortCounts,,ageband,,1,TRUE,,,,,,,
-SubcohortCounts,,gender,,1,TRUE,,,,,,,
-SubcohortCounts,,N,int,,TRUE,,,,,,,
+SubcohortCounts,,ageGroup,ref,1,TRUE,CatalogueOntologies,AgeGroups,,,,,
+SubcohortCounts,,N total,int,,,,,,,,,
+SubcohortCounts,,N female,int,,,,,,,,,
+SubcohortCounts,,N male,int,,,,,,,,,
