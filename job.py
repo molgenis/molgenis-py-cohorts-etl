@@ -60,12 +60,12 @@ class JobStrategy:
         
         elif self.job_strategy == 'CohortStagingToDataCatalogue': 
             log.info('Run job strategy: ' + self.job_strategy)
-            if Job.get_source_cohort_pid(self):
+            if JobUtil.get_source_cohort_pid(self):
                 JobSync.sync_cohort_staging_to_datacatalogue(self)
         
         elif self.job_strategy == 'NetworkStagingToDataCatalogue':
             log.info('Run job strategy: ' + self.job_strategy)
-            if Job.get_source_model_pid(self):
+            if JobUtil.get_source_model_pid(self):
                 JobSync.sync_network_staging_to_datacatalogue(self)
             #Job.sync_network_staging_to_datacatalogue(self)
         
@@ -176,7 +176,7 @@ class JobSync:
             'TargetVariableValues': 'variables',
         }
 
-        JobUtil.delete_network_from_data_catalogue(self, tablesToDelete)
+        #JobUtil.delete_network_from_data_catalogue(self, tablesToDelete)
         JobUtil.download_upload(self, tablesToSync)
     
     def sync_datacatalogue_to_network_staging(self) -> None:

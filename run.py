@@ -33,21 +33,25 @@ def main():
 
 
     targets = map(str.strip, TARGET_DATABASE.split(','))
+    sources = map(str.strip, SOURCE_DATABASE.split(','))
 
     for target in targets:
         log.info('START SYNC SOURCE (' + SOURCE_DATABASE + ') WITH TARGET (' + target + ')')
-        job.Job(
-            target_url = TARGET_URL,
-            target_email = TARGET_USERNAME,
-            target_password = TARGET_PASSWORD,
-            target_database = target,
-            source_url = SOURCE_URL,
-            source_email = SOURCE_USERNAME,
-            source_password = SOURCE_PASSWORD,
-            source_database = SOURCE_DATABASE,
-            job_strategy = JOB_STRATEGY,
-        )
-        log.info('END SYNC SOURCE (' + SOURCE_DATABASE + ') WITH TARGET (' + target + ')')
+        for source in sources:
+            job.Job(
+                target_url = TARGET_URL,
+                target_email = TARGET_USERNAME,
+                target_password = TARGET_PASSWORD,
+                target_database = target,
+                source_url = SOURCE_URL,
+                source_email = SOURCE_USERNAME,
+                source_password = SOURCE_PASSWORD,
+                #source_database = SOURCE_DATABASE,
+                source_database = source,
+                job_strategy = JOB_STRATEGY,
+            )
+            #log.info('END SYNC SOURCE (' + SOURCE_DATABASE + ') WITH TARGET (' + target + ')')
+            log.info('END SYNC SOURCE (' + source + ') WITH TARGET (' + target + ')')
 
     log.info('*** JOB COMPLETED ***')
 

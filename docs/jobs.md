@@ -23,7 +23,7 @@ These flows have the following steps:
 
 ### FillStaging
 
-The goal of *FillStaging* is to migrate data from a data-catalogue model to an **empty** cohort-model, flow A is used.
+The goal of *FillStaging* is to migrate data from a data-catalogue model to an (almost) **empty** cohort-model, flow A is used.
 
 SOURCE is either [data-catalogue.molgeniscloud.org](https://data-catalogue.molgeniscloud.org/) or [conception-acc.molgeniscloud.org](https://conception-acc.molgeniscloud.org/).
 
