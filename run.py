@@ -2,22 +2,27 @@ import job
 from decouple import config
 import os
 import logging
+import sys
 
 def main():
     logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
     log = logging.getLogger('run')
 
-    SOURCE_URL = config('MG_SOURCE_URL', default='https://data-catalogue.molgeniscloud.org')
-    SOURCE_USERNAME = config('MG_SOURCE_USERNAME', default='admin')
-    SOURCE_PASSWORD = config('MG_SOURCE_PASSWORD')
-    SOURCE_DATABASE = config('MG_SOURCE_DATABASE', default='catalogue')
-    
-    TARGET_URL = config('MG_TARGET_URL', default='https://data-catalogue-staging-test.molgeniscloud.org/')
-    TARGET_USERNAME = config('MG_TARGET_USERNAME', default='admin')
-    TARGET_PASSWORD = config('MG_TARGET_PASSWORD')
-    TARGET_DATABASE = config('MG_TARGET_DATABASE')
+    try:
+        SOURCE_URL = config('MG_SOURCE_URL')
+        SOURCE_USERNAME = config('MG_SOURCE_USERNAME')
+        SOURCE_PASSWORD = config('MG_SOURCE_PASSWORD')
+        SOURCE_DATABASE = config('MG_SOURCE_DATABASE')
+        
+        TARGET_URL = config('MG_TARGET_URL')
+        TARGET_USERNAME = config('MG_TARGET_USERNAME')
+        TARGET_PASSWORD = config('MG_TARGET_PASSWORD')
+        TARGET_DATABASE = config('MG_TARGET_DATABASE')
 
-    JOB_STRATEGY = config('MG_JOB_STRATEGY')
+        JOB_STRATEGY = config('MG_JOB_STRATEGY')
+    except:
+        log.error('Make sure you filled in all variables in the .env file, script will exit now.')
+        sys.exit()
 
     log.info('*** START SYNC JOB WITH settings: ***')
     log.info('JOB_STRATEGY: ' + JOB_STRATEGY)
@@ -36,8 +41,8 @@ def main():
     sources = map(str.strip, SOURCE_DATABASE.split(','))
 
     for target in targets:
-        log.info('START SYNC SOURCE (' + SOURCE_DATABASE + ') WITH TARGET (' + target + ')')
         for source in sources:
+            log.info('START SYNC SOURCE (' + source + ') WITH TARGET (' + target + ')')
             job.Job(
                 target_url = TARGET_URL,
                 target_email = TARGET_USERNAME,
@@ -46,11 +51,9 @@ def main():
                 source_url = SOURCE_URL,
                 source_email = SOURCE_USERNAME,
                 source_password = SOURCE_PASSWORD,
-                #source_database = SOURCE_DATABASE,
                 source_database = source,
                 job_strategy = JOB_STRATEGY,
             )
-            #log.info('END SYNC SOURCE (' + SOURCE_DATABASE + ') WITH TARGET (' + target + ')')
             log.info('END SYNC SOURCE (' + source + ') WITH TARGET (' + target + ')')
 
     log.info('*** JOB COMPLETED ***')
