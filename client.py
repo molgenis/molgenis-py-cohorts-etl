@@ -1,5 +1,6 @@
 import requests
 import logging
+import sys
 
 log = logging.getLogger(__name__)
 
@@ -60,6 +61,7 @@ class Client:
         if response.status_code != 200:
             log.error(f"Error while posting query, status code {response.status_code}")
             # TODO: add logging content > errors > message
+            sys.exit()
 
         return response.json()['data']
 
