@@ -159,7 +159,7 @@ class Client:
     
     def database_exists(self) -> None:
         """ Check if database exists on server, otherwise complain and exit """
-        query = '{_session { email, roles, schemas } }'
+        query = '{_session {schemas} }'
 
         response = self.session.post(self.graphqlEndpoint, json={'query': query} )
         if response.status_code != 200:
