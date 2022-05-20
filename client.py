@@ -156,3 +156,12 @@ class Client:
             return resp.content
         else:
             log.error('Error: download failed')
+    
+    def database_exists(self) -> None:
+        """ Check if database exists on server, otherwise complain and exit """
+        query = '{_session { email, roles, schemas } }'
+
+        response = self.session.post(self.graphqlEndpoint, json={'query': query} )
+        if response.status_code != 200:
+            log.error(f"Database schema does not exist, status code {response.status_code}")
+            sys.exit()

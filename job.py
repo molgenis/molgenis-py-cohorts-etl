@@ -44,5 +44,9 @@ class Job:
             email = self.target_email,
             password = self.target_password
         )
-        
+
+        # Make sure database schemas exists otherwise exit
+        client.Client.database_exists(self.source)
+        client.Client.database_exists(self.target)
+
         strategy.Strategy.strategy(self)
