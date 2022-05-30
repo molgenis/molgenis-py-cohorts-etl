@@ -1,6 +1,9 @@
+import zipfile
 import pandas as pd
+import os
 from io import BytesIO, StringIO
 from pathlib import Path
+
 
 import client
 import logging
@@ -148,3 +151,45 @@ class Util:
         
             if tableName in result:
                 client.Client.delete(self.target, tableName, result[tableName])
+    
+    def download_cohort_zip_process(self) -> None:
+        """ download molgenis zip from cohort staging area and process zip before upload to datacatalogue """
+        result = client.Client.download_zip(self.source)
+        result = BytesIO(result)
+        result = zipfile.ZipFile(result)
+
+        stream = BytesIO()
+        #outputZip = zipfile.ZipFile(stream, 'x')
+
+        # create new stream to setup 'new' zip
+        # remove molgenis.csv, molgenis_members.csv
+        # - do I need to double check if correct tables are passed?
+        # check _files folder (if exists)
+        # dirs = list(set([os.path.dirname(x) for x in result.namelist()]))
+        # print(dirs)
+        # for name in result.namelist():
+        #     #print(result.getinfo(name))
+        #     print(name)
+        # for item in result.infolist():
+        #     buffer = result.read(item.filename)
+        #     #print(buffer)
+        #     if (item.filename == 'Cohorts.csv'):
+        #         #outputZip.writestr(item.filename, buffer)
+        #         print(item.filename, buffer)
+        #         #outputZip.write(item.filename, buffer)
+        # outputZip.close()
+        #print(outputZip)
+
+        #t = zipfile.ZipFile(outputZip)
+        #for name in outputZip.namelist():
+        #    print(name)
+        # with zipfile.ZipFile(outputZip) as archive:
+        #     archive.printdir()
+        with zipfile.ZipFile(stream, mode='x', compression=zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr('file.txt', b'derp')
+            print(zf)
+            for name in zf.namelist():
+                print(name)
+                print(zf.read(name))
+
+        #print(stream)

@@ -35,6 +35,9 @@ class Strategy:
 
         # TODO onotolgies,
         # TODO files (eerst files dan molgenis)
+        elif self.job_strategy == 'CohortStagingToDataCatalogue_Zip':
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.cohort_zip_to_datacatalogue(self)
 
         else:
             log.error('Job Strategy not set, please use: FillStaging, SharedStaging, CohortStagingToDataCatalogue, NetworkStagingToDataCatalogue, DataCatalogueToNetworkStaging, UMCGCohorts')

@@ -133,3 +133,25 @@ class Sync:
         }
         util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
         util.Util.download_upload(self, tablesToSync)
+
+    def cohort_zip_to_datacatalogue(self) -> None:
+        """Download cohort staging zip, delete cohort on datacatalogue and finaly upload transformed zip"""
+        
+        # Database name needs to be identical to cohort PID
+        tablesToDelete = {
+            'VariableMappings': 'mappings',
+            'TableMappings': 'mappings',
+            'SourceVariableValues': 'variables',
+            'RepeatedSourceVariables': 'variables',
+            'SourceVariables': 'variables',
+            'SourceTables': 'variables',
+            'SourceDataDictionaries': 'resource',
+            'Documentation': 'resource',
+            'Contributions': 'resource',
+            'CollectionEvents': 'resource',
+            'Subcohorts': 'resource',
+            'Partners': 'resource',
+            'Cohorts': 'pid',
+        }
+        util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
+        util.Util.download_cohort_zip_process(self)
