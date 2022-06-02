@@ -146,8 +146,16 @@ class Client:
         else:
             log.error('Error: download failed')
             
-    def upload_zip(self) -> None:
-        pass
+    def upload_zip(self, data) -> None:
+        """ Upload zip """
+        response = self.session.post(
+            self.apiEndpoint + '/zip?async=true',
+            files={'file': ('zip.zip', data.getvalue())},
+        )
+        
+        if response.status_code != 200:
+            log.error(response)
+            log.error(f"Error uploading zip, status code {response.text}")
 
     def download_zip(self) -> bytes:
         """ Download zip data from database """

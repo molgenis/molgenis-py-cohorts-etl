@@ -1,6 +1,7 @@
 import zipfile
 import pandas as pd
 import os
+import zipfile
 from io import BytesIO, StringIO
 from pathlib import Path
 
@@ -152,44 +153,36 @@ class Util:
             if tableName in result:
                 client.Client.delete(self.target, tableName, result[tableName])
     
-    def download_cohort_zip_process(self) -> None:
+    def download_cohort_zip_process(self, tablesToSync: dict) -> None:
         """ download molgenis zip from cohort staging area and process zip before upload to datacatalogue """
         result = client.Client.download_zip(self.source)
-        result = BytesIO(result)
-        result = zipfile.ZipFile(result)
+        # setup output zip stream
+        zip_stream = BytesIO()
 
-        stream = BytesIO()
-        #outputZip = zipfile.ZipFile(stream, 'x')
+        try:
+            with zipfile.ZipFile(BytesIO(result), mode='r') as archive:
+                #archive.printdir()
+                for name in archive.namelist():
 
-        # create new stream to setup 'new' zip
-        # remove molgenis.csv, molgenis_members.csv
-        # - do I need to double check if correct tables are passed?
-        # check _files folder (if exists)
-        # dirs = list(set([os.path.dirname(x) for x in result.namelist()]))
-        # print(dirs)
-        # for name in result.namelist():
-        #     #print(result.getinfo(name))
-        #     print(name)
-        # for item in result.infolist():
-        #     buffer = result.read(item.filename)
-        #     #print(buffer)
-        #     if (item.filename == 'Cohorts.csv'):
-        #         #outputZip.writestr(item.filename, buffer)
-        #         print(item.filename, buffer)
-        #         #outputZip.write(item.filename, buffer)
-        # outputZip.close()
-        #print(outputZip)
+                    if os.path.splitext(name)[0] in tablesToSync:
 
-        #t = zipfile.ZipFile(outputZip)
-        #for name in outputZip.namelist():
-        #    print(name)
-        # with zipfile.ZipFile(outputZip) as archive:
-        #     archive.printdir()
-        with zipfile.ZipFile(stream, mode='x', compression=zipfile.ZIP_DEFLATED) as zf:
-            zf.writestr('file.txt', b'derp')
-            print(zf)
-            for name in zf.namelist():
-                print(name)
-                print(zf.read(name))
+                        with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+                            zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
+                    
+                    if '_files/' in name:
+                        with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+                            zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
 
-        #print(stream)
+        except zipfile.BadZipfile as e:
+            print(e)
+        
+        # read stream zip
+        # try:
+        #     with zipfile.ZipFile(zip_stream, mode='r') as archive:
+        #         archive.printdir()
+        #         #client.Client.upload_zip(self.target, zip_stream)
+        #         #client.Client.upload_zip(self.target, archive)
+        # except zipfile.BadZipfile as e:
+        #     print(e)
+
+        client.Client.upload_zip(self.target, zip_stream)

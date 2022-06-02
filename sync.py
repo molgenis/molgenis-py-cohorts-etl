@@ -153,5 +153,24 @@ class Sync:
             'Partners': 'resource',
             'Cohorts': 'pid',
         }
+
+        tablesToSync = {
+            'VariableMappings': 'mappings',
+            'TableMappings': 'mappings',
+            'SourceVariableValues': 'variables',
+            'RepeatedSourceVariables': 'variables',
+            'SourceVariables': 'variables',
+            'SourceTables': 'variables',
+            'SourceDataDictionaries': 'resource',
+            'Documentation': 'resource',
+            'Contributions': 'resource',
+            'CollectionEvents': 'resource',
+            'Subcohorts': 'resource',
+            'Partners': 'resource',
+            'Cohorts': 'pid',
+            #'_files/': None,  # make sure to include _files folder (not really a table ofcourse..)
+        }
+       
+
         util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
-        util.Util.download_cohort_zip_process(self)
+        util.Util.download_cohort_zip_process(self, tablesToSync)
