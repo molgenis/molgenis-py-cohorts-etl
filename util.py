@@ -1,3 +1,4 @@
+import pathlib
 import zipfile
 import pandas as pd
 import os
@@ -184,5 +185,12 @@ class Util:
         #         #client.Client.upload_zip(self.target, archive)
         # except zipfile.BadZipfile as e:
         #     print(e)
+        # write zip to zip.zip
+        #pathlib.Path('zip.zip').write_bytes(zip_stream.getbuffer())
 
         client.Client.upload_zip(self.target, zip_stream)
+    
+    def download_target(self) -> bytes:
+        """ download target schema as zip, save in case upload fails """
+        result = client.Client.download_zip(self.target)
+        pathlib.Path('TARGET.zip').write_bytes(result)

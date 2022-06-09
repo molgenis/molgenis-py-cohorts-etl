@@ -1,6 +1,7 @@
 import requests
 import logging
 import sys
+import time
 
 log = logging.getLogger(__name__)
 
@@ -152,10 +153,31 @@ class Client:
             self.apiEndpoint + '/zip?async=true',
             files={'file': ('zip.zip', data.getvalue())},
         )
+
+        def upload_zip_task_status(self, response) -> None:
+            task_response = self.session.get(self.url + response.json()['url'])
+
+            if task_response.json()['status'] == 'COMPLETED':
+                log.info(f"{task_response.json()['status']}, {task_response.json()['description']}")
+                return
+
+            if task_response.json()['status'] == 'ERROR':
+                log.error(f"{task_response.json()['status']}, {task_response.json()['description']}")
+                # fallback to TARGET.zip
+                fallback_response = self.session.post(
+                    self.apiEndpoint + '/zip?async=true',
+                    files={'file': open('TARGET.zip','rb')},
+                )
+                log.info(f"TARGET.zip found, upload zip")
+                upload_zip_task_status(self, fallback_response) # endless loop ..
+                sys.exit()
+            
+            if task_response.json()['status'] == 'RUNNING':
+                log.info(f"{task_response.json()['status']}, {task_response.json()['description']}")
+                time.sleep(5)
+                upload_zip_task_status(self, response)
         
-        if response.status_code != 200:
-            log.error(response)
-            log.error(f"Error uploading zip, status code {response.text}")
+        upload_zip_task_status(self, response)
 
     def download_zip(self) -> bytes:
         """ Download zip data from database """

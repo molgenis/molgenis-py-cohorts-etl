@@ -136,6 +136,7 @@ class Sync:
 
     def cohort_zip_to_datacatalogue(self) -> None:
         """Download cohort staging zip, delete cohort on datacatalogue and finaly upload transformed zip"""
+        util.Util.download_target(self)
         
         # Database name needs to be identical to cohort PID
         tablesToDelete = {
