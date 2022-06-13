@@ -27,7 +27,6 @@ class Util:
         else:
             databases = [self.target_database]
 
-        #print(databases)
         for table in tablesToSync:
             filter = tablesToSync[table]
             data = Util.download_source_data(self, table)
@@ -164,33 +163,21 @@ class Util:
             with zipfile.ZipFile(BytesIO(result), mode='r') as archive:
                 #archive.printdir()
                 for name in archive.namelist():
-
                     if os.path.splitext(name)[0] in tablesToSync:
-
                         with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
                             zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
-                    
                     if '_files/' in name:
                         with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
                             zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
-
         except zipfile.BadZipfile as e:
             print(e)
         
-        # read stream zip
-        # try:
-        #     with zipfile.ZipFile(zip_stream, mode='r') as archive:
-        #         archive.printdir()
-        #         #client.Client.upload_zip(self.target, zip_stream)
-        #         #client.Client.upload_zip(self.target, archive)
-        # except zipfile.BadZipfile as e:
-        #     print(e)
-        # write zip to zip.zip
-        #pathlib.Path('zip.zip').write_bytes(zip_stream.getbuffer())
-
         client.Client.upload_zip(self.target, zip_stream)
     
     def download_target(self) -> bytes:
         """ download target schema as zip, save in case upload fails """
+        if os.path.exists('TARGET.zip'):
+            os.remove('TARGET.zip')
+        
         result = client.Client.download_zip(self.target)
         pathlib.Path('TARGET.zip').write_bytes(result)

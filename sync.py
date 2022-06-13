@@ -169,7 +169,6 @@ class Sync:
             'Subcohorts': 'resource',
             'Partners': 'resource',
             'Cohorts': 'pid',
-            #'_files/': None,  # make sure to include _files folder (not really a table ofcourse..)
         }
        
 

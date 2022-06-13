@@ -33,8 +33,7 @@ class Strategy:
             log.info('Run job strategy: ' + self.job_strategy)
             sync.Sync.sync_UMCG_cohort_to_UMCG_catalogue(self)
 
-        # TODO onotolgies,
-        # TODO files (eerst files dan molgenis)
+        # TODO onotolgies
         elif self.job_strategy == 'CohortStagingToDataCatalogue_Zip':
             log.info('Run job strategy: ' + self.job_strategy)
             sync.Sync.cohort_zip_to_datacatalogue(self)
