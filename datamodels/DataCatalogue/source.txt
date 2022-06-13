@@ -1,0 +1,1 @@
+https://github.com/molgenis/molgenis-emx2/blob/master/data/datacatalogue/molgenis.csv
