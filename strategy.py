@@ -37,6 +37,9 @@ class Strategy:
         elif self.job_strategy == 'CohortStagingToDataCatalogue_Zip':
             log.info('Run job strategy: ' + self.job_strategy)
             sync.Sync.cohort_zip_to_datacatalogue(self)
+        elif self.job_strategy == 'NetworkStagingToDataCatalogue_Zip':
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.network_zip_to_datacatalogue(self)
 
         else:
             log.error('Job Strategy not set, please use: FillStaging, SharedStaging, CohortStagingToDataCatalogue, NetworkStagingToDataCatalogue, DataCatalogueToNetworkStaging, UMCGCohorts')

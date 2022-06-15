@@ -171,6 +171,36 @@ class Sync:
             'Cohorts': 'pid',
         }
        
-
         util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
+        util.Util.download_cohort_zip_process(self, tablesToSync)
+    
+    def network_zip_to_datacatalogue(self) -> None:
+        # order of tables is important, value equals filter
+        # tablesToDelete = {
+        #     'TargetVariableValues': 'variables',
+        #     'RepeatedTargetVariables': 'variables',
+        #     'TargetVariables': 'variables',
+        #     'TargetTables': 'variables',
+        #     'TargetDataDictionaries': 'resource',
+        #     'CollectionEvents': 'resource',
+        #     'Subcohorts': 'resource',
+        # }
+
+        tablesToSync = {
+            'AllTargetVariables': None,
+            'CollectionEvents': None,
+            'Models': None,
+            'Networks': None,
+            'RepeatedTargetVariables': None,
+            'Resources': None,
+            'Subcohorts': None,
+            'TargetDataDictionaries': None,
+            'TargetTables': None,
+            'TargetVariables': None,
+            'TargetVariableValues': None,
+
+        }
+
+        #JobUtil.delete_network_from_data_catalogue(self, tablesToDelete)
+        #util.Util.download_upload(self, tablesToSync)
         util.Util.download_cohort_zip_process(self, tablesToSync)

@@ -176,8 +176,9 @@ class Util:
     
     def download_target(self) -> bytes:
         """ download target schema as zip, save in case upload fails """
-        if os.path.exists('TARGET.zip'):
-            os.remove('TARGET.zip')
+        filename = 'TARGET.zip'
+        if os.path.exists(filename):
+            os.remove(filename)
         
         result = client.Client.download_zip(self.target)
-        pathlib.Path('TARGET.zip').write_bytes(result)
+        pathlib.Path(filename).write_bytes(result)
