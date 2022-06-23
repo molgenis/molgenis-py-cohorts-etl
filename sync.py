@@ -25,76 +25,75 @@ class Sync:
 
     def sync_shared_staging(self) -> None:
         """ Sync SOURCE (SharedStaging) with TARGET """
-        # order of tables is important, value equals filter
         tablesToSync = {
             'Institutions': None,
             'Contacts': None,
         }
         util.Util.download_filter_upload(self, tablesToSync)
     
-    def sync_cohort_staging_to_datacatalogue(self) -> None:
-        # order of tables is important, value equals filter
-        tablesToDelete = {
-            'VariableMappings': 'mappings',
-            'TableMappings': 'mappings',
-            'SourceVariableValues': 'variables',
-            'RepeatedSourceVariables': 'variables',
-            'SourceVariables': 'variables',
-            'SourceTables': 'variables',
-            'SourceDataDictionaries': 'resource',
-            'Documentation': 'resource',
-            'Contributions': 'resource',
-            'CollectionEvents': 'resource',
-            'Subcohorts': 'resource',
-            'Partners': 'resource',
-            'Cohorts': 'pid',
-        }
+    # def sync_cohort_staging_to_datacatalogue(self) -> None:
+    #     # order of tables is important, value equals filter
+    #     tablesToDelete = {
+    #         'VariableMappings': 'mappings',
+    #         'TableMappings': 'mappings',
+    #         'SourceVariableValues': 'variables',
+    #         'RepeatedSourceVariables': 'variables',
+    #         'SourceVariables': 'variables',
+    #         'SourceTables': 'variables',
+    #         'SourceDataDictionaries': 'resource',
+    #         'Documentation': 'resource',
+    #         'Contributions': 'resource',
+    #         'CollectionEvents': 'resource',
+    #         'Subcohorts': 'resource',
+    #         'Partners': 'resource',
+    #         'Cohorts': 'pid',
+    #     }
 
-        tablesToSync = {
-            'Cohorts': 'pid',
-            'Partners': 'resource',
-            'Contributions': 'resource',
-            'Subcohorts': 'resource',
-            'CollectionEvents': 'resource',
-            'Documentation': 'resource',
-            'SourceDataDictionaries': 'resource',
-            'SourceTables': 'variables',
-            'SourceVariables': 'variables',
-            'SourceVariableValues': 'variables',
-            'RepeatedSourceVariables': 'variables',
-            'TableMappings': 'mappings',
-            'VariableMappings': 'mappings',
+    #     tablesToSync = {
+    #         'Cohorts': 'pid',
+    #         'Partners': 'resource',
+    #         'Contributions': 'resource',
+    #         'Subcohorts': 'resource',
+    #         'CollectionEvents': 'resource',
+    #         'Documentation': 'resource',
+    #         'SourceDataDictionaries': 'resource',
+    #         'SourceTables': 'variables',
+    #         'SourceVariables': 'variables',
+    #         'SourceVariableValues': 'variables',
+    #         'RepeatedSourceVariables': 'variables',
+    #         'TableMappings': 'mappings',
+    #         'VariableMappings': 'mappings',
             
-        }
+    #     }
 
-        util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
-        util.Util.download_upload(self, tablesToSync)
+    #     util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
+    #     util.Util.download_upload(self, tablesToSync)
     
-    def sync_network_staging_to_datacatalogue(self) -> None:
-        # order of tables is important, value equals filter
-        tablesToDelete = {
-            'TargetVariableValues': 'variables',
-            'RepeatedTargetVariables': 'variables',
-            'TargetVariables': 'variables',
-            'TargetTables': 'variables',
-            'TargetDataDictionaries': 'resource',
-            'CollectionEvents': 'resource',
-            'Subcohorts': 'resource',
-        }
+    # def sync_network_staging_to_datacatalogue(self) -> None:
+    #     # order of tables is important, value equals filter
+    #     tablesToDelete = {
+    #         'TargetVariableValues': 'variables',
+    #         'RepeatedTargetVariables': 'variables',
+    #         'TargetVariables': 'variables',
+    #         'TargetTables': 'variables',
+    #         'TargetDataDictionaries': 'resource',
+    #         'CollectionEvents': 'resource',
+    #         'Subcohorts': 'resource',
+    #     }
 
-        tablesToSync = {
-            #'Models': None,
-            'TargetDataDictionaries': 'resource',
-            'TargetTables': 'variables',
-            'Subcohorts': 'resource',
-            'RepeatedTargetVariables': 'variables',
-            'CollectionEvents': 'resource',
-            'TargetVariables': 'variables',
-            'TargetVariableValues': 'variables',
-        }
+    #     tablesToSync = {
+    #         #'Models': None,
+    #         'TargetDataDictionaries': 'resource',
+    #         'TargetTables': 'variables',
+    #         'Subcohorts': 'resource',
+    #         'RepeatedTargetVariables': 'variables',
+    #         'CollectionEvents': 'resource',
+    #         'TargetVariables': 'variables',
+    #         'TargetVariableValues': 'variables',
+    #     }
 
-        #JobUtil.delete_network_from_data_catalogue(self, tablesToDelete)
-        util.Util.download_upload(self, tablesToSync)
+    #     #JobUtil.delete_network_from_data_catalogue(self, tablesToDelete)
+    #     util.Util.download_upload(self, tablesToSync)
     
     def sync_datacatalogue_to_network_staging(self) -> None:
         # order of tables is important, value equals filter
@@ -111,28 +110,61 @@ class Sync:
 
         util.Util.download_filter_upload(self, tablesToSync, network = True)
 
-    def sync_UMCG_cohort_to_UMCG_catalogue(self) -> None:
-        """cohort rich metadata from UMCG cohort staging areas to catalogue."""
+    # def sync_UMCG_cohort_to_UMCG_catalogue(self) -> None:
+    #     """cohort rich metadata from UMCG cohort staging areas to catalogue."""
+    #     tablesToDelete = {
+    #         'Documentation': 'resource',
+    #         'Contributions': 'resource',
+    #         'CollectionEvents': 'resource',
+    #         'Subcohorts': 'resource',
+    #         'Partners': 'resource',
+    #         'Cohorts': 'pid',
+    #     }
+
+    #     tablesToSync = {
+    #         'Publications': None,
+    #         'Cohorts': None,
+    #         'Documentation': None,
+    #         'Contributions': None,
+    #         'Subcohorts': None,
+    #         'CollectionEvents': None,
+    #         'Partners': None,
+    #     }
+    #     util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
+    #     util.Util.download_upload(self, tablesToSync)
+    def umcg_cohort_zip_to_datacatalogue(self) -> None:
+        """Download UMCG cohort staging zip, delete cohort on datacatalogue and finaly upload transformed zip"""
+        util.Util.download_target(self)
+        
+        # Database name needs to be identical to cohort PID
         tablesToDelete = {
+            #'Publications': 'doi',
             'Documentation': 'resource',
             'Contributions': 'resource',
             'CollectionEvents': 'resource',
             'Subcohorts': 'resource',
             'Partners': 'resource',
+            #'SubcohortCounts': 'resource',
+            'Subcohorts': 'resource',
+            #'Resources': 'pid',
             'Cohorts': 'pid',
         }
 
         tablesToSync = {
             'Publications': None,
-            'Cohorts': None,
             'Documentation': None,
             'Contributions': None,
-            'Subcohorts': None,
             'CollectionEvents': None,
+            'Subcohorts': None,
             'Partners': None,
+            'SubcohortCounts': None,
+            'Subcohorts': None,
+            'Resources': None,
+            'Cohorts': None,
         }
+       
         util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
-        util.Util.download_upload(self, tablesToSync)
+        util.Util.download_zip_process(self, tablesToSync)
 
     def cohort_zip_to_datacatalogue(self) -> None:
         """Download cohort staging zip, delete cohort on datacatalogue and finaly upload transformed zip"""
@@ -156,36 +188,25 @@ class Sync:
         }
 
         tablesToSync = {
-            'VariableMappings': 'mappings',
-            'TableMappings': 'mappings',
-            'SourceVariableValues': 'variables',
-            'RepeatedSourceVariables': 'variables',
-            'SourceVariables': 'variables',
-            'SourceTables': 'variables',
-            'SourceDataDictionaries': 'resource',
-            'Documentation': 'resource',
-            'Contributions': 'resource',
-            'CollectionEvents': 'resource',
-            'Subcohorts': 'resource',
-            'Partners': 'resource',
-            'Cohorts': 'pid',
+            'VariableMappings': None,
+            'TableMappings': None,
+            'SourceVariableValues': None,
+            'RepeatedSourceVariables': None,
+            'SourceVariables': None,
+            'SourceTables': None,
+            'SourceDataDictionaries': None,
+            'Documentation': None,
+            'Contributions': None,
+            'CollectionEvents': None,
+            'Subcohorts': None,
+            'Partners': None,
+            'Cohorts': None,
         }
        
         util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
-        util.Util.download_cohort_zip_process(self, tablesToSync)
+        util.Util.download_zip_process(self, tablesToSync)
     
     def network_zip_to_datacatalogue(self) -> None:
-        # order of tables is important, value equals filter
-        # tablesToDelete = {
-        #     'TargetVariableValues': 'variables',
-        #     'RepeatedTargetVariables': 'variables',
-        #     'TargetVariables': 'variables',
-        #     'TargetTables': 'variables',
-        #     'TargetDataDictionaries': 'resource',
-        #     'CollectionEvents': 'resource',
-        #     'Subcohorts': 'resource',
-        # }
-
         tablesToSync = {
             'AllTargetVariables': None,
             'CollectionEvents': None,
@@ -200,7 +221,4 @@ class Sync:
             'TargetVariableValues': None,
 
         }
-
-        #JobUtil.delete_network_from_data_catalogue(self, tablesToDelete)
-        #util.Util.download_upload(self, tablesToSync)
-        util.Util.download_cohort_zip_process(self, tablesToSync)
+        util.Util.download_zip_process(self, tablesToSync)

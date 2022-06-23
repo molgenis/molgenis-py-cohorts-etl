@@ -4,11 +4,14 @@ import pandas as pd
 import os
 import zipfile
 from io import BytesIO, StringIO
+from enum import Enum
 from pathlib import Path
 
 
 import client
 import logging
+import job
+#from job import JobStrategy
 
 log = logging.getLogger(__name__)
 
@@ -132,36 +135,56 @@ class Util:
             if tableName in result:
                 client.Client.delete(self.target, tableName, result[tableName])
 
-    def delete_network_from_data_catalogue(self, tablesToSync: dict) -> None:
-        """ Delete SOURCE Network data from TARGET data catalogue before upload """
-        rowsToDelete = []
+    # def delete_network_from_data_catalogue(self, tablesToSync: dict) -> None:
+    #     """ Delete SOURCE Network data from TARGET data catalogue before upload """
+    #     rowsToDelete = []
 
-        for tableName in tablesToSync:
-            tableType = tablesToSync[tableName]
+    #     for tableName in tablesToSync:
+    #         tableType = tablesToSync[tableName]
 
-            query = Path('./graphql-queries/' + tableName + '.gql').read_text()
+    #         query = Path('./graphql-queries/' + tableName + '.gql').read_text()
         
-            if tableType == 'resource':
-                variables = {"filter": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}
-            elif tableType == 'mappings':
-                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}}
-            elif tableType == 'variables':
-                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}}
+    #         if tableType == 'resource':
+    #             variables = {"filter": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}
+    #         elif tableType == 'mappings':
+    #             variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}}
+    #         elif tableType == 'variables':
+    #             variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}}
 
-            result = self.target.query(query, variables)
+    #         result = self.target.query(query, variables)
         
-            if tableName in result:
-                client.Client.delete(self.target, tableName, result[tableName])
+    #         if tableName in result:
+    #             client.Client.delete(self.target, tableName, result[tableName])
     
-    def download_cohort_zip_process(self, tablesToSync: dict) -> None:
-        """ download molgenis zip from cohort staging area and process zip before upload to datacatalogue """
+    # def download_cohort_zip_process(self, tablesToSync: dict) -> None:
+    #     """ download molgenis zip from cohort staging area and process zip before upload to datacatalogue """
+    #     result = client.Client.download_zip(self.source)
+    #     # setup output zip stream
+    #     zip_stream = BytesIO()
+
+    #     try:
+    #         with zipfile.ZipFile(BytesIO(result), mode='r') as archive:
+    #             #archive.printdir()
+    #             for name in archive.namelist():
+    #                 if os.path.splitext(name)[0] in tablesToSync:
+    #                     with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+    #                         zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
+    #                 if '_files/' in name:
+    #                     with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+    #                         zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
+    #     except zipfile.BadZipfile as e:
+    #         print(e)
+        
+    #     client.Client.upload_zip(self.target, zip_stream)
+
+    def download_zip_process(self, tablesToSync: dict) -> None:
+        """ download molgenis zip from SOURCE and process zip before upload to TARGET """
         result = client.Client.download_zip(self.source)
         # setup output zip stream
         zip_stream = BytesIO()
 
         try:
             with zipfile.ZipFile(BytesIO(result), mode='r') as archive:
-                #archive.printdir()
                 for name in archive.namelist():
                     if os.path.splitext(name)[0] in tablesToSync:
                         with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
@@ -172,7 +195,12 @@ class Util:
         except zipfile.BadZipfile as e:
             print(e)
         
-        client.Client.upload_zip(self.target, zip_stream)
+        if self.job_strategy == job.JobStrategy.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            client.Client.upload_zip(self.target, zip_stream)
+        elif self.job_strategy == job.JobStrategy.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            client.Client.upload_zip_fallback(self.target, zip_stream)
+        elif self.job_strategy == job.JobStrategy.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            client.Client.upload_zip_fallback(self.target, zip_stream)
     
     def download_target(self) -> bytes:
         """ download target schema as zip, save in case upload fails """

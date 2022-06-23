@@ -2,6 +2,8 @@ import client
 import strategy
 import logging
 
+from enum import Enum, auto
+
 log = logging.getLogger(__name__)
 
 class Job:
@@ -15,7 +17,7 @@ class Job:
         source_email: str,
         source_password: str,
         source_database: str,
-        job_strategy: str) -> None:
+        job_strategy: Enum) -> None:
         ''''''
         self.target_url = target_url
         self.target_email = target_email
@@ -49,4 +51,11 @@ class Job:
         client.Client.database_exists(self.source)
         client.Client.database_exists(self.target)
 
-        strategy.Strategy.strategy(self)
+        strategy.Strategy.run_strategy(self)
+
+class JobStrategy(Enum):
+    COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = auto()
+    UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = auto()
+    NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP = auto()
+    FILL_STAGING = auto()
+    SHARED_STAGING = auto()

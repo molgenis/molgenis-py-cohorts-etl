@@ -20,6 +20,8 @@ def main():
         TARGET_DATABASE = config('MG_TARGET_DATABASE')
 
         JOB_STRATEGY = config('MG_JOB_STRATEGY')
+
+        isinstance(job.JobStrategy[JOB_STRATEGY], job.JobStrategy)
     except:
         log.error('Make sure you filled in all variables in the .env file, script will exit now.')
         sys.exit()
