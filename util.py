@@ -11,7 +11,6 @@ from pathlib import Path
 import client
 import logging
 import job
-#from job import JobStrategy
 
 log = logging.getLogger(__name__)
 
@@ -200,6 +199,10 @@ class Util:
         elif self.job_strategy == job.JobStrategy.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
             client.Client.upload_zip_fallback(self.target, zip_stream)
         elif self.job_strategy == job.JobStrategy.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            client.Client.upload_zip_fallback(self.target, zip_stream)
+        elif self.job_strategy == job.JobStrategy.UMCG_SHARED_STAGING_ZIP.name:
+            client.Client.upload_zip_fallback(self.target, zip_stream)
+        elif self.job_strategy == job.JobStrategy.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP.name:
             client.Client.upload_zip_fallback(self.target, zip_stream)
     
     def download_target(self) -> bytes:

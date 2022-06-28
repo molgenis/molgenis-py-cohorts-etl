@@ -222,3 +222,70 @@ class Sync:
 
         }
         util.Util.download_zip_process(self, tablesToSync)
+    
+    def umcg_shared_staging_zip_to_datacatalogue(self) -> None:
+        """ UMCG data model uses SharedStaging Contacts and Instiutions directly (same server), no need to sync.
+        Upload CoreVariables to CatalogueOntologies as a zip"""
+        util.Util.download_target(self)
+
+        # tablesToSync = {
+        #     'Contacts': None,
+        #     'Institutions': None,
+        # }
+
+        ontologiesToSync = {
+            'CoreVariables': None
+        }
+        util.Util.download_zip_process(self, ontologiesToSync)
+    
+    def ontology_staging_zip_to_datacatalogue(self) -> None:
+        """ Upload SOURCE CatalogueOntologies to TARGET CatalogueOntologies as a zip"""
+        util.Util.download_target(self)
+
+        ontologiesToSync = {
+            'AgeGroups': None,
+            'AreasOfInformation': None,
+            'CareSettings': None,
+            'CohortDesigns': None,
+            'CollectionTypes': None,
+            'ContributionTypes': None,
+            'CoreVariables': None,
+            'Countries': None,
+            'DAPsAccessCompleteness': None,
+            'DAPsAccessLevels': None,
+            'DAPsAccessPermissions': None,
+            'DAPsReasonsForAccess': None,
+            'DataAccessConditions': None,
+            'DataCategories': None,
+            'DataUseConditions': None,
+            'DatabankFamilies': None,
+            'DatasourceTypes': None,
+            'Diseases': None,
+            'DocumentTypes': None,
+            'Formats': None,
+            'InformedConsents': None,
+            'InstitutionRoles': None,
+            'InstitutionTypes': None,
+            'Keywords': None,
+            'Languages': None,
+            'LinkageStrategies': None,
+            'Months': None,
+            'ObservationTargets': None,
+            'PartnerRoles': None,
+            'PopulationEntryCauses': None,
+            'PopulationExitCauses': None,
+            'PopulationSubsets': None,
+            'Regions': None,
+            'ReleaseTypes': None,
+            'ResourceTypes': None,
+            'SampleCategories': None,
+            'StandardizedTools': None,
+            'Status': None,
+            'StatusDetails': None,
+            'StudyTypes': None,
+            'Titles': None,
+            'Units': None,
+            'Vocabularies': None,
+            'Years': None,
+        }
+        util.Util.download_zip_process(self, ontologiesToSync)

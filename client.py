@@ -165,14 +165,6 @@ class Client:
             if task_response.json()['status'] == 'ERROR':
                 log.error(f"{task_response.json()['status']}, {task_response.json()['description']}")
                 return
-                # fallback to TARGET.zip
-                # fallback_response = self.session.post(
-                #     self.apiEndpoint + '/zip?async=true',
-                #     files={'file': open('TARGET.zip','rb')},
-                # )
-                # log.info(f"TARGET.zip found, upload zip")
-                # upload_zip_task_status(self, fallback_response) # endless loop ..
-                # sys.exit()
             
             if task_response.json()['status'] == 'RUNNING':
                 log.info(f"{task_response.json()['status']}, {task_response.json()['description']}")

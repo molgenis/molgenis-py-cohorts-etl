@@ -53,9 +53,18 @@ class Strategy:
         elif self.job_strategy == job.JobStrategy.FILL_STAGING.name:
             log.info('Run job strategy: ' + self.job_strategy)
             sync.Sync.sync_fill_staging(self)
+        #elif self.job_strategy == job.JobStrategy.FILL_COHORT_STAGING_ZIP.name:
+        #     log.info('Run job strategy: ' + self.job_strategy)
+             #sync.Sync.sync_fill_staging(self)
         elif self.job_strategy == job.JobStrategy.SHARED_STAGING.name:
             log.info('Run job strategy: ' + self.job_strategy)
             sync.Sync.sync_shared_staging(self)
+        elif self.job_strategy == job.JobStrategy.UMCG_SHARED_STAGING_ZIP.name:
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.umcg_shared_staging_zip_to_datacatalogue(self)
+        elif self.job_strategy == job.JobStrategy.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.ontology_staging_zip_to_datacatalogue(self)
         else:
             log.error(f'Job Strategy not set, please use: ')
             log.error(job.JobStrategy._member_names_)
