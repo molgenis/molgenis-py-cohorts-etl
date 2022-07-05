@@ -1,85 +1,65 @@
-from client import Client
-from catalogueClient import CatalogueClient
-from pathlib import Path
+import client
+import strategy
 import logging
 
-log = logging.getLogger(__name__)
-# TODO: add copying of catalogue from (data-)catalogue-staging to catalogue production server to JobDataCatalogue
-#  and JobUMCG
-# TODO: add more insightful error messages
-# TODO add copying of files (logos)
+from enum import Enum, auto
 
+log = logging.getLogger(__name__)
 
 class Job:
-    """
+    def __init__(
+        self,
+        target_url: str,
+        target_email: str,
+        target_password: str,
+        target_database: str,
+        source_url: str,
+        source_email: str,
+        source_password: str,
+        source_database: str,
+        job_strategy: Enum) -> None:
+        ''''''
+        self.target_url = target_url
+        self.target_email = target_email
+        self.target_password = target_password
+        self.target_database = target_database
+        
+        self.source_url = source_url
+        self.source_email = source_email
+        self.source_password = source_password
+        self.source_database = source_database
+        
+        self.job_strategy = job_strategy
+
+        # set up Client for SOURCE
+        self.source = client.Client(
+            url = self.source_url,
+            database = self.source_database,
+            email = self.source_email,
+            password = self.source_password
+        )
+
+        # set up Client for TARGET
+        self.target = client.Client(
+            url = self.target_url,
+            database = self.target_database,
+            email = self.target_email,
+            password = self.target_password
+        )
+
+        # Make sure database schemas exists otherwise exit
+        client.Client.database_exists(self.source)
+        client.Client.database_exists(self.target)
+
+        strategy.Strategy.run_strategy(self)
+
+class JobStrategy(Enum):
+    COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = auto()
+    UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = auto()
+    NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP = auto()
+    UMCG_SHARED_ONTOLOGY_ZIP = auto()
+    ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP = auto()
+    FILL_STAGING = auto()
+    SHARED_STAGING = auto()
+    FILL_NETWORK = auto()
     
-    """
-
-    def __init__(self, url, email, password, catalogueDB, sourceDB):
-        self.url = url
-        self.email = email
-        self.password = password
-        self.catalogueDB = catalogueDB
-        self.sourceDB = sourceDB
-
-        # Client serves as a general exm2 api client
-        self.staging = Client(url=self.url, database=sourceDB, email=self.email, password=self.password)
-        self.catalogue = Client(url=self.url, database=self.catalogueDB, email=self.email, password=self.password)
-        # CatalogueClient serves client specific for use with the catalog model
-        self.catalogueClient = CatalogueClient(self.staging, self.catalogue)
-
-    def uploadIfSet(self, table, data):
-        """ Upload staging data to catalogue if staging table contains data (else skip) """
-        if data is None:
-            return
-        uploadResp = self.catalogue.uploadCSV(table, data)
-        log.info('upload ' + table + ' ; ' + str(uploadResp))
-
-    def download(self, table):
-        """ Download staging data or return None in case of zero rows """
-        countResp = self.staging.query('query Count{' + table + '_agg { count }}')
-        if countResp[table + '_agg']['count'] > 0:
-            return self.staging.downLoadCSV(table)
-        else:
-            return None
-
-    def fetchCohortPid(self, staging, schemaName):
-        """ Fetch first cohort and return pid or else fail
-        Not all staging areas (network staging areas, SharedStaging) contain a table 'Cohorts',
-        therefore a try/except is used here.
-        """
-        try:
-            cohortsResp = staging.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
-            if "Cohorts" in cohortsResp:
-                if len(cohortsResp['Cohorts']) != 1:
-                    log.warning('Expected a single cohort in staging area "' + schemaName + '" but found ' + str(
-                        len(cohortsResp['Cohorts'])))
-                    return None
-            else:
-                log.warning('Expected a single cohort in staging area "' + schemaName + '" but found none')
-                return None
-
-            return cohortsResp['Cohorts'][0]['pid']
-        except KeyError:
-            log.info('Staging area "' + schemaName + ' does not contain a table "Cohorts".')
-            return None
-
-    def fetchModelPid(self, staging, schemaName):
-        """ Fetch first model and return pid or else fail.
-        Not all staging areas (SharedStaging) contain a table 'Models', therefore a try/except is used
-        here.
-        """
-        try:
-            modelsResp = staging.query(Path('./graphql-queries/' + 'Models.gql').read_text())
-            if "Models" in modelsResp:
-                if len(modelsResp['Models']) != 1:
-                    log.warning('Expected a single model in staging area "' + schemaName + '" but found ' + str(len(modelsResp['Models'])))
-                    return None
-            else:
-                log.warning('Expected a single model in staging area "' + schemaName + '" but found none')
-                return None
-
-            return modelsResp['Models'][0]['pid']
-        except KeyError:
-            log.info('Staging area "' + schemaName + '" does not contain a table "Models".')
-            return None
