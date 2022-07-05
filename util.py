@@ -155,27 +155,6 @@ class Util:
     #         if tableName in result:
     #             client.Client.delete(self.target, tableName, result[tableName])
     
-    # def download_cohort_zip_process(self, tablesToSync: dict) -> None:
-    #     """ download molgenis zip from cohort staging area and process zip before upload to datacatalogue """
-    #     result = client.Client.download_zip(self.source)
-    #     # setup output zip stream
-    #     zip_stream = BytesIO()
-
-    #     try:
-    #         with zipfile.ZipFile(BytesIO(result), mode='r') as archive:
-    #             #archive.printdir()
-    #             for name in archive.namelist():
-    #                 if os.path.splitext(name)[0] in tablesToSync:
-    #                     with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
-    #                         zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
-    #                 if '_files/' in name:
-    #                     with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
-    #                         zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
-    #     except zipfile.BadZipfile as e:
-    #         print(e)
-        
-    #     client.Client.upload_zip(self.target, zip_stream)
-
     def download_zip_process(self, tablesToSync: dict) -> None:
         """ download molgenis zip from SOURCE and process zip before upload to TARGET """
         result = client.Client.download_zip(self.source)
@@ -200,7 +179,7 @@ class Util:
             client.Client.upload_zip_fallback(self.target, zip_stream)
         elif self.job_strategy == job.JobStrategy.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
             client.Client.upload_zip_fallback(self.target, zip_stream)
-        elif self.job_strategy == job.JobStrategy.UMCG_SHARED_STAGING_ZIP.name:
+        elif self.job_strategy == job.JobStrategy.UMCG_SHARED_ONTOLOGY_ZIP.name:
             client.Client.upload_zip_fallback(self.target, zip_stream)
         elif self.job_strategy == job.JobStrategy.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP.name:
             client.Client.upload_zip_fallback(self.target, zip_stream)

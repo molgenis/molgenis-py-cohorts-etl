@@ -1,7 +1,7 @@
 import util
 
 class Sync:
-    def sync_fill_staging(self) -> None:
+    def fill_staging(self) -> None:
         """ Sync SOURCE (catalogue) with TARGET (staging)
         """       
         # order of tables is important, value equals filter
@@ -23,7 +23,7 @@ class Sync:
         }
         util.Util.download_filter_upload(self, tablesToSync)
 
-    def sync_shared_staging(self) -> None:
+    def shared_staging(self) -> None:
         """ Sync SOURCE (SharedStaging) with TARGET """
         tablesToSync = {
             'Institutions': None,
@@ -31,71 +31,8 @@ class Sync:
         }
         util.Util.download_filter_upload(self, tablesToSync)
     
-    # def sync_cohort_staging_to_datacatalogue(self) -> None:
-    #     # order of tables is important, value equals filter
-    #     tablesToDelete = {
-    #         'VariableMappings': 'mappings',
-    #         'TableMappings': 'mappings',
-    #         'SourceVariableValues': 'variables',
-    #         'RepeatedSourceVariables': 'variables',
-    #         'SourceVariables': 'variables',
-    #         'SourceTables': 'variables',
-    #         'SourceDataDictionaries': 'resource',
-    #         'Documentation': 'resource',
-    #         'Contributions': 'resource',
-    #         'CollectionEvents': 'resource',
-    #         'Subcohorts': 'resource',
-    #         'Partners': 'resource',
-    #         'Cohorts': 'pid',
-    #     }
-
-    #     tablesToSync = {
-    #         'Cohorts': 'pid',
-    #         'Partners': 'resource',
-    #         'Contributions': 'resource',
-    #         'Subcohorts': 'resource',
-    #         'CollectionEvents': 'resource',
-    #         'Documentation': 'resource',
-    #         'SourceDataDictionaries': 'resource',
-    #         'SourceTables': 'variables',
-    #         'SourceVariables': 'variables',
-    #         'SourceVariableValues': 'variables',
-    #         'RepeatedSourceVariables': 'variables',
-    #         'TableMappings': 'mappings',
-    #         'VariableMappings': 'mappings',
-            
-    #     }
-
-    #     util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
-    #     util.Util.download_upload(self, tablesToSync)
     
-    # def sync_network_staging_to_datacatalogue(self) -> None:
-    #     # order of tables is important, value equals filter
-    #     tablesToDelete = {
-    #         'TargetVariableValues': 'variables',
-    #         'RepeatedTargetVariables': 'variables',
-    #         'TargetVariables': 'variables',
-    #         'TargetTables': 'variables',
-    #         'TargetDataDictionaries': 'resource',
-    #         'CollectionEvents': 'resource',
-    #         'Subcohorts': 'resource',
-    #     }
-
-    #     tablesToSync = {
-    #         #'Models': None,
-    #         'TargetDataDictionaries': 'resource',
-    #         'TargetTables': 'variables',
-    #         'Subcohorts': 'resource',
-    #         'RepeatedTargetVariables': 'variables',
-    #         'CollectionEvents': 'resource',
-    #         'TargetVariables': 'variables',
-    #         'TargetVariableValues': 'variables',
-    #     }
-
-    #     #JobUtil.delete_network_from_data_catalogue(self, tablesToDelete)
-    #     util.Util.download_upload(self, tablesToSync)
-    
-    def sync_datacatalogue_to_network_staging(self) -> None:
+    def fill_network(self) -> None:
         # order of tables is important, value equals filter
         tablesToSync = {
             'Models': 'pid',
@@ -110,28 +47,6 @@ class Sync:
 
         util.Util.download_filter_upload(self, tablesToSync, network = True)
 
-    # def sync_UMCG_cohort_to_UMCG_catalogue(self) -> None:
-    #     """cohort rich metadata from UMCG cohort staging areas to catalogue."""
-    #     tablesToDelete = {
-    #         'Documentation': 'resource',
-    #         'Contributions': 'resource',
-    #         'CollectionEvents': 'resource',
-    #         'Subcohorts': 'resource',
-    #         'Partners': 'resource',
-    #         'Cohorts': 'pid',
-    #     }
-
-    #     tablesToSync = {
-    #         'Publications': None,
-    #         'Cohorts': None,
-    #         'Documentation': None,
-    #         'Contributions': None,
-    #         'Subcohorts': None,
-    #         'CollectionEvents': None,
-    #         'Partners': None,
-    #     }
-    #     util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
-    #     util.Util.download_upload(self, tablesToSync)
     def umcg_cohort_zip_to_datacatalogue(self) -> None:
         """Download UMCG cohort staging zip, delete cohort on datacatalogue and finaly upload transformed zip"""
         util.Util.download_target(self)
@@ -223,15 +138,10 @@ class Sync:
         }
         util.Util.download_zip_process(self, tablesToSync)
     
-    def umcg_shared_staging_zip_to_datacatalogue(self) -> None:
+    def umcg_shared_ontology_zip_to_datacatalogue(self) -> None:
         """ UMCG data model uses SharedStaging Contacts and Instiutions directly (same server), no need to sync.
         Upload CoreVariables to CatalogueOntologies as a zip"""
         util.Util.download_target(self)
-
-        # tablesToSync = {
-        #     'Contacts': None,
-        #     'Institutions': None,
-        # }
 
         ontologiesToSync = {
             'CoreVariables': None
