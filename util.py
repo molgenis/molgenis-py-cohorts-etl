@@ -172,6 +172,8 @@ class Util:
                             zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
         except zipfile.BadZipfile as e:
             print(e)
+
+        #pathlib.Path('SOURCE.ZIP').write_bytes(zip_stream.getvalue())
         
         if self.job_strategy == job.JobStrategy.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP.name:
             client.Client.upload_zip(self.target, zip_stream)
