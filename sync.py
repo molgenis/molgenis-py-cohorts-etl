@@ -103,6 +103,7 @@ class Sync:
         }
 
         tablesToSync = {
+            'Publications': None,
             'VariableMappings': None,
             'TableMappings': None,
             'SourceVariableValues': None,

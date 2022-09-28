@@ -173,6 +173,9 @@ class Util:
         except zipfile.BadZipfile as e:
             print(e)
         
+        # Uncomment if you need to debug, will write SOURCE.zip that will be uploaded to TARGET
+        #pathlib.Path('SOURCE.ZIP').write_bytes(zip_stream.getvalue())
+        
         if self.job_strategy == job.JobStrategy.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP.name:
             client.Client.upload_zip(self.target, zip_stream)
         elif self.job_strategy == job.JobStrategy.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
