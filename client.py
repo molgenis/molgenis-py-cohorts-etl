@@ -76,16 +76,17 @@ class Client:
             "}"
         "")
 
-        variables =  {'pkey': pkey}
+        stepSize = 1000 # to make sure list is not to big which will make server give error 500
 
-        response = self.session.post(
-            self.graphqlEndpoint,
-            json={'query': query, 'variables': variables}
-        )
-
-        if response.status_code != 200:
-            log.error(response)
-            log.error(f"Error uploading csv, response.text: {response.text}")
+        for i in range(0, len(pkey), stepSize):
+            variables =  {'pkey': pkey[i:i+stepSize]}
+            response = self.session.post(
+                self.graphqlEndpoint,
+                json={'query': query, 'variables': variables}
+            )
+            if response.status_code != 200:
+                log.error(response)
+                log.error(f"Error uploading csv, response.text: {response.text}")
 
         return response
 
