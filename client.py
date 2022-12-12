@@ -225,3 +225,64 @@ class Client:
         if response.status_code != 200:
             log.error(f"Database schema does not exist, status code {response.status_code}")
             sys.exit()
+
+    def create_database(self, template: str) -> None:
+        """ Create TARGET database if it doesn't exists"""
+        query = '{_session {schemas} }'
+
+        response = self.session.post(self.graphqlEndpoint, json={'query': query} )
+        if response.status_code != 200:
+            log.warning(f"Database schema does not exist, status code {response.status_code}")
+
+            # query = """
+            #     mutation createSchema($name:String, $description:String, $template: String, $includeDemoData: Boolean){
+            #         createSchema(name:$name, description:$description, template: $template, includeDemoData: $includeDemoData){
+            #             message
+            #         }
+            #     }
+            #     """
+            query = """
+                mutation createSchema($name:String, $template:String){
+                    createSchema(name:$name, template:$template){
+                        message
+                    }
+                }
+                """
+            # variables = {'name':self.database,'description':'null','template':'null','includeDemoData':'false'}
+            variables = {'name':self.database,'template':template}
+
+            response = self.session.post(
+                self.url + '/apps/central/graphql',
+                json={'query': query, 'variables': variables}
+            )
+            
+            if response.json()['data']['createSchema']['message']:
+                log.info(response.json()['data']['createSchema']['message'])
+            
+    def drop_database(self) -> None:
+        """ Delete database """
+
+        # see if schema exists before deleting it
+        query = '{_session {schemas} }'
+
+        response = self.session.post(self.graphqlEndpoint, json={'query': query} )
+        if response.status_code == 200:
+            #log.warning(f"Database schema does not exist, status code {response.status_code}")
+            query = """
+            mutation deleteSchema($name:String){
+                deleteSchema(name:$name) {
+                    message
+                }
+            }
+            """
+
+            variables = {'name':self.database}
+
+            response = self.session.post(
+                self.url + '/api/graphql',
+                json={'query': query, 'variables': variables}
+            )
+
+            if response.json()['data']['deleteSchema']['message']:
+                log.info(response.json()['data']['deleteSchema']['message'])
+

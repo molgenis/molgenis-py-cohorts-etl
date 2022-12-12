@@ -133,3 +133,6 @@ dmypy.json
 
 # Mac os
 .DS_Store
+
+migration/data/SOURCE/
+migration/data/TARGET/

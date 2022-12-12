@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import zipfile
 from io import BytesIO, StringIO
-from enum import Enum
+#from enum import Enum
 from pathlib import Path
 
 
