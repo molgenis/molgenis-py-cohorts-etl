@@ -6,6 +6,7 @@ import time
 
 log = logging.getLogger(__name__)
 
+
 class Client:
     """
     
@@ -266,6 +267,7 @@ class Client:
         query = '{_session {schemas} }'
 
         response = self.session.post(self.graphqlEndpoint, json={'query': query} )
+
         if response.status_code == 200:
             #log.warning(f"Database schema does not exist, status code {response.status_code}")
             query = """
