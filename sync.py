@@ -59,9 +59,8 @@ class Sync:
             'CollectionEvents': 'resource',
             'Subcohorts': 'resource',
             'Partners': 'resource',
-            #'SubcohortCounts': 'resource',
+            #'SubcohortCounts': 'resource',  # TODO: why not deleted?
             'Subcohorts': 'resource',
-            #'Resources': 'pid',
             'Cohorts': 'pid',
         }
 
