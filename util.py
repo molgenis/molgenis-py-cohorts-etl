@@ -128,7 +128,10 @@ class Util:
                 variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
             elif tableType == 'pid':
                 variables = {"filter": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}
-                
+            elif tableType == 'subcohort':
+                variables = {"filter": {"subcohort": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
+
+
             result = self.target.query(query, variables)
         
             if tableName in result:

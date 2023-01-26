@@ -211,7 +211,7 @@ class Client:
 
     def download_zip(self) -> bytes:
         """ Download zip data from database """
-        resp = self.session.get(self.apiEndpoint + '/zip', allow_redirects=True)
+        resp = self.session.get(self.apiEndpoint + '/zip?includeSystemColumns=true', allow_redirects=True)
         if resp.content:
             return resp.content
         else:

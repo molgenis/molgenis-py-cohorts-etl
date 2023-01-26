@@ -57,11 +57,9 @@ class Sync:
             'Documentation': 'resource',
             'Contributions': 'resource',
             'CollectionEvents': 'resource',
-            'Subcohorts': 'resource',
             'Partners': 'resource',
-            #'SubcohortCounts': 'resource',
+            'SubcohortCounts': 'subcohort',
             'Subcohorts': 'resource',
-            #'Resources': 'pid',
             'Cohorts': 'pid',
         }
 
@@ -70,7 +68,7 @@ class Sync:
             'Documentation': None,
             'Contributions': None,
             'CollectionEvents': None,
-            'Subcohorts': None,
+            #'Subcohorts': None,
             'Partners': None,
             'SubcohortCounts': None,
             'Subcohorts': None,

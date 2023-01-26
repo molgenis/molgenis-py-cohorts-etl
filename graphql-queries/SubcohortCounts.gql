@@ -1,0 +1,13 @@
+query SubcohortCounts($filter: SubcohortCountsFilter) {
+  SubcohortCounts(filter: $filter) {
+    subcohort {
+      resource {
+        pid
+      }
+      name
+    }
+    ageGroup {
+      name
+    }
+  }
+}
