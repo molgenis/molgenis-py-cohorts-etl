@@ -217,7 +217,7 @@ class Client:
         else:
             log.error('Error: download failed')
 
-    def database_exists(self) -> None:
+    def check_database_exists(self) -> None:
         """ Check if database exists on server, otherwise complain and exit """
         query = '{_session {schemas} }'
 
@@ -226,4 +226,6 @@ class Client:
             log.error(f"Database schema does not exist, status code {response.status_code}")
             sys.exit()
 
-        # TODO: check if self.database is in response.get('data').get('_session').get('schemas')
+        if self.database not in response.json().get('data').get('_session').get('schemas'):
+            log.error(f"Database schema does not exist.")
+            sys.exit()

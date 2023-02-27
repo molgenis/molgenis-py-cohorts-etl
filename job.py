@@ -49,8 +49,8 @@ class Job:
         )
 
         # Ensure database schemas exist, otherwise exit
-        self.source.database_exists()
-        self.target.database_exists()
+        self.source.check_database_exists()
+        self.target.check_database_exists()
 
         strategy.Strategy.run_strategy(self)
 
