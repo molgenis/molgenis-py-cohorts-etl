@@ -1,5 +1,6 @@
 import util
 
+
 class Sync:
     def fill_staging(self) -> None:
         """ Sync SOURCE (catalogue) with TARGET (staging)
@@ -30,8 +31,7 @@ class Sync:
             'Contacts': None,
         }
         util.Util.download_filter_upload(self, tablesToSync)
-    
-    
+
     def fill_network(self) -> None:
         # order of tables is important, value equals filter
         tablesToSync = {
@@ -45,15 +45,15 @@ class Sync:
             'RepeatedTargetVariables': 'dataDictionary.resource',
         }
 
-        util.Util.download_filter_upload(self, tablesToSync, network = True)
+        util.Util.download_filter_upload(self, tablesToSync, network=True)
 
     def umcg_cohort_zip_to_datacatalogue(self) -> None:
-        """Download UMCG cohort staging zip, delete cohort on datacatalogue and finaly upload transformed zip"""
+        """Download UMCGCohortStaging zip, delete cohort on DataCatalogue and finally upload transformed zip"""
         util.Util.download_target(self)
         
         # Database name needs to be identical to cohort PID
         tablesToDelete = {
-            #'Publications': 'doi',
+            # 'Publications': 'doi',
             'Documentation': 'resource',
             'Contributions': 'resource',
             'CollectionEvents': 'resource',
@@ -68,7 +68,7 @@ class Sync:
             'Documentation': None,
             'Contributions': None,
             'CollectionEvents': None,
-            #'Subcohorts': None,
+            # 'Subcohorts': None,
             'Partners': None,
             'SubcohortCounts': None,
             'Subcohorts': None,
@@ -80,7 +80,7 @@ class Sync:
         util.Util.download_zip_process(self, tablesToSync)
 
     def cohort_zip_to_datacatalogue(self) -> None:
-        """Download cohort staging zip, delete cohort on datacatalogue and finaly upload transformed zip"""
+        """Download cohort staging zip, delete cohort on DataCatalogue and finally upload transformed zip"""
         util.Util.download_target(self)
         
         # Database name needs to be identical to cohort PID
@@ -138,7 +138,7 @@ class Sync:
         util.Util.download_zip_process(self, tablesToSync)
     
     def umcg_shared_ontology_zip_to_datacatalogue(self) -> None:
-        """ UMCG data model uses SharedStaging Contacts and Instiutions directly (same server), no need to sync.
+        """ UMCG data model uses SharedStaging Contacts and Institutions directly (same server), no need to sync.
         Upload CoreVariables to CatalogueOntologies as a zip"""
         util.Util.download_target(self)
 

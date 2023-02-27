@@ -1,9 +1,10 @@
-import job
-import sync
-#import util
 import logging
 
+import job
+import sync
+
 log = logging.getLogger(__name__)
+
 
 class Strategy:
     def run_strategy(self) -> None:

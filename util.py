@@ -1,18 +1,17 @@
+import logging
+import os
 import pathlib
 import zipfile
-import pandas as pd
-import os
-import zipfile
 from io import BytesIO, StringIO
-from enum import Enum
 from pathlib import Path
 
+import pandas as pd
 
 import client
-import logging
 import job
 
 log = logging.getLogger(__name__)
+
 
 class Util:
     def download_source_data(self, table: str) -> bytes:
@@ -21,7 +20,7 @@ class Util:
         if result[table + '_agg']['count'] > 0:
             return client.Client.downLoadCSV(self.source, table)
         return None
-    
+
     def download_filter_upload(self, tablesToSync: dict, network: bool = False) -> None:
         """ Download SOURCE csv, filter with pandas and upload csv to TARGET"""
         if network:
@@ -32,14 +31,15 @@ class Util:
         for table in tablesToSync:
             filter = tablesToSync[table]
             data = Util.download_source_data(self, table)
-            
-            if data != None:
-                df = pd.read_csv(BytesIO(data), dtype='str', na_filter=False) # dtype set to string otherwise numbers will be converted to 2015 -> 2015.0
+
+            if data is not None:
+                df = pd.read_csv(BytesIO(data), dtype='str',
+                                 na_filter=False)  # dtype set to string otherwise numbers will be converted to 2015 -> 2015.0
 
                 stream = StringIO()
-                
+
                 for database in databases:
-                    if filter != None:
+                    if filter is not None:
                         df_filter = df[filter] == database
                         if not df[df_filter].empty:
                             df[df_filter].to_csv(stream, index=False)
@@ -48,38 +48,41 @@ class Util:
 
                     if stream.getvalue():
                         uploadResponse = client.Client.uploadCSV(
-                            self.target, 
-                            table, 
+                            self.target,
+                            table,
                             stream.getvalue().encode('utf-8')
                         )
                 log.info(str(table) + ' ' + str(uploadResponse.status_code))
-    
+
     def download_upload(self, tablesToSync: dict) -> None:
         """ Download SOURCE csv and upload csv to TARGET"""
         for table in tablesToSync:
             data = Util.download_source_data(self, table)
-            
-            if data != None:
-                df = pd.read_csv(BytesIO(data), dtype='str', na_filter=False) # dtype set to string otherwise numbers will be converted to 2015 -> 2015.0
+
+            if data is not None:
+                df = pd.read_csv(BytesIO(data), dtype='str',
+                                 na_filter=False)  # dtype set to string otherwise numbers will be converted to 2015 -> 2015.0
 
                 stream = StringIO()
-                              
+
                 df.to_csv(stream, index=False)
 
                 uploadResponse = client.Client.uploadCSV(
-                    self.target, 
-                    table, 
+                    self.target,
+                    table,
                     stream.getvalue().encode('utf-8')
                 )
                 log.info(str(table) + ' ' + str(uploadResponse.status_code))
-    
+
     def get_source_cohort_pid(self) -> str:
         """ get PID of SOURCE cohort, expects to get one PID, return pid. """
         try:
             result = self.source.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
             if "Cohorts" in result:
                 if len(result['Cohorts']) != 1:
-                    log.warning('Expected a single cohort in staging area "' + self.source_database + '" but found ' + str(len(result['Cohorts'])))
+                    log.warning(
+                        'Expected a single cohort in staging area "' + self.source_database + '" but found ' + str(
+                            len(result['Cohorts'])))
                     return None
             else:
                 log.warning('Expected a single cohort in staging area "' + self.source_database + '" but found none')
@@ -89,7 +92,7 @@ class Util:
         except KeyError:
             log.error('Staging area "' + self.source_database + ' does not contain a table "Cohorts".')
             return None
-    
+
     def get_source_model_pid(self) -> str:
         """ get PID of SOURCE network, expects to get one PID, return pid.
         Fetch first model and return pid or else fail.
@@ -100,7 +103,9 @@ class Util:
             result = self.source.query(Path('./graphql-queries/' + 'Models.gql').read_text())
             if "Models" in result:
                 if len(result['Models']) != 1:
-                    log.warning('Expected a single model in staging area "' + self.source_database + '" but found ' + str(len(result['Models'])) + ': ' + str(result['Models']))
+                    log.warning(
+                        'Expected a single model in staging area "' + self.source_database + '" but found ' + str(
+                            len(result['Models'])) + ': ' + str(result['Models']))
                     return None
             else:
                 log.warning('Expected a single model in staging area "' + self.source_database + '" but found none')
@@ -119,21 +124,23 @@ class Util:
             tableType = tablesToSync[tableName]
 
             query = Path('./graphql-queries/' + tableName + '.gql').read_text()
-        
+
             if tableType == 'resource':
                 variables = {"filter": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}
             elif tableType == 'mappings':
-                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
+                variables = {"filter": {"fromDataDictionary":
+                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
             elif tableType == 'variables':
-                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
+                variables = {"filter": {"dataDictionary":
+                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
             elif tableType == 'pid':
                 variables = {"filter": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}
             elif tableType == 'subcohort':
-                variables = {"filter": {"subcohort": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
-
+                variables = {"filter": {"subcohort":
+                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
 
             result = self.target.query(query, variables)
-        
+
             if tableName in result:
                 client.Client.delete(self.target, tableName, result[tableName])
 
@@ -145,7 +152,7 @@ class Util:
     #         tableType = tablesToSync[tableName]
 
     #         query = Path('./graphql-queries/' + tableName + '.gql').read_text()
-        
+
     #         if tableType == 'resource':
     #             variables = {"filter": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}
     #         elif tableType == 'mappings':
@@ -154,10 +161,10 @@ class Util:
     #             variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}}
 
     #         result = self.target.query(query, variables)
-        
+
     #         if tableName in result:
     #             client.Client.delete(self.target, tableName, result[tableName])
-    
+
     def download_zip_process(self, tablesToSync: dict) -> None:
         """ download molgenis zip from SOURCE and process zip before upload to TARGET """
         result = client.Client.download_zip(self.source)
@@ -175,10 +182,10 @@ class Util:
                             zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
         except zipfile.BadZipfile as e:
             print(e)
-        
+
         # Uncomment if you need to debug, will write SOURCE.zip that will be uploaded to TARGET
-        #pathlib.Path('SOURCE.ZIP').write_bytes(zip_stream.getvalue())
-        
+        # pathlib.Path('SOURCE.ZIP').write_bytes(zip_stream.getvalue())
+
         if self.job_strategy == job.JobStrategy.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP.name:
             client.Client.upload_zip(self.target, zip_stream)
         elif self.job_strategy == job.JobStrategy.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
@@ -189,12 +196,12 @@ class Util:
             client.Client.upload_zip_fallback(self.target, zip_stream)
         elif self.job_strategy == job.JobStrategy.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP.name:
             client.Client.upload_zip_fallback(self.target, zip_stream)
-    
+
     def download_target(self) -> bytes:
         """ download target schema as zip, save in case upload fails """
         filename = 'TARGET.zip'
         if os.path.exists(filename):
             os.remove(filename)
-        
+
         result = client.Client.download_zip(self.target)
         pathlib.Path(filename).write_bytes(result)
