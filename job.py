@@ -48,9 +48,9 @@ class Job:
             password=self.target_password
         )
 
-        # Make sure database schemas exists otherwise exit
-        client.Client.database_exists(self.source)
-        client.Client.database_exists(self.target)
+        # Ensure database schemas exist, otherwise exit
+        self.source.database_exists()
+        self.target.database_exists()
 
         strategy.Strategy.run_strategy(self)
 
