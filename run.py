@@ -48,7 +48,7 @@ def main():
     for target in targets:
         for source in sources:
             log.info('START SYNC SOURCE (' + source + ') WITH TARGET (' + target + ')')
-            job.Job(
+            this_job = job.Job(
                 target_url=TARGET_URL,
                 target_email=TARGET_USERNAME,
                 target_password=TARGET_PASSWORD,
@@ -59,6 +59,7 @@ def main():
                 source_database=source,
                 job_strategy=JOB_STRATEGY,
             )
+            this_job.run_strategy()
             log.info('END SYNC SOURCE (' + source + ') WITH TARGET (' + target + ')')
 
     log.info('*** JOB COMPLETED ***')

@@ -1,8 +1,8 @@
-import client
-import strategy
 import logging
-
 from enum import Enum, auto
+
+import client
+import sync
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class Job:
 
         self.job_strategy = job_strategy
 
-        # set up Client for SOURCE
+        # Set up Client for SOURCE
         self.source = client.Client(
             url=self.source_url,
             database=self.source_database,
@@ -40,7 +40,7 @@ class Job:
             password=self.source_password
         )
 
-        # set up Client for TARGET
+        # Set up Client for TARGET
         self.target = client.Client(
             url=self.target_url,
             database=self.target_database,
@@ -52,7 +52,35 @@ class Job:
         self.source.check_database_exists()
         self.target.check_database_exists()
 
-        strategy.Strategy.run_strategy(self)
+    def run_strategy(self) -> None:
+
+        if self.job_strategy == JobStrategy.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.network_zip_to_datacatalogue(self)
+        elif self.job_strategy == JobStrategy.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.cohort_zip_to_datacatalogue(self)
+        elif self.job_strategy == JobStrategy.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.umcg_cohort_zip_to_datacatalogue(self)
+        elif self.job_strategy == JobStrategy.FILL_STAGING.name:
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.fill_staging(self)
+        elif self.job_strategy == JobStrategy.SHARED_STAGING.name:
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.shared_staging(self)
+        elif self.job_strategy == JobStrategy.UMCG_SHARED_ONTOLOGY_ZIP.name:
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.umcg_shared_ontology_zip_to_datacatalogue(self)
+        elif self.job_strategy == JobStrategy.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.ontology_staging_zip_to_datacatalogue(self)
+        elif self.job_strategy == JobStrategy.FILL_NETWORK.name:
+            log.info('Run job strategy: ' + self.job_strategy)
+            sync.Sync.fill_network(self)
+        else:
+            log.error(f'Job Strategy not set, please use: ')
+            log.error(JobStrategy._member_names_)
 
 
 class JobStrategy(Enum):
