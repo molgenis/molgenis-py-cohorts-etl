@@ -223,9 +223,5 @@ class Client:
 
         response = self.session.post(self.graphqlEndpoint, json={'query': query})
         if response.status_code != 200:
-            log.error(f"Database schema does not exist, status code {response.status_code}")
-            sys.exit()
-
-        if self.database not in response.json().get('data').get('_session').get('schemas'):
-            log.error(f"Database schema does not exist.")
+            log.error(f"Database schema \'{self.database}\' does not exist, status code {response.status_code}.")
             sys.exit()
