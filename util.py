@@ -57,10 +57,11 @@ class Util:
                         )
                         log.info(str(table) + ' ' + str(uploadResponse.status_code))
 
-    def download_upload(self, tablesToSync: dict) -> None:
+    @staticmethod
+    def download_upload(source: client.Client, target: client.Client, tablesToSync: dict) -> None:
         """ Download SOURCE csv and upload csv to TARGET"""
         for table in tablesToSync:
-            data = Util.download_source_data(self, table)
+            data = Util.download_source_data(source, table)
 
             if data is not None:
                 df = pd.read_csv(BytesIO(data), dtype='str',
@@ -71,47 +72,49 @@ class Util:
                 df.to_csv(stream, index=False)
 
                 uploadResponse = client.Client.uploadCSV(
-                    self.target,
+                    target,
                     table,
                     stream.getvalue().encode('utf-8')
                 )
                 log.info(str(table) + ' ' + str(uploadResponse.status_code))
 
-    def get_source_cohort_pid(self) -> str:
+    @staticmethod
+    def get_source_cohort_pid(source: client.Client) -> str:
         """ get PID of SOURCE cohort, expects to get one PID, return pid. """
         try:
-            result = self.source.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
+            result = source.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
             if "Cohorts" in result:
                 if len(result['Cohorts']) != 1:
                     log.warning(
-                        'Expected a single cohort in staging area "' + self.source_database + '" but found ' + str(
+                        'Expected a single cohort in staging area "' + source.database + '" but found ' + str(
                             len(result['Cohorts'])))
                     return None
             else:
-                log.warning('Expected a single cohort in staging area "' + self.source_database + '" but found none')
+                log.warning('Expected a single cohort in staging area "' + source.database + '" but found none')
                 return None
 
             return result['Cohorts'][0]['pid']
         except KeyError:
-            log.error('Staging area "' + self.source_database + ' does not contain a table "Cohorts".')
+            log.error('Staging area "' + source.database + ' does not contain a table "Cohorts".')
             return None
 
-    def get_source_model_pid(self) -> str:
+    @staticmethod
+    def get_source_model_pid(source) -> str:
         """ get PID of SOURCE network, expects to get one PID, return pid.
         Fetch first model and return pid or else fail.
         Not all staging areas (SharedStaging) contain a table 'Models', therefore a try/except is used
         here.
         """
         try:
-            result = self.source.query(Path('./graphql-queries/' + 'Models.gql').read_text())
+            result = source.query(Path('./graphql-queries/' + 'Models.gql').read_text())
             if "Models" in result:
                 if len(result['Models']) != 1:
                     log.warning(
-                        'Expected a single model in staging area "' + self.source_database + '" but found ' + str(
+                        'Expected a single model in staging area "' + source.database + '" but found ' + str(
                             len(result['Models'])) + ': ' + str(result['Models']))
                     return None
             else:
-                log.warning('Expected a single model in staging area "' + self.source_database + '" but found none')
+                log.warning('Expected a single model in staging area "' + source.database + '" but found none')
                 return None
 
             return result['Models'][0]['pid']
@@ -129,18 +132,18 @@ class Util:
             query = Path('./graphql-queries/' + tableName + '.gql').read_text()
 
             if tableType == 'resource':
-                variables = {"filter": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}
+                variables = {"filter": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self.source)}]}}}
             elif tableType == 'mappings':
                 variables = {"filter": {"fromDataDictionary":
-                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
+                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self.source)}]}}}}
             elif tableType == 'variables':
                 variables = {"filter": {"dataDictionary":
-                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
+                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self.source)}]}}}}
             elif tableType == 'pid':
-                variables = {"filter": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}
+                variables = {"filter": {"equals": [{"pid": Util.get_source_cohort_pid(self.source)}]}}
             elif tableType == 'subcohort':
                 variables = {"filter": {"subcohort":
-                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self)}]}}}}
+                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self.source)}]}}}}
 
             result = self.target.query(query, variables)
 
