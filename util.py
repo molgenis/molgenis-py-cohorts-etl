@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 class Util:
     @staticmethod
-    def download_source_data(source, table: str) -> bytes:
+    def download_source_data(source, table: str) -> bytes | None:
         """ Download catalogue data or return None in case of zero rows """
         result = client.Client.query(source, 'query Count{' + table + '_agg { count }}')
         if result[table + '_agg']['count'] > 0:
@@ -79,7 +79,7 @@ class Util:
                 log.info(str(table) + ' ' + str(uploadResponse.status_code))
 
     @staticmethod
-    def get_source_cohort_pid(source: client.Client) -> str:
+    def get_source_cohort_pid(source: client.Client) -> str | None:
         """ get PID of SOURCE cohort, expects to get one PID, return pid. """
         try:
             result = source.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
@@ -99,7 +99,7 @@ class Util:
             return None
 
     @staticmethod
-    def get_source_model_pid(source) -> str:
+    def get_source_model_pid(source) -> str | None:
         """ get PID of SOURCE network, expects to get one PID, return pid.
         Fetch first model and return pid or else fail.
         Not all staging areas (SharedStaging) contain a table 'Models', therefore a try/except is used
