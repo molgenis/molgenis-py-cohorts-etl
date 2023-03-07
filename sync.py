@@ -34,12 +34,12 @@ class Sync:
         """       
         # order of tables is important, value equals filter
         tablesToSync = TablesToSync.FILL_STAGING
-        util.Util.download_filter_upload(self, tablesToSync)
+        util.Util.download_filter_upload(source=self.source, target=self.target, tablesToSync=tablesToSync)
 
     def shared_staging(self) -> None:
         """ Sync SOURCE (SharedStaging) with TARGET """
         tablesToSync = TablesToSync.SHARED_STAGING
-        util.Util.download_filter_upload(self, tablesToSync)
+        util.Util.download_filter_upload(source=self.source, target=self.target, tablesToSync=tablesToSync)
 
     def umcg_shared_ontology_zip_to_datacatalogue(self) -> None:
         """ UMCG data model uses SharedStaging Contacts and Institutions directly (same server), no need to sync.
@@ -60,4 +60,5 @@ class Sync:
         # order of tables is important, value equals filter
         tablesToSync = TablesToSync.FILL_NETWORK
 
-        util.Util.download_filter_upload(self, tablesToSync, network=True)
+        util.Util.download_filter_upload(source=self.source, target=self.target, tablesToSync=tablesToSync,
+                                         network=True)

@@ -14,23 +14,26 @@ log = logging.getLogger(__name__)
 
 
 class Util:
-    def download_source_data(self, table: str) -> bytes:
+    @staticmethod
+    def download_source_data(source, table: str) -> bytes:
         """ Download catalogue data or return None in case of zero rows """
-        result = client.Client.query(self.source, 'query Count{' + table + '_agg { count }}')
+        result = client.Client.query(source, 'query Count{' + table + '_agg { count }}')
         if result[table + '_agg']['count'] > 0:
-            return client.Client.downLoadCSV(self.source, table)
+            return client.Client.downLoadCSV(source, table)
         return None
 
-    def download_filter_upload(self, tablesToSync: dict, network: bool = False) -> None:
+    @staticmethod
+    def download_filter_upload(source: client.Client, target: client.Client,
+                               tablesToSync: dict, network: bool = False) -> None:
         """ Download SOURCE csv, filter with pandas and upload csv to TARGET"""
         if network:
-            databases = [self.target_database, self.target_database + '_CDM']
+            databases = [target.database, target.database + '_CDM']
         else:
-            databases = [self.target_database]
+            databases = [target.database]
 
         for table in tablesToSync:
             filter = tablesToSync[table]
-            data = Util.download_source_data(self, table)
+            data = Util.download_source_data(source, table)
 
             if data is not None:
                 df = pd.read_csv(BytesIO(data), dtype='str',
@@ -48,11 +51,11 @@ class Util:
 
                     if stream.getvalue():
                         uploadResponse = client.Client.uploadCSV(
-                            self.target,
+                            target,
                             table,
                             stream.getvalue().encode('utf-8')
                         )
-                log.info(str(table) + ' ' + str(uploadResponse.status_code))
+                        log.info(str(table) + ' ' + str(uploadResponse.status_code))
 
     def download_upload(self, tablesToSync: dict) -> None:
         """ Download SOURCE csv and upload csv to TARGET"""
