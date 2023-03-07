@@ -122,7 +122,9 @@ class Util:
             log.info('Staging area "' + result + '" does not contain a table "Models".')
             return None
 
-    def delete_cohort_from_data_catalogue(self, tablesToSync: dict) -> None:
+    @staticmethod
+    def delete_cohort_from_data_catalogue(source: client.Client, target: client.Client,
+                                          tablesToSync: dict) -> None:
         """ Delete SOURCE Cohort data from TARGET data catalogue before upload """
         rowsToDelete = []
 
@@ -132,23 +134,23 @@ class Util:
             query = Path('./graphql-queries/' + tableName + '.gql').read_text()
 
             if tableType == 'resource':
-                variables = {"filter": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self.source)}]}}}
+                variables = {"filter": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(source)}]}}}
             elif tableType == 'mappings':
                 variables = {"filter": {"fromDataDictionary":
-                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self.source)}]}}}}
+                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(source)}]}}}}
             elif tableType == 'variables':
                 variables = {"filter": {"dataDictionary":
-                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self.source)}]}}}}
+                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(source)}]}}}}
             elif tableType == 'pid':
-                variables = {"filter": {"equals": [{"pid": Util.get_source_cohort_pid(self.source)}]}}
+                variables = {"filter": {"equals": [{"pid": Util.get_source_cohort_pid(source)}]}}
             elif tableType == 'subcohort':
                 variables = {"filter": {"subcohort":
-                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(self.source)}]}}}}
+                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(source)}]}}}}
 
-            result = self.target.query(query, variables)
+            result = target.query(query, variables)
 
             if tableName in result:
-                client.Client.delete(self.target, tableName, result[tableName])
+                client.Client.delete(target, tableName, result[tableName])
 
     # def delete_network_from_data_catalogue(self, tablesToSync: dict) -> None:
     #     """ Delete SOURCE Network data from TARGET data catalogue before upload """
@@ -171,9 +173,11 @@ class Util:
     #         if tableName in result:
     #             client.Client.delete(self.target, tableName, result[tableName])
 
-    def download_zip_process(self, tablesToSync: dict) -> None:
-        """ download molgenis zip from SOURCE and process zip before upload to TARGET """
-        result = client.Client.download_zip(self.source)
+    @staticmethod
+    def download_zip_process(source: client.Client, target: client.Client, job_strategy,
+                             tablesToSync: dict) -> None:
+        """ Download molgenis zip from SOURCE and process zip before upload to TARGET. """
+        result = client.Client.download_zip(source)
         # setup output zip stream
         zip_stream = BytesIO()
 
@@ -192,22 +196,23 @@ class Util:
         # Uncomment if you need to debug, will write SOURCE.zip that will be uploaded to TARGET
         # pathlib.Path('SOURCE.ZIP').write_bytes(zip_stream.getvalue())
 
-        if self.job_strategy == job.JobStrategy.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-            client.Client.upload_zip(self.target, zip_stream)
-        elif self.job_strategy == job.JobStrategy.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-            client.Client.upload_zip_fallback(self.target, zip_stream)
-        elif self.job_strategy == job.JobStrategy.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-            client.Client.upload_zip_fallback(self.target, zip_stream)
-        elif self.job_strategy == job.JobStrategy.UMCG_SHARED_ONTOLOGY_ZIP.name:
-            client.Client.upload_zip_fallback(self.target, zip_stream)
-        elif self.job_strategy == job.JobStrategy.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-            client.Client.upload_zip_fallback(self.target, zip_stream)
+        if job_strategy == job.JobStrategy.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            client.Client.upload_zip(target, zip_stream)
+        elif job_strategy == job.JobStrategy.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            client.Client.upload_zip_fallback(target, zip_stream)
+        elif job_strategy == job.JobStrategy.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            client.Client.upload_zip_fallback(target, zip_stream)
+        elif job_strategy == job.JobStrategy.UMCG_SHARED_ONTOLOGY_ZIP.name:
+            client.Client.upload_zip_fallback(target, zip_stream)
+        elif job_strategy == job.JobStrategy.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+            client.Client.upload_zip_fallback(target, zip_stream)
 
-    def download_target(self) -> bytes:
-        """ download target schema as zip, save in case upload fails """
+    @staticmethod
+    def download_target(target: client.Client):
+        """ Download target schema as zip, save in case upload fails. """
         filename = 'TARGET.zip'
         if os.path.exists(filename):
             os.remove(filename)
 
-        result = client.Client.download_zip(self.target)
+        result = client.Client.download_zip(target)
         pathlib.Path(filename).write_bytes(result)
