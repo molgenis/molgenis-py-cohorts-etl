@@ -173,9 +173,11 @@ class Util:
     #         if tableType == 'resource':
     #             variables = {"filter": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}
     #         elif tableType == 'mappings':
-    #             variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}}
+    #             variables = {"filter": {"fromDataDictionary":
+    #                                       {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}}
     #         elif tableType == 'variables':
-    #             variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}}
+    #             variables = {"filter": {"dataDictionary":
+    #                                       {"resource": {"equals": [{"pid": Util.get_source_model_pid(self)}]}}}}
 
     #         result = self.target.query(query, variables)
 
@@ -184,16 +186,18 @@ class Util:
 
     @staticmethod
     def download_zip_process(source: client.Client, target: client.Client, job_strategy,
-                             tablesToSync: dict) -> None:
-        """ Download molgenis zip from SOURCE and process zip before upload to TARGET. """
-        result = client.Client.download_zip(source)
-        # setup output zip stream
+                             tables_to_sync: dict) -> None:
+        """Download molgenis zip from SOURCE and process zip before upload to TARGET."""
+
+        result = source.download_zip()
+
+        # Setup output zip stream
         zip_stream = BytesIO()
 
         try:
             with zipfile.ZipFile(BytesIO(result), mode='r') as archive:
                 for name in archive.namelist():
-                    if os.path.splitext(name)[0] in tablesToSync:
+                    if os.path.splitext(name)[0] in tables_to_sync.keys():
                         with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
                             zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
                     if '_files/' in name:
@@ -206,15 +210,14 @@ class Util:
         # pathlib.Path('SOURCE.ZIP').write_bytes(zip_stream.getvalue())
 
         if job_strategy == job.JobStrategy.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-            client.Client.upload_zip(target, zip_stream)
-        elif job_strategy == job.JobStrategy.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-            client.Client.upload_zip_fallback(target, zip_stream)
-        elif job_strategy == job.JobStrategy.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-            client.Client.upload_zip_fallback(target, zip_stream)
-        elif job_strategy == job.JobStrategy.UMCG_SHARED_ONTOLOGY_ZIP.name:
-            client.Client.upload_zip_fallback(target, zip_stream)
-        elif job_strategy == job.JobStrategy.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-            client.Client.upload_zip_fallback(target, zip_stream)
+            target.upload_zip(zip_stream)
+        elif job_strategy in [
+            'COHORT_STAGING_TO_DATA_CATALOGUE_ZIP',
+            'UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP',
+            'UMCG_SHARED_ONTOLOGY_ZIP',
+            'ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP'
+        ]:
+            target.upload_zip_fallback(zip_stream)
 
     @staticmethod
     def download_target(target: client.Client):
