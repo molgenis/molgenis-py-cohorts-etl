@@ -16,10 +16,10 @@ log = logging.getLogger(__name__)
 class Util:
     @staticmethod
     def download_source_data(source, table: str) -> bytes | None:
-        """ Download catalogue data or return None in case of zero rows """
-        result = client.Client.query(source, 'query Count{' + table + '_agg { count }}')
+        """Download catalogue data or return None in case of zero rows."""
+        result = source.query('query Count{' + table + '_agg { count }}')
         if result[table + '_agg']['count'] > 0:
-            return client.Client.downLoadCSV(source, table)
+            return source.downLoadCSV(table)
         return None
 
     @staticmethod
