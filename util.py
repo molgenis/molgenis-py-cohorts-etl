@@ -8,7 +8,6 @@ from pathlib import Path
 import pandas as pd
 
 import client
-import job
 
 log = logging.getLogger(__name__)
 
@@ -209,7 +208,7 @@ class Util:
         # Uncomment if you need to debug, will write SOURCE.zip that will be uploaded to TARGET
         # pathlib.Path('SOURCE.ZIP').write_bytes(zip_stream.getvalue())
 
-        if job_strategy == job.JobStrategy.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP.name:
+        if job_strategy == 'NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP':
             target.upload_zip(zip_stream)
         elif job_strategy in [
             'COHORT_STAGING_TO_DATA_CATALOGUE_ZIP',
@@ -218,6 +217,8 @@ class Util:
             'ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP'
         ]:
             target.upload_zip_fallback(zip_stream)
+        else:
+            log.warning(f'Tried to download zip using invalid job strategy "{job_strategy}".')
 
     @staticmethod
     def download_target(target: client.Client):
