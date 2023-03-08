@@ -105,8 +105,8 @@ class Util:
         Not all staging areas (SharedStaging) contain a table 'Models', therefore a try/except is used
         here.
         """
+        result = source.query(Path('./graphql-queries/' + 'Models.gql').read_text())
         try:
-            result = source.query(Path('./graphql-queries/' + 'Models.gql').read_text())
             if "Models" in result:
                 if len(result['Models']) != 1:
                     log.warning(
@@ -124,33 +124,35 @@ class Util:
 
     @staticmethod
     def delete_cohort_from_data_catalogue(source: client.Client, target: client.Client,
-                                          tablesToSync: dict) -> None:
-        """ Delete SOURCE Cohort data from TARGET data catalogue before upload """
-        rowsToDelete = []
+                                          tables_to_sync: dict) -> None:
+        """Delete SOURCE Cohort data from TARGET data catalogue before upload."""
 
-        for tableName in tablesToSync:
-            tableType = tablesToSync[tableName]
+        source_cohort_pid = Util.get_source_cohort_pid(source)
+        if source_cohort_pid is None:
+            log.info("No tables to delete.")
+            return
 
-            query = Path('./graphql-queries/' + tableName + '.gql').read_text()
+        for table_name in tables_to_sync.keys():
+            table_type = tables_to_sync.get(table_name)
 
-            if tableType == 'resource':
-                variables = {"filter": {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(source)}]}}}
-            elif tableType == 'mappings':
-                variables = {"filter": {"fromDataDictionary":
-                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(source)}]}}}}
-            elif tableType == 'variables':
-                variables = {"filter": {"dataDictionary":
-                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(source)}]}}}}
-            elif tableType == 'pid':
-                variables = {"filter": {"equals": [{"pid": Util.get_source_cohort_pid(source)}]}}
-            elif tableType == 'subcohort':
-                variables = {"filter": {"subcohort":
-                                            {"resource": {"equals": [{"pid": Util.get_source_cohort_pid(source)}]}}}}
+            query = Path(f'./graphql-queries/{table_name}.gql').read_text()
 
+            if table_type == 'resource':
+                variables = {"filter": {"resource": {"equals": [{"pid": source_cohort_pid}]}}}
+            elif table_type == 'mappings':
+                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": source_cohort_pid}]}}}}
+            elif table_type == 'variables':
+                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": source_cohort_pid}]}}}}
+            elif table_type == 'pid':
+                variables = {"filter": {"equals": [{"pid": source_cohort_pid}]}}
+            elif table_type == 'subcohort':
+                variables = {"filter": {"subcohort": {"resource": {"equals": [{"pid": source_cohort_pid}]}}}}
+            else:
+                continue
             result = target.query(query, variables)
 
-            if tableName in result:
-                client.Client.delete(target, tableName, result[tableName])
+            if table_name in result:
+                target.delete(table_name, result[table_name])
 
     # def delete_network_from_data_catalogue(self, tablesToSync: dict) -> None:
     #     """ Delete SOURCE Network data from TARGET data catalogue before upload """
