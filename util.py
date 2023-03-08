@@ -101,31 +101,32 @@ class Util:
 
             return result['Cohorts'][0]['pid']
         except KeyError:
-            log.error(f'Staging area "{source.database} does not contain a table "Cohorts".')
+            log.error(f'Staging area "{source.database}" does not contain a table "Cohorts".')
             return None
 
     @staticmethod
     def get_source_model_pid(source) -> str | None:
-        """ get PID of SOURCE network, expects to get one PID, return pid.
+        """Get PID of SOURCE network, expects to get one PID, return pid.
         Fetch first model and return pid or else fail.
         Not all staging areas (SharedStaging) contain a table 'Models', therefore a try/except is used
         here.
         """
-        result = source.query(Path('./graphql-queries/' + 'Models.gql').read_text())
+        result = source.query(Path('./graphql-queries/Models.gql').read_text())
         try:
             if "Models" in result:
                 if len(result['Models']) != 1:
                     log.warning(
-                        'Expected a single model in staging area "' + source.database + '" but found ' + str(
-                            len(result['Models'])) + ': ' + str(result['Models']))
+                        f'Expected a single model in staging area "{source.database}"'
+                        f' but found {len(result["Models"])}:  {result["Models"]}.')
                     return None
             else:
-                log.warning('Expected a single model in staging area "' + source.database + '" but found none')
+                log.warning(f'Expected a single model in staging area "{source.database}"'
+                            f' but found none.')
                 return None
 
             return result['Models'][0]['pid']
         except KeyError:
-            log.info('Staging area "' + result + '" does not contain a table "Models".')
+            log.info(f'Staging area "{result}" does not contain a table "Models".')
             return None
 
     @staticmethod
