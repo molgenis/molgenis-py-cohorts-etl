@@ -221,10 +221,11 @@ class Util:
 
     @staticmethod
     def download_target(target: client.Client):
-        """ Download target schema as zip, save in case upload fails. """
+        """Download target schema as zip, save in case upload fails."""
         filename = 'TARGET.zip'
         if os.path.exists(filename):
             os.remove(filename)
 
-        result = client.Client.download_zip(target)
+        result = target.download_zip()
         pathlib.Path(filename).write_bytes(result)
+        log.info(f'Downloaded target schema to "{filename}".')
