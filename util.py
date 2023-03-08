@@ -24,38 +24,37 @@ class Util:
 
     @staticmethod
     def download_filter_upload(source: client.Client, target: client.Client,
-                               tablesToSync: dict, network: bool = False) -> None:
-        """ Download SOURCE csv, filter with pandas and upload csv to TARGET"""
+                               tables_to_sync: dict, network: bool = False) -> None:
+        """Download SOURCE csv, filter with pandas and upload csv to TARGET."""
         if network:
             databases = [target.database, target.database + '_CDM']
         else:
             databases = [target.database]
 
-        for table in tablesToSync:
-            filter = tablesToSync[table]
+        for table in tables_to_sync.keys():
+            table_filter = tables_to_sync.get(table)
             data = Util.download_source_data(source, table)
 
             if data is not None:
                 df = pd.read_csv(BytesIO(data), dtype='str',
-                                 na_filter=False)  # dtype set to string otherwise numbers will be converted to 2015 -> 2015.0
+                                 na_filter=False)  # dtype set to string to prevent conversion, e.g. 2015 -> 2015.0
 
                 stream = StringIO()
 
                 for database in databases:
-                    if filter is not None:
-                        df_filter = df[filter] == database
+                    if table_filter is not None:
+                        df_filter = df[table_filter] == database
                         if not df[df_filter].empty:
                             df[df_filter].to_csv(stream, index=False)
                     else:
                         df.to_csv(stream, index=False)
 
                     if stream.getvalue():
-                        uploadResponse = client.Client.uploadCSV(
-                            target,
+                        upload_response = target.uploadCSV(
                             table,
                             stream.getvalue().encode('utf-8')
                         )
-                        log.info(str(table) + ' ' + str(uploadResponse.status_code))
+                        log.info(f'{table}{upload_response.status_code}')
 
     @staticmethod
     def download_upload(source: client.Client, target: client.Client, tablesToSync: dict) -> None:
