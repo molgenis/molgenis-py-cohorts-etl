@@ -6,7 +6,7 @@ class Sync:
     def network_zip_to_datacatalogue(self) -> None:
         tablesToSync = TablesToSync.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP
         util.Util.download_zip_process(source=self.source, target=self.target, job_strategy=self.job_strategy,
-                                       tablesToSync=tablesToSync)
+                                       tables_to_sync=tablesToSync)
 
     def cohort_zip_to_datacatalogue(self) -> None:
         """Download cohort staging zip, delete cohort on DataCatalogue and finally upload transformed zip"""
@@ -17,9 +17,9 @@ class Sync:
         tablesToSync = TablesToSync.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP
 
         util.Util.delete_cohort_from_data_catalogue(source=self.source, target=self.target,
-                                                    tablesToSync=tablesToDelete)
+                                                    tables_to_sync=tablesToDelete)
         util.Util.download_zip_process(source=self.source, target=self.target, job_strategy=self.job_strategy,
-                                       tablesToSync=tablesToSync)
+                                       tables_to_sync=tablesToSync)
 
     def umcg_cohort_zip_to_datacatalogue(self) -> None:
         """Download UMCGCohortStaging zip, delete cohort on DataCatalogue and finally upload transformed zip"""
@@ -30,21 +30,21 @@ class Sync:
         tablesToSync = TablesToSync.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP
 
         util.Util.delete_cohort_from_data_catalogue(source=self.source, target=self.target,
-                                                    tablesToSync=tablesToDelete)
+                                                    tables_to_sync=tablesToDelete)
         util.Util.download_zip_process(source=self.source, target=self.target, job_strategy=self.job_strategy,
-                                       tablesToSync=tablesToSync)
+                                       tables_to_sync=tablesToSync)
 
     def fill_staging(self) -> None:
         """ Sync SOURCE (catalogue) with TARGET (staging)
         """       
         # order of tables is important, value equals filter
         tablesToSync = TablesToSync.FILL_STAGING
-        util.Util.download_filter_upload(source=self.source, target=self.target, tablesToSync=tablesToSync)
+        util.Util.download_filter_upload(source=self.source, target=self.target, tables_to_sync=tablesToSync)
 
     def shared_staging(self) -> None:
         """ Sync SOURCE (SharedStaging) with TARGET """
         tablesToSync = TablesToSync.SHARED_STAGING
-        util.Util.download_filter_upload(source=self.source, target=self.target, tablesToSync=tablesToSync)
+        util.Util.download_filter_upload(source=self.source, target=self.target, tables_to_sync=tablesToSync)
 
     def umcg_shared_ontology_zip_to_datacatalogue(self) -> None:
         """ UMCG data model uses SharedStaging Contacts and Institutions directly (same server), no need to sync.
@@ -53,7 +53,7 @@ class Sync:
 
         ontologiesToSync = OntologiesToSync.UMCG_SHARED_ONTOLOGY_ZIP
         util.Util.download_zip_process(source=self.source, target=self.target, job_strategy=self.job_strategy,
-                                       tablesToSync=ontologiesToSync)
+                                       tables_to_sync=ontologiesToSync)
 
     def ontology_staging_zip_to_datacatalogue(self) -> None:
         """ Upload SOURCE CatalogueOntologies to TARGET CatalogueOntologies as a zip"""
@@ -61,11 +61,11 @@ class Sync:
 
         ontologiesToSync = OntologiesToSync.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP
         util.Util.download_zip_process(source=self.source, target=self.target, job_strategy=self.job_strategy,
-                                       tablesToSync=ontologiesToSync)
+                                       tables_to_sync=ontologiesToSync)
 
     def fill_network(self) -> None:
         # order of tables is important, value equals filter
         tablesToSync = TablesToSync.FILL_NETWORK
 
-        util.Util.download_filter_upload(source=self.source, target=self.target, tablesToSync=tablesToSync,
+        util.Util.download_filter_upload(source=self.source, target=self.target, tables_to_sync=tablesToSync,
                                          network=True)
