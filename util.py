@@ -80,22 +80,24 @@ class Util:
 
     @staticmethod
     def get_source_cohort_pid(source: client.Client) -> str | None:
-        """ get PID of SOURCE cohort, expects to get one PID, return pid. """
+        """Get PID of SOURCE cohort, expects to get one PID, return pid."""
         try:
-            result = source.query(Path('./graphql-queries/' + 'Cohorts.gql').read_text())
+            result = source.query(Path('./graphql-queries/Cohorts.gql').read_text())
             if "Cohorts" in result:
                 if len(result['Cohorts']) != 1:
                     log.warning(
-                        'Expected a single cohort in staging area "' + source.database + '" but found ' + str(
-                            len(result['Cohorts'])))
+                        f'Expected a single cohort in staging area "{source.database}"'
+                        f' but found {len(result["Cohorts"])}')
                     return None
             else:
-                log.warning('Expected a single cohort in staging area "' + source.database + '" but found none')
+                log.warning(
+                    f'Expected a single cohort in staging area "{source.database}"'
+                    f' but found none.')
                 return None
 
             return result['Cohorts'][0]['pid']
         except KeyError:
-            log.error('Staging area "' + source.database + ' does not contain a table "Cohorts".')
+            log.error(f'Staging area "{source.database} does not contain a table "Cohorts".')
             return None
 
     @staticmethod
