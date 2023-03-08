@@ -35,47 +35,52 @@ class Util:
             table_filter = tables_to_sync.get(table)
             data = Util.download_source_data(source, table)
 
-            if data is not None:
-                df = pd.read_csv(BytesIO(data), dtype='str',
-                                 na_filter=False)  # dtype set to string to prevent conversion, e.g. 2015 -> 2015.0
+            if data is None:
+                # Skip if there is no data
+                continue
 
-                stream = StringIO()
+            df = pd.read_csv(BytesIO(data), dtype='str',
+                             na_filter=False)  # dtype set to string to prevent conversion, e.g. 2015 -> 2015.0
 
-                for database in databases:
-                    if table_filter is not None:
-                        df_filter = df[table_filter] == database
-                        if not df[df_filter].empty:
-                            df[df_filter].to_csv(stream, index=False)
-                    else:
-                        df.to_csv(stream, index=False)
+            stream = StringIO()
 
-                    if stream.getvalue():
-                        upload_response = target.uploadCSV(
-                            table,
-                            stream.getvalue().encode('utf-8')
-                        )
-                        log.info(f'{table}{upload_response.status_code}')
+            for database in databases:
+                if table_filter is not None:
+                    df_filter = df[table_filter] == database
+                    if not df[df_filter].empty:
+                        df[df_filter].to_csv(stream, index=False)
+                else:
+                    df.to_csv(stream, index=False)
+
+                if stream.getvalue():
+                    upload_response = target.uploadCSV(
+                        table,
+                        stream.getvalue().encode('utf-8')
+                    )
+                    log.info(f'{table}{upload_response.status_code}')
 
     @staticmethod
-    def download_upload(source: client.Client, target: client.Client, tablesToSync: dict) -> None:
-        """ Download SOURCE csv and upload csv to TARGET"""
-        for table in tablesToSync:
+    def download_upload(source: client.Client, target: client.Client, tables_to_sync: dict) -> None:
+        """Download SOURCE csv and upload csv to TARGET."""
+        for table in tables_to_sync.keys():
             data = Util.download_source_data(source, table)
 
-            if data is not None:
-                df = pd.read_csv(BytesIO(data), dtype='str',
-                                 na_filter=False)  # dtype set to string otherwise numbers will be converted to 2015 -> 2015.0
+            if data is None:
+                # Skip if there is no data
+                continue
 
-                stream = StringIO()
+            df = pd.read_csv(BytesIO(data), dtype='str',
+                             na_filter=False)  # dtype set to string to prevent conversion, e.g. 2015 -> 2015.0
 
-                df.to_csv(stream, index=False)
+            stream = StringIO()
 
-                uploadResponse = client.Client.uploadCSV(
-                    target,
-                    table,
-                    stream.getvalue().encode('utf-8')
-                )
-                log.info(str(table) + ' ' + str(uploadResponse.status_code))
+            df.to_csv(stream, index=False)
+
+            upload_response = target.uploadCSV(
+                table,
+                stream.getvalue().encode('utf-8')
+            )
+            log.info(f'{table} {upload_response.status_code}')
 
     @staticmethod
     def get_source_cohort_pid(source: client.Client) -> str | None:
