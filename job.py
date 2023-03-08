@@ -23,33 +23,23 @@ class Job:
         and the Job strategy.
         """
 
-        self.target_url = target_url
-        self.target_email = target_email
-        self.target_password = target_password
-        self.target_database = target_database
-
-        self.source_url = source_url
-        self.source_email = source_email
-        self.source_password = source_password
-        self.source_database = source_database
-
-        self.job_strategy = job_strategy
-
         # Set up Client for SOURCE
         self.source = client.Client(
-            url=self.source_url,
-            database=self.source_database,
-            email=self.source_email,
-            password=self.source_password
+            url=source_url,
+            database=source_database,
+            email=source_email,
+            password=source_password
         )
 
         # Set up Client for TARGET
         self.target = client.Client(
-            url=self.target_url,
-            database=self.target_database,
-            email=self.target_email,
-            password=self.target_password
+            url=target_url,
+            database=target_database,
+            email=target_email,
+            password=target_password
         )
+
+        self.job_strategy = job_strategy
 
         # Ensure database schemas exist, otherwise exit
         self.source.check_database_exists()
@@ -83,7 +73,7 @@ class Job:
             sync.Sync.fill_network(self.source, self.target)
         else:
             log.error(f'Job Strategy not set, please use: ')
-            log.error(JobStrategy._member_names_)
+            log.error(JobStrategy.member_names())
 
 
 class JobStrategy(Enum):
@@ -95,3 +85,7 @@ class JobStrategy(Enum):
     FILL_STAGING = auto()
     SHARED_STAGING = auto()
     FILL_NETWORK = auto()
+
+    @classmethod
+    def member_names(cls):
+        return list(map(lambda c: c.name, cls))
