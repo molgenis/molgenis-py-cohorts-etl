@@ -24,8 +24,8 @@ class Client:
 
         self.signin(self.email, self.password)
 
-    def signin(self, email, password):
-        """Sign in to Molgenis and retrieve session cookie"""
+    def signin(self, email: str, password: str):
+        """Sign in to Molgenis and retrieve session cookie."""
         query = """
             mutation($email:String, $password: String) {
                 signin(email: $email, password: $password) {
@@ -55,7 +55,7 @@ class Client:
             log.error('Error: sign in failed, exiting.')
 
     def query(self, query: str, variables: dict = None):
-        """Query backend"""
+        """Query backend."""
 
         response = self.session.post(
             self.graphqlEndpoint,
@@ -69,8 +69,8 @@ class Client:
 
         return response.json()['data']
 
-    def delete(self, table, pkey):
-        """Delete row by key"""
+    def delete(self, table: str, pkey: str):
+        """Delete row by key."""
 
         query = (""
                  "mutation delete($pkey:[" + table + "Input]) {"
@@ -78,7 +78,7 @@ class Client:
                                                                          "}"
                                                                          "")
 
-        step_size = 1000  # to make sure list is not to big which will make server give error 500
+        step_size = 1000  # to make sure list is not too big which will make server give error 500
 
         for i in range(0, len(pkey), step_size):
             variables = {'pkey': pkey[i:i + step_size]}
@@ -90,8 +90,8 @@ class Client:
                 log.error(response)
                 log.error(f"Error uploading csv, response.text: {response.text}")
 
-    def add(self, table, data, draft=False):
-        """Add record"""
+    def add(self, table: str, data, draft=False):
+        """Add record."""
 
         query = (""
                  "mutation insert($value:[" + table + "Input]) {"
@@ -114,8 +114,8 @@ class Client:
 
         return response
 
-    def fields(self, table):
-        """ Fetch a field list as json array of name value pairs"""
+    def fields(self, table: str):
+        """Fetch a field list as json array of name value pairs."""
 
         query = '{__type(name:"' + table + '") {fields { name } } }'
 
@@ -127,8 +127,8 @@ class Client:
 
         return response.json()['data']['__type']['fields']
 
-    def upload_csv(self, table, data):
-        """ Upload csv data ( string ) to table """
+    def upload_csv(self, table: str, data):
+        """Upload csv data ( string ) to table."""
         response = self.session.post(
             self.apiEndpoint + '/csv/' + table,
             headers={"Content-Type": 'text/csv'},
@@ -141,8 +141,8 @@ class Client:
 
         return response
 
-    def download_csv(self, table):
-        """ Download csv data from table """
+    def download_csv(self, table: str):
+        """Download csv data from table."""
         resp = self.session.get(self.apiEndpoint + '/csv/' + table, allow_redirects=True)
         if resp.content:
             return resp.content
@@ -150,7 +150,7 @@ class Client:
             log.error('Error: download failed')
 
     def upload_zip(self, data) -> None:
-        """ Upload zip """
+        """Upload zip."""
         response = self.session.post(
             self.apiEndpoint + '/zip?async=true',
             files={'file': ('zip.zip', data.getvalue())},
@@ -175,7 +175,7 @@ class Client:
         upload_zip_task_status(self, response)
 
     def upload_zip_fallback(self, data) -> None:
-        """ Upload zip, will fall back on TARGET.zip if upload of SOURCE zip fails"""
+        """Upload zip, will fall back on TARGET.zip if upload of SOURCE zip fails."""
         response = self.session.post(
             self.apiEndpoint + '/zip?async=true',
             files={'file': ('zip.zip', data.getvalue())},
@@ -210,7 +210,7 @@ class Client:
         upload_zip_task_status(self, response)
 
     def download_zip(self) -> bytes:
-        """ Download zip data from database """
+        """Download zip data from database."""
         resp = self.session.get(self.apiEndpoint + '/zip?includeSystemColumns=true', allow_redirects=True)
         if resp.content:
             return resp.content
@@ -218,7 +218,7 @@ class Client:
             log.error('Error: download failed')
 
     def check_database_exists(self) -> None:
-        """ Check if database exists on server, otherwise complain and exit """
+        """Check if database exists on server, otherwise complain and exit."""
         query = '{_session {schemas} }'
 
         response = self.session.post(self.graphqlEndpoint, json={'query': query})
