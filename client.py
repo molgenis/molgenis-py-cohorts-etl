@@ -42,10 +42,10 @@ class Client:
             json={'query': query, 'variables': variables}
         )
 
-        responseJson = response.json()
+        response_json = response.json()
 
-        status = responseJson['data']['signin']['status']
-        message = responseJson['data']['signin']['message']
+        status = response_json['data']['signin']['status']
+        message = response_json['data']['signin']['message']
 
         if status == 'SUCCESS':
             log.debug(f"Success: Signed into {self.database} as {self.email}")
@@ -78,10 +78,10 @@ class Client:
                                                                          "}"
                                                                          "")
 
-        stepSize = 1000  # to make sure list is not to big which will make server give error 500
+        step_size = 1000  # to make sure list is not to big which will make server give error 500
 
-        for i in range(0, len(pkey), stepSize):
-            variables = {'pkey': pkey[i:i + stepSize]}
+        for i in range(0, len(pkey), step_size):
+            variables = {'pkey': pkey[i:i + step_size]}
             response = self.session.post(
                 self.graphqlEndpoint,
                 json={'query': query, 'variables': variables}
@@ -127,7 +127,7 @@ class Client:
 
         return response.json()['data']['__type']['fields']
 
-    def uploadCSV(self, table, data):
+    def upload_csv(self, table, data):
         """ Upload csv data ( string ) to table """
         response = self.session.post(
             self.apiEndpoint + '/csv/' + table,
@@ -141,7 +141,7 @@ class Client:
 
         return response
 
-    def downLoadCSV(self, table):
+    def download_csv(self, table):
         """ Download csv data from table """
         resp = self.session.get(self.apiEndpoint + '/csv/' + table, allow_redirects=True)
         if resp.content:

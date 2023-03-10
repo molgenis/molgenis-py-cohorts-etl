@@ -18,7 +18,7 @@ class Util:
         """Download catalogue data or return None in case of zero rows."""
         result = source.query('query Count{' + table + '_agg { count }}')
         if result[table + '_agg']['count'] > 0:
-            return source.downLoadCSV(table)
+            return source.download_csv(table)
         return None
 
     @staticmethod
@@ -52,7 +52,7 @@ class Util:
                     df.to_csv(stream, index=False)
 
                 if stream.getvalue():
-                    upload_response = target.uploadCSV(
+                    upload_response = target.upload_csv(
                         table,
                         stream.getvalue().encode('utf-8')
                     )
@@ -75,7 +75,7 @@ class Util:
 
             df.to_csv(stream, index=False)
 
-            upload_response = target.uploadCSV(
+            upload_response = target.upload_csv(
                 table,
                 stream.getvalue().encode('utf-8')
             )
