@@ -2,8 +2,10 @@ import logging
 import os
 import sys
 import time
+from io import BytesIO
 
 import requests
+from requests import Response
 
 log = logging.getLogger(__name__)
 
@@ -19,46 +21,46 @@ class Client:
         self.email = email
         self.password = password
         self.session = requests.Session()
-        self.graphqlEndpoint = self.url + '/' + self.database + '/graphql'
-        self.apiEndpoint = self.url + '/' + self.database + '/api'
+        self.graphqlEndpoint = f'{self.url}/{self.database}/graphql'
+        self.apiEndpoint = f'{self.url}/{self.database}/api'
 
         self.signin(self.email, self.password)
 
     def signin(self, email: str, password: str):
         """Sign in to Molgenis and retrieve session cookie."""
         query = """
-            mutation($email:String, $password: String) {
-                signin(email: $email, password: $password) {
-                    status
-                    message
-                }
+          mutation($email:String, $password: String) {
+            signin(email: $email, password: $password) {
+              status
+              message
             }
+          }
         """
 
         variables = {'email': email, 'password': password}
 
         response = self.session.post(
-            self.url + '/apps/central/graphql',
+            url=f'{self.url}/apps/central/graphql',
             json={'query': query, 'variables': variables}
         )
 
-        response_json = response.json()
+        response_json: dict = response.json()
 
-        status = response_json['data']['signin']['status']
-        message = response_json['data']['signin']['message']
+        status: str = response_json['data']['signin']['status']
+        message: str = response_json['data']['signin']['message']
 
         if status == 'SUCCESS':
-            log.debug(f"Success: Signed into {self.database} as {self.email}")
+            log.debug(f"Success: Signed into {self.database} as {self.email}.")
         elif status == 'FAILED':
             log.error(message)
         else:
             log.error('Error: sign in failed, exiting.')
 
-    def query(self, query: str, variables: dict = None):
+    def query(self, query: str, variables: dict = None) -> dict:
         """Query backend."""
 
         response = self.session.post(
-            self.graphqlEndpoint,
+            url=self.graphqlEndpoint,
             json={"query": query, "variables": variables}
         )
 
@@ -67,23 +69,23 @@ class Client:
             # TODO: add logging content > errors > message
             sys.exit()
 
-        return response.json()['data']
+        return response.json().get('data')
 
-    def delete(self, table: str, pkey: str):
+    def delete(self, table: str, pkey: list):
         """Delete row by key."""
 
         query = (""
-                 "mutation delete($pkey:[" + table + "Input]) {"
-                                                     "delete(" + table + ":$pkey){message}"
-                                                                         "}"
-                                                                         "")
+                 "mutation delete($pkey:[" + table + "Input]) {\n"
+                 "  delete(" + table + ":$pkey){message}\n"
+                 "}"
+                 "")
 
         step_size = 1000  # to make sure list is not too big which will make server give error 500
 
         for i in range(0, len(pkey), step_size):
             variables = {'pkey': pkey[i:i + step_size]}
             response = self.session.post(
-                self.graphqlEndpoint,
+                url=self.graphqlEndpoint,
                 json={'query': query, 'variables': variables}
             )
             if response.status_code != 200:
@@ -94,10 +96,10 @@ class Client:
         """Add record."""
 
         query = (""
-                 "mutation insert($value:[" + table + "Input]) {"
-                                                      "insert(" + table + ":$value){message}"
-                                                                          "}"
-                                                                          "")
+                 "mutation insert($value:[" + table + "Input]) {\n"
+                 "  insert(" + table + ":$value){message}\n"
+                 "}"
+                 "")
 
         data['mg_draft'] = draft
 
@@ -122,7 +124,7 @@ class Client:
         response = self.session.post(self.graphqlEndpoint, json={'query': query})
 
         if response.status_code != 200:
-            log.error(f"Error while fetching table fields, status code {response.status_code}")
+            log.error(f"Error while fetching table fields, status code {response.status_code}.")
             log.error(response)
 
         return response.json()['data']['__type']['fields']
@@ -130,7 +132,7 @@ class Client:
     def upload_csv(self, table: str, data):
         """Upload csv data ( string ) to table."""
         response = self.session.post(
-            self.apiEndpoint + '/csv/' + table,
+            url=f'{self.apiEndpoint}/csv/{table}',
             headers={"Content-Type": 'text/csv'},
             data=data
         )
@@ -174,14 +176,14 @@ class Client:
 
         upload_zip_task_status(self, response)
 
-    def upload_zip_fallback(self, data) -> None:
+    def upload_zip_fallback(self, data: BytesIO) -> None:
         """Upload zip, will fall back on TARGET.zip if upload of SOURCE zip fails."""
         response = self.session.post(
-            self.apiEndpoint + '/zip?async=true',
+            url=f'{self.apiEndpoint}/zip?async=true',
             files={'file': ('zip.zip', data.getvalue())},
         )
 
-        def upload_zip_task_status(self, response) -> None:
+        def upload_zip_task_status(self, response: Response) -> None:
             task_response = self.session.get(self.url + response.json()['url'])
 
             if task_response.json()['status'] == 'COMPLETED':

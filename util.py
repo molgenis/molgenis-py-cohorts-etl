@@ -85,8 +85,8 @@ class Util:
     def get_source_cohort_pid(source: client.Client) -> str | None:
         """Get PID of SOURCE cohort, expects to get one PID, return pid."""
         try:
-            result = source.query(Path('./graphql-queries/Cohorts.gql').read_text())
-            if "Cohorts" in result:
+            result: dict = source.query(Path('./graphql-queries/Cohorts.gql').read_text())
+            if "Cohorts" in result.keys():
                 if len(result['Cohorts']) != 1:
                     log.warning(
                         f'Expected a single cohort in staging area "{source.database}"'
@@ -133,7 +133,7 @@ class Util:
                                           tables_to_sync: dict) -> None:
         """Delete SOURCE Cohort data from TARGET data catalogue before upload."""
 
-        source_cohort_pid = Util.get_source_cohort_pid(source)
+        source_cohort_pid: str = Util.get_source_cohort_pid(source)
         if source_cohort_pid is None:
             log.info("No tables to delete.")
             return
@@ -155,10 +155,11 @@ class Util:
                 variables = {"filter": {"subcohort": {"resource": {"equals": [{"pid": source_cohort_pid}]}}}}
             else:
                 continue
-            result = target.query(query, variables)
 
-            if table_name in result:
-                target.delete(table_name, result[table_name])
+            result: dict = target.query(query, variables)
+
+            if table_name in result.keys():
+                target.delete(table_name, result.get(table_name))
 
     # def delete_network_from_data_catalogue(self, tablesToSync: dict) -> None:
     #     """ Delete SOURCE Network data from TARGET data catalogue before upload """
@@ -184,11 +185,11 @@ class Util:
     #             client.Client.delete(self.target, tableName, result[tableName])
 
     @staticmethod
-    def download_zip_process(source: client.Client, target: client.Client, job_strategy,
+    def download_zip_process(source: client.Client, target: client.Client, job_strategy: str,
                              tables_to_sync: dict) -> None:
         """Download molgenis zip from SOURCE and process zip before upload to TARGET."""
 
-        result = source.download_zip()
+        result: bytes = source.download_zip()
 
         # Setup output zip stream
         zip_stream = BytesIO()
