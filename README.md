@@ -1,6 +1,6 @@
 # molgenis-py-cohorts-etl
 
-Python library to control data flow from staging environment to live catalogue for cohort rich or descriptive metadata and for variable metadata. Set up of servers and datamodels are found [here](https://github.com/molgenis/molgenis-py-cohorts-etl/datamodels)
+Python library to control data flow from staging environment to live catalogue for cohort rich or descriptive metadata and for variable metadata. Set up of servers and datamodels are found [here](https://github.com/molgenis/molgenis-py-cohorts-etl/docs/datamodels).
 
 ## system requirements
 
