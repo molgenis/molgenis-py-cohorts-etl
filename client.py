@@ -145,36 +145,36 @@ class Client:
 
     def download_csv(self, table: str):
         """Download csv data from table."""
-        resp = self.session.get(self.apiEndpoint + '/csv/' + table, allow_redirects=True)
+        resp = self.session.get(f'{self.apiEndpoint}/csv/{table}', allow_redirects=True)
         if resp.content:
             return resp.content
         else:
-            log.error('Error: download failed')
+            log.error('Error: download failed.')
 
     def upload_zip(self, data) -> None:
         """Upload zip."""
         response = self.session.post(
-            self.apiEndpoint + '/zip?async=true',
+            url=f'{self.apiEndpoint}/zip?async=true',
             files={'file': ('zip.zip', data.getvalue())},
         )
 
-        def upload_zip_task_status(self, response) -> None:
-            task_response = self.session.get(self.url + response.json()['url'])
+        def upload_zip_task_status(_response) -> None:
+            task_response = self.session.get(f"{self.url}{_response.json().get('url')}")
 
             if task_response.json()['status'] == 'COMPLETED':
-                log.info(f"{task_response.json()['status']}, {task_response.json()['description']}")
+                log.info(f"{task_response.json().get('status')}, {task_response.json().get('description')}")
                 return
 
             if task_response.json()['status'] == 'ERROR':
-                log.error(f"{task_response.json()['status']}, {task_response.json()['description']}")
+                log.error(f"{task_response.json().get('status')}, {task_response.json().get('description')}")
                 return
 
-            if task_response.json()['status'] == 'RUNNING':
-                log.info(f"{task_response.json()['status']}, {task_response.json()['description']}")
+            if task_response.json().get('status') == 'RUNNING':
+                log.info(f"{task_response.json().get('status')}, {task_response.json().get('description')}")
                 time.sleep(5)
-                upload_zip_task_status(self, response)
+                upload_zip_task_status(_response=_response)
 
-        upload_zip_task_status(self, response)
+        upload_zip_task_status(_response=response)
 
     def upload_zip_fallback(self, data: BytesIO) -> None:
         """Upload zip, will fall back on TARGET.zip if upload of SOURCE zip fails."""
@@ -183,37 +183,37 @@ class Client:
             files={'file': ('zip.zip', data.getvalue())},
         )
 
-        def upload_zip_task_status(self, response: Response) -> None:
-            task_response = self.session.get(self.url + response.json()['url'])
+        def upload_zip_task_status(_response: Response) -> None:
+            task_response = self.session.get(f"{self.url}{_response.json().get('url')}")
 
-            if task_response.json()['status'] == 'COMPLETED':
-                log.info(f"{task_response.json()['status']}, {task_response.json()['description']}")
+            if task_response.json().get('status') == 'COMPLETED':
+                log.info(f"{task_response.json().get('status')}, {task_response.json().get('description')}.")
                 filename = 'TARGET.zip'
                 if os.path.exists(filename):
                     os.remove(filename)
                 return
 
-            if task_response.json()['status'] == 'ERROR':
-                log.error(f"{task_response.json()['status']}, {task_response.json()['description']}")
-                # fallback to TARGET.zip
+            if task_response.json().get('status') == 'ERROR':
+                log.error(f"{task_response.json().get('status')}, {task_response.json().get('description')}.")
+                # Fall back to TARGET.zip
                 fallback_response = self.session.post(
-                    self.apiEndpoint + '/zip?async=true',
+                    url=f'{self.apiEndpoint}/zip?async=true',
                     files={'file': open('TARGET.zip', 'rb')},
                 )
                 log.info(f"TARGET.zip found, upload zip")
-                upload_zip_task_status(self, fallback_response)  # endless loop ..
+                upload_zip_task_status(_response=fallback_response)  # endless loop ..
                 sys.exit()
 
             if task_response.json()['status'] == 'RUNNING':
-                log.info(f"{task_response.json()['status']}, {task_response.json()['description']}")
+                log.info(f"{task_response.json().get('status')}, {task_response.json().get('description')}.")
                 time.sleep(5)
-                upload_zip_task_status(self, response)
+                upload_zip_task_status(_response=_response)
 
-        upload_zip_task_status(self, response)
+        upload_zip_task_status(_response=response)
 
     def download_zip(self) -> bytes:
         """Download zip data from database."""
-        resp = self.session.get(self.apiEndpoint + '/zip?includeSystemColumns=true', allow_redirects=True)
+        resp = self.session.get(f'{self.apiEndpoint}/zip?includeSystemColumns=true', allow_redirects=True)
         if resp.content:
             return resp.content
         else:
@@ -223,7 +223,7 @@ class Client:
         """Check if database exists on server, otherwise complain and exit."""
         query = '{_session {schemas} }'
 
-        response = self.session.post(self.graphqlEndpoint, json={'query': query})
+        response = self.session.post(url=self.graphqlEndpoint, json={'query': query})
         if response.status_code != 200:
             log.error(f"Database schema \'{self.database}\' does not exist, status code {response.status_code}.")
             sys.exit()
