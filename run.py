@@ -4,7 +4,7 @@ import sys
 
 from decouple import config
 
-import job
+from job import Job, JobStrategy
 
 
 def main():
@@ -24,7 +24,7 @@ def main():
 
         JOB_STRATEGY = config('MG_JOB_STRATEGY')
 
-        isinstance(job.JobStrategy[JOB_STRATEGY], job.JobStrategy)
+        isinstance(JobStrategy[JOB_STRATEGY], JobStrategy)
     except:
         log.error('Make sure you filled in all variables in the .env file, script will exit now.')
         sys.exit()
@@ -48,7 +48,7 @@ def main():
     for target in targets:
         for source in sources:
             log.info('START SYNC SOURCE (' + source + ') WITH TARGET (' + target + ')')
-            this_job = job.Job(
+            this_job = Job(
                 target_url=TARGET_URL,
                 target_email=TARGET_USERNAME,
                 target_password=TARGET_PASSWORD,

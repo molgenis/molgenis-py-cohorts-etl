@@ -7,14 +7,14 @@ from pathlib import Path
 
 import pandas as pd
 
-import client
+from client import Client
 
 log = logging.getLogger(__name__)
 
 
 class Util:
     @staticmethod
-    def download_source_data(source, table: str) -> bytes | None:
+    def download_source_data(source: Client, table: str) -> bytes | None:
         """Download catalogue data or return None in case of zero rows."""
         result = source.query('query Count{' + table + '_agg { count }}')
         if result[table + '_agg']['count'] > 0:
@@ -22,7 +22,7 @@ class Util:
         return None
 
     @staticmethod
-    def download_filter_upload(source: client.Client, target: client.Client,
+    def download_filter_upload(source: Client, target: Client,
                                tables_to_sync: dict, network: bool = False) -> None:
         """Download SOURCE csv, filter with pandas and upload csv to TARGET."""
         if network:
@@ -59,7 +59,7 @@ class Util:
                     log.info(f'{table}{upload_response.status_code}')
 
     @staticmethod
-    def download_upload(source: client.Client, target: client.Client, tables_to_sync: dict) -> None:
+    def download_upload(source: Client, target: Client, tables_to_sync: dict) -> None:
         """Download SOURCE csv and upload csv to TARGET."""
         for table in tables_to_sync.keys():
             data = Util.download_source_data(source, table)
@@ -82,7 +82,7 @@ class Util:
             log.info(f'{table} {upload_response.status_code}')
 
     @staticmethod
-    def get_source_cohort_pid(source: client.Client) -> str | None:
+    def get_source_cohort_pid(source: Client) -> str | None:
         """Get PID of SOURCE cohort, expects to get one PID, return pid."""
         try:
             result: dict = source.query(Path('./graphql-queries/Cohorts.gql').read_text())
@@ -104,7 +104,7 @@ class Util:
             return None
 
     @staticmethod
-    def get_source_model_pid(source) -> str | None:
+    def get_source_model_pid(source: Client) -> str | None:
         """Get PID of SOURCE network, expects to get one PID, return pid.
         Fetch first model and return pid or else fail.
         Not all staging areas (SharedStaging) contain a table 'Models', therefore a try/except is used
@@ -129,7 +129,7 @@ class Util:
             return None
 
     @staticmethod
-    def delete_cohort_from_data_catalogue(source: client.Client, target: client.Client,
+    def delete_cohort_from_data_catalogue(source: Client, target: Client,
                                           tables_to_sync: dict) -> None:
         """Delete SOURCE Cohort data from TARGET data catalogue before upload."""
 
@@ -182,10 +182,10 @@ class Util:
     #         result = self.target.query(query, variables)
 
     #         if tableName in result:
-    #             client.Client.delete(self.target, tableName, result[tableName])
+    #             Client.delete(self.target, tableName, result[tableName])
 
     @staticmethod
-    def download_zip_process(source: client.Client, target: client.Client, job_strategy: str,
+    def download_zip_process(source: Client, target: Client, job_strategy: str,
                              tables_to_sync: dict) -> None:
         """Download molgenis zip from SOURCE and process zip before upload to TARGET."""
 
@@ -222,7 +222,7 @@ class Util:
             log.warning(f'Tried to download zip using invalid job strategy "{job_strategy}".')
 
     @staticmethod
-    def download_target(target: client.Client):
+    def download_target(target: Client):
         """Download target schema as zip, save in case upload fails."""
         filename = 'TARGET.zip'
         if os.path.exists(filename):

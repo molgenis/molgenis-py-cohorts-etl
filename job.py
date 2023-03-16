@@ -2,8 +2,8 @@ import logging
 import sys
 from enum import Enum, auto
 
-import client
-import sync
+from client import Client
+from sync import Sync
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class Job:
             job_strategy: str) -> None:
 
         # Set up Client for SOURCE
-        self.source = client.Client(
+        self.source = Client(
             url=source_url,
             database=source_database,
             email=source_email,
@@ -33,7 +33,7 @@ class Job:
         )
 
         # Set up Client for TARGET
-        self.target = client.Client(
+        self.target = Client(
             url=target_url,
             database=target_database,
             email=target_email,
@@ -57,21 +57,21 @@ class Job:
         log.info(f'Run job strategy: {self.job_strategy}.')
         match self.job_strategy:
             case JobStrategy.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-                sync.Sync.network_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
+                Sync.network_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
             case JobStrategy.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-                sync.Sync.cohort_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
+                Sync.cohort_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
             case JobStrategy.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-                sync.Sync.umcg_cohort_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
+                Sync.umcg_cohort_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
             case JobStrategy.FILL_STAGING.name:
-                sync.Sync.fill_staging(self.source, self.target)
+                Sync.fill_staging(self.source, self.target)
             case JobStrategy.SHARED_STAGING.name:
-                sync.Sync.shared_staging(self.source, self.target)
+                Sync.shared_staging(self.source, self.target)
             case JobStrategy.UMCG_SHARED_ONTOLOGY_ZIP.name:
-                sync.Sync.umcg_shared_ontology_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
+                Sync.umcg_shared_ontology_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
             case JobStrategy.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP.name:
-                sync.Sync.ontology_staging_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
+                Sync.ontology_staging_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
             case JobStrategy.FILL_NETWORK.name:
-                sync.Sync.fill_network(self.source, self.target)
+                Sync.fill_network(self.source, self.target)
 
 
 class JobStrategy(Enum):
