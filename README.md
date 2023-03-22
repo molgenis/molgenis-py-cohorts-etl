@@ -4,7 +4,7 @@ Python library to control data flow from staging environment to live catalogue f
 
 ## system requirements
 
-- Python 3 (3.8.10)
+- Python 3 (3.11.2)
 - Git
 
 ## Initial one-time setup
@@ -20,6 +20,10 @@ Use virtual env to get a consistent python environment.
 2. Create a virtual python environment
 
     `python -m venv venv`
+
+    On linux:
+
+    `/usr/bin/python3.11 -m venv venv`
 
 3. Activate the virtual python environment
 
@@ -81,22 +85,26 @@ Edit the env setting in the docker-compose.yml as needed
 
     | Name        | description | SOURCE | TARGET |
     | ----------- | ----------- | ------ | ------ |
-    | COHORT_STAGING_TO_DATA_CATALOGUE_ZIP | Delete cohort on the TARGET by  <code>pid</code>, download and process SOURCE zip and upload to TARGET (make sure schema name is identical to <code>pid</code>)| CohortStaging | Catalogue |
-    | UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP | Delete cohort on the TARGET by  <code>pid</code>, download and process SOURCE zip and upload to TARGET (make sure schema name is identical to <code>pid</code>) | UMCG CohortStaging | UMCG Catalogue |
+    | COHORT_STAGING_TO_DATA_CATALOGUE_ZIP | Delete cohort on the TARGET by  `pid`, download and process SOURCE zip and upload to TARGET (make sure schema name is identical to `pid`)| CohortStaging | Catalogue |
+    | UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP | Delete cohort on the TARGET by  `pid`, download and process SOURCE zip and upload to TARGET (make sure schema name is identical to `pid`) | UMCG CohortStaging | UMCG Catalogue |
     | UMCG_SHARED_ONTOLOGY_ZIP | Download zip from SOURCE and upload ontology to TARGET (UMCG CatalogueOntologies) | UMCG SharedStaging | UMCG CatalogueOntologies |
     | ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP | Download zip from SOURCE and upload ontology to TARGET  | CatalogueOntologies | CatalogueOntologies |
     | NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP | Download zip from SOURCE and upload ontology to TARGET | NetworkStaging | Catalogue |
-    | FILL_STAGING | First create cohort staging area with the correct model, the schema and Cohorts <code>pid</code> need to be exactly the same.  Note that files like logo's will not be copied over!| Catalogue | CohortStaging |
+    | FILL_STAGING | First create cohort staging area with the correct model, the schema and Cohorts `pid` need to be exactly the same.  Note that files like logo's will not be copied over!| Catalogue | CohortStaging |
     | SHARED_STAGING | Copy SharedStaging model tables, no deletion.| SharedStaging | Catalogue |
-    | FILL_NETWORK | First create network staging area with the correct model, the schema and Networks <code>pid</code> need to be exactly the same.  Note that files like logo's will not be copied over! | Catalogue | NetworkStaging |
+    | FILL_NETWORK | First create network staging area with the correct model, the schema and Networks `pid` need to be exactly the same.  Note that files like logo's will not be copied over! | Catalogue | NetworkStaging |
 
 3. Run the script
 
-    ```python run.py```
+    `python run.py`
 
 4. Deactivate the the virtual python environment
 
-    ```deactivate```
+    `deactivate`
+
+5. Remove virtual python environment
+
+    `rm -rf venv`
 
 ## For script developers
 
