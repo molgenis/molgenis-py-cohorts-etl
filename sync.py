@@ -1,200 +1,92 @@
-import util
+from client import Client
+from constants import OntologiesToSync, TablesToSync, TablesToDelete
+from util import Util
+
 
 class Sync:
-    def fill_staging(self) -> None:
-        """ Sync SOURCE (catalogue) with TARGET (staging)
-        """       
-        # order of tables is important, value equals filter
-        tablesToSync = {
-            'Publications': None,
-            'Cohorts': 'pid',
-            'Documentation': 'resource',
-            'Contributions': 'resource',
-            'Subcohorts': 'resource',
-            'CollectionEvents': 'resource',
-            'Partners': 'resource',
-            'SourceDataDictionaries': 'resource',
-            'SourceTables': 'dataDictionary.resource',
-            'SourceVariables': 'dataDictionary.resource',
-            'RepeatedSourceVariables': 'dataDictionary.resource',
-            'SourceVariableValues': 'dataDictionary.resource',
-            'TableMappings': 'fromDataDictionary.resource',
-            'VariableMappings': 'fromDataDictionary.resource',
-        }
-        util.Util.download_filter_upload(self, tablesToSync)
+    @staticmethod
+    def network_zip_to_datacatalogue(source: Client, target: Client,
+                                     job_strategy: str) -> None:
+        tables_to_sync = TablesToSync.NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP
+        Util.download_zip_process(source=source, target=target, job_strategy=job_strategy,
+                                  tables_to_sync=tables_to_sync)
 
-    def shared_staging(self) -> None:
+    @staticmethod
+    def cohort_zip_to_datacatalogue(source: Client, target: Client,
+                                    job_strategy: str) -> None:
+        """Download cohort staging zip, delete cohort on DataCatalogue and finally upload transformed zip."""
+        Util.download_target(target)
+
+        # Database name needs to be identical to cohort PID
+        tables_to_delete = TablesToDelete.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP
+        tables_to_sync = TablesToSync.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP
+
+        Util.delete_cohort_from_data_catalogue(source=source, target=target,
+                                               tables_to_sync=tables_to_delete)
+        Util.download_zip_process(source=source, target=target, job_strategy=job_strategy,
+                                  tables_to_sync=tables_to_sync)
+
+    @staticmethod
+    def umcg_cohort_zip_to_datacatalogue(source: Client, target: Client,
+                                         job_strategy: str) -> None:
+        """
+        Download UMCGCohortStaging zip, delete cohort on DataCatalogue
+        and finally upload transformed zip
+        """
+        Util.download_target(target)
+
+        # Database name needs to be identical to cohort PID
+        tables_to_delete = TablesToDelete.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP
+        tables_to_sync = TablesToSync.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP
+
+        Util.delete_cohort_from_data_catalogue(source=source, target=target,
+                                               tables_to_sync=tables_to_delete)
+        Util.download_zip_process(source=source, target=target, job_strategy=job_strategy,
+                                  tables_to_sync=tables_to_sync)
+
+    @staticmethod
+    def fill_staging(source: Client, target: Client) -> None:
+        """Sync SOURCE (catalogue) with TARGET (staging)"""
+
+        # The order of tables is important, value equals filter
+        tables_to_sync = TablesToSync.FILL_STAGING
+        Util.download_filter_upload(source=source, target=target,
+                                    tables_to_sync=tables_to_sync)
+
+    @staticmethod
+    def shared_staging(source: Client, target: Client) -> None:
         """ Sync SOURCE (SharedStaging) with TARGET """
-        tablesToSync = {
-            'Institutions': None,
-            'Contacts': None,
-        }
-        util.Util.download_filter_upload(self, tablesToSync)
-    
-    
-    def fill_network(self) -> None:
-        # order of tables is important, value equals filter
-        tablesToSync = {
-            'Models': 'pid',
-            'TargetDataDictionaries': 'resource',
-            'TargetTables': 'dataDictionary.resource',
-            'Subcohorts': 'resource',
-            'CollectionEvents': 'resource',
-            'TargetVariables': 'dataDictionary.resource',
-            'TargetVariableValues': 'dataDictionary.resource',
-            'RepeatedTargetVariables': 'dataDictionary.resource',
-        }
+        tables_to_sync = TablesToSync.SHARED_STAGING
+        Util.download_filter_upload(source=source, target=target,
+                                    tables_to_sync=tables_to_sync)
 
-        util.Util.download_filter_upload(self, tablesToSync, network = True)
+    @staticmethod
+    def umcg_shared_ontology_zip_to_datacatalogue(source: Client, target: Client,
+                                                  job_strategy: str) -> None:
+        """
+        UMCG data model uses SharedStaging Contacts and Institutions directly (same server), no need to sync.
+        Upload CoreVariables to CatalogueOntologies as a zip.
+        """
+        Util.download_target(target)
 
-    def umcg_cohort_zip_to_datacatalogue(self) -> None:
-        """Download UMCG cohort staging zip, delete cohort on datacatalogue and finaly upload transformed zip"""
-        util.Util.download_target(self)
-        
-        # Database name needs to be identical to cohort PID
-        tablesToDelete = {
-            #'Publications': 'doi',
-            'Documentation': 'resource',
-            'Contributions': 'resource',
-            'CollectionEvents': 'resource',
-            'Partners': 'resource',
-            'SubcohortCounts': 'subcohort',
-            'Subcohorts': 'resource',
-            'Cohorts': 'pid',
-        }
+        ontologies_to_sync = OntologiesToSync.UMCG_SHARED_ONTOLOGY_ZIP
+        Util.download_zip_process(source=source, target=target, job_strategy=job_strategy,
+                                  tables_to_sync=ontologies_to_sync)
 
-        tablesToSync = {
-            'Publications': None,
-            'Documentation': None,
-            'Contributions': None,
-            'CollectionEvents': None,
-            #'Subcohorts': None,
-            'Partners': None,
-            'SubcohortCounts': None,
-            'Subcohorts': None,
-            'Resources': None,
-            'Cohorts': None,
-        }
-       
-        util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
-        util.Util.download_zip_process(self, tablesToSync)
+    @staticmethod
+    def ontology_staging_zip_to_datacatalogue(source: Client, target: Client,
+                                              job_strategy: str) -> None:
+        """Upload SOURCE CatalogueOntologies to TARGET CatalogueOntologies as a zip."""
+        Util.download_target(target)
 
-    def cohort_zip_to_datacatalogue(self) -> None:
-        """Download cohort staging zip, delete cohort on datacatalogue and finaly upload transformed zip"""
-        util.Util.download_target(self)
-        
-        # Database name needs to be identical to cohort PID
-        tablesToDelete = {
-            'VariableMappings': 'mappings',
-            'TableMappings': 'mappings',
-            'SourceVariableValues': 'variables',
-            'RepeatedSourceVariables': 'variables',
-            'SourceVariables': 'variables',
-            'SourceTables': 'variables',
-            'SourceDataDictionaries': 'resource',
-            'Documentation': 'resource',
-            'Contributions': 'resource',
-            'CollectionEvents': 'resource',
-            'Subcohorts': 'resource',
-            'Partners': 'resource',
-            'Cohorts': 'pid',
-        }
+        ontologies_to_sync = OntologiesToSync.ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP
+        Util.download_zip_process(source=source, target=target, job_strategy=job_strategy,
+                                  tables_to_sync=ontologies_to_sync)
 
-        tablesToSync = {
-            'Publications': None,
-            'VariableMappings': None,
-            'TableMappings': None,
-            'SourceVariableValues': None,
-            'RepeatedSourceVariables': None,
-            'SourceVariables': None,
-            'SourceTables': None,
-            'SourceDataDictionaries': None,
-            'Documentation': None,
-            'Contributions': None,
-            'CollectionEvents': None,
-            'Subcohorts': None,
-            'Partners': None,
-            'Cohorts': None,
-        }
-       
-        util.Util.delete_cohort_from_data_catalogue(self, tablesToDelete)
-        util.Util.download_zip_process(self, tablesToSync)
-    
-    def network_zip_to_datacatalogue(self) -> None:
-        tablesToSync = {
-            'AllTargetVariables': None,
-            'CollectionEvents': None,
-            'Models': None,
-            'Networks': None,
-            'RepeatedTargetVariables': None,
-            'Resources': None,
-            'Subcohorts': None,
-            'TargetDataDictionaries': None,
-            'TargetTables': None,
-            'TargetVariables': None,
-            'TargetVariableValues': None,
+    @staticmethod
+    def fill_network(source: Client, target: Client) -> None:
+        # The order of tables is important, value equals filter
+        tables_to_sync = TablesToSync.FILL_NETWORK
 
-        }
-        util.Util.download_zip_process(self, tablesToSync)
-    
-    def umcg_shared_ontology_zip_to_datacatalogue(self) -> None:
-        """ UMCG data model uses SharedStaging Contacts and Instiutions directly (same server), no need to sync.
-        Upload CoreVariables to CatalogueOntologies as a zip"""
-        util.Util.download_target(self)
-
-        ontologiesToSync = {
-            'CoreVariables': None
-        }
-        util.Util.download_zip_process(self, ontologiesToSync)
-    
-    def ontology_staging_zip_to_datacatalogue(self) -> None:
-        """ Upload SOURCE CatalogueOntologies to TARGET CatalogueOntologies as a zip"""
-        util.Util.download_target(self)
-
-        ontologiesToSync = {
-            'AgeGroups': None,
-            'AreasOfInformation': None,
-            'CareSettings': None,
-            'CohortDesigns': None,
-            'CollectionTypes': None,
-            'ContributionTypes': None,
-            'CoreVariables': None,
-            'Countries': None,
-            'DAPsAccessCompleteness': None,
-            'DAPsAccessLevels': None,
-            'DAPsAccessPermissions': None,
-            'DAPsReasonsForAccess': None,
-            'DataAccessConditions': None,
-            'DataCategories': None,
-            'DataUseConditions': None,
-            'DatabankFamilies': None,
-            'DatasourceTypes': None,
-            'Diseases': None,
-            'DocumentTypes': None,
-            'Formats': None,
-            'InformedConsents': None,
-            'InstitutionRoles': None,
-            'InstitutionTypes': None,
-            'Keywords': None,
-            'Languages': None,
-            'LinkageStrategies': None,
-            'Months': None,
-            'ObservationTargets': None,
-            'PartnerRoles': None,
-            'PopulationEntryCauses': None,
-            'PopulationExitCauses': None,
-            'PopulationSubsets': None,
-            'Regions': None,
-            'ReleaseTypes': None,
-            'ResourceTypes': None,
-            'SampleCategories': None,
-            'StandardizedTools': None,
-            'Status': None,
-            'StatusDetails': None,
-            'StudyTypes': None,
-            'Titles': None,
-            'Units': None,
-            'Vocabularies': None,
-            'Years': None,
-        }
-        util.Util.download_zip_process(self, ontologiesToSync)
+        Util.download_filter_upload(source=source, target=target,
+                                    tables_to_sync=tables_to_sync, network=True)
