@@ -13,22 +13,33 @@ Use virtual env to get a consistent python environment.
 
 1. Clone the github repository
 
-    `git clone git@github.com:molgenis/molgenis-py-cohorts-etl.git`
+    `clone https://github.com/molgenis/molgenis-py-cohorts-etl.git`
 
     `cd molgenis-py-cohorts-etl`
 
 2. Create a virtual python environment
 
+    On macOS:
+
     `python -m venv venv`
 
-    On linux:
+    On Linux:
 
     `python3.11 -m venv venv`
-
+    
+    On Windows:
+    
+    `py -3.11 venv venv `
 
 3. Activate the virtual python environment
+    
+    On macOS and Linux:
 
     `source venv/bin/activate`
+    
+    On Windows:
+    
+    `.venv\Scripts\activate.bat`
 
 4. Install the script dependencies from requirements.txt file
 
@@ -36,9 +47,9 @@ Use virtual env to get a consistent python environment.
 
 More info see:
 
-mac: [https://www.youtube.com/watch?v=Kg1Yvry_Ydk](https://www.youtube.com/watch?v=Kg1Yvry_Ydk)
+macOS: [https://www.youtube.com/watch?v=Kg1Yvry_Ydk](https://www.youtube.com/watch?v=Kg1Yvry_Ydk)
 
-windows: [https://www.youtube.com/watch?v=APOPm01BVrk](https://www.youtube.com/watch?v=APOPm01BVrk)
+Windows: [https://www.youtube.com/watch?v=APOPm01BVrk](https://www.youtube.com/watch?v=APOPm01BVrk)
 
 ## Run the script using docker
 
@@ -58,19 +69,11 @@ Edit the env setting in the docker-compose.yml as needed
 
 ## Run the script using the python virtual environment
 
-1. Activate the virtual python environment
-
-    `source venv/bin/activate`
-
-    (1.1 Optionally update the requirements)
-
-    `pip install -r requirements.txt`
-
-2. Configure the script by setting the environment variables
+1. Configure the script by setting the environment variables
 
     Add a .env file and fill out the values (see .env-example as a template) or directly setting the values on the system environment.
 
-    | Name        | description  |
+    | Name        | Description  |
     | ------------- | ------------- |
     | MG_JOB_STRATEGY | see [list](/README.md#job-strategies) below for all options |
     | MG_SOURCE_URL | full url of source server |
@@ -84,7 +87,7 @@ Edit the env setting in the docker-compose.yml as needed
 
     Job strategies
 
-    | Name        | description | SOURCE | TARGET |
+    | Name        | Description | SOURCE | TARGET |
     | ----------- | ----------- | ------ | ------ |
     | COHORT_STAGING_TO_DATA_CATALOGUE_ZIP | Delete cohort on the TARGET by  `pid`, download and process SOURCE zip and upload to TARGET (make sure schema name is identical to `pid`)| CohortStaging | Catalogue |
     | UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP | Delete cohort on the TARGET by  `pid`, download and process SOURCE zip and upload to TARGET (make sure schema name is identical to `pid`) | UMCG CohortStaging | UMCG Catalogue |
@@ -95,7 +98,7 @@ Edit the env setting in the docker-compose.yml as needed
     | SHARED_STAGING | Copy SharedStaging model tables, no deletion.| SharedStaging | Catalogue |
     | FILL_NETWORK | First create network staging area with the correct model, the schema and Networks `pid` need to be exactly the same.  Note that files like logo's will not be copied over! | Catalogue | NetworkStaging |
 
-3. Run the script
+2. Run the script
 
     `python run.py`
 
@@ -103,13 +106,19 @@ Edit the env setting in the docker-compose.yml as needed
 
     `arch -arm64 python run.py`
 
-4. Deactivate the the virtual python environment
+3. Deactivate the virtual python environment
 
     `deactivate`
 
-5. Remove virtual python environment
+4. Remove virtual python environment
+
+    On macOS and Linux:
 
     `rm -rf venv`
+    
+    On Windows:
+    
+    `del venv`
 
 ## For script developers
 
