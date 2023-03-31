@@ -4,7 +4,7 @@ import sys
 
 from decouple import config
 
-from src.job import Job, JobStrategy
+from src import Job, JobStrategy
 
 
 def main():

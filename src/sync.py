@@ -1,6 +1,6 @@
 from src.client import Client
 from src.constants import OntologiesToSync, TablesToSync, TablesToDelete
-from util import Util
+from src.util import Util
 
 
 class Sync:

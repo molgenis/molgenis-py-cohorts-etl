@@ -3,7 +3,7 @@ import sys
 from enum import Enum, auto
 
 from src.client import Client
-from sync import Sync
+from src.sync import Sync
 
 log = logging.getLogger(__name__)
 
