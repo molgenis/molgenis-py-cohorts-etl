@@ -1,4 +1,4 @@
-from client import Client
+from src.client import Client
 from constants import OntologiesToSync, TablesToSync, TablesToDelete
 from util import Util
 

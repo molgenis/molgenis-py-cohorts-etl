@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from client import Client
+from src.client import Client
 
 log = logging.getLogger(__name__)
 
