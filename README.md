@@ -13,7 +13,7 @@ Use virtual env to get a consistent python environment.
 
 1. Clone the github repository
 
-    `clone https://github.com/molgenis/molgenis-py-cohorts-etl.git`
+    `git clone https://github.com/molgenis/molgenis-py-cohorts-etl.git`
 
     `cd molgenis-py-cohorts-etl`
 
