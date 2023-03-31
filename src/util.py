@@ -85,7 +85,7 @@ class Util:
     def get_source_cohort_pid(source: Client) -> str | None:
         """Get PID of SOURCE cohort, expects to get one PID, return pid."""
         try:
-            result: dict = source.query(Path('./graphql-queries/Cohorts.gql').read_text())
+            result: dict = source.query(Path('../graphql-queries/Cohorts.gql').read_text())
             if "Cohorts" in result.keys():
                 if len(result['Cohorts']) != 1:
                     log.warning(
@@ -110,7 +110,7 @@ class Util:
         Not all staging areas (SharedStaging) contain a table 'Models', therefore a try/except is used
         here.
         """
-        result = source.query(Path('./graphql-queries/Models.gql').read_text())
+        result = source.query(Path('../graphql-queries/Models.gql').read_text())
         try:
             if "Models" in result:
                 if len(result['Models']) != 1:
@@ -224,7 +224,7 @@ class Util:
     @staticmethod
     def download_target(target: Client):
         """Download target schema as zip, save in case upload fails."""
-        filename = 'TARGET.zip'
+        filename = '../TARGET.zip'
         if os.path.exists(filename):
             os.remove(filename)
 
