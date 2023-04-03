@@ -11,6 +11,8 @@ from src.client import Client
 
 log = logging.getLogger(__name__)
 
+BASE_DIR = os.path.abspath(f'{os.path.dirname(__file__)}/..')
+
 
 class Util:
     @staticmethod
@@ -85,7 +87,7 @@ class Util:
     def get_source_cohort_pid(source: Client) -> str | None:
         """Get PID of SOURCE cohort, expects to get one PID, return pid."""
         try:
-            result: dict = source.query(Path('../graphql-queries/Cohorts.gql').read_text())
+            result: dict = source.query(Path(f'{BASE_DIR}/graphql-queries/Cohorts.gql').read_text())
             if "Cohorts" in result.keys():
                 if len(result['Cohorts']) != 1:
                     log.warning(
@@ -110,7 +112,7 @@ class Util:
         Not all staging areas (SharedStaging) contain a table 'Models', therefore a try/except is used
         here.
         """
-        result = source.query(Path('../graphql-queries/Models.gql').read_text())
+        result = source.query(Path(f'{BASE_DIR}/graphql-queries/Models.gql').read_text())
         try:
             if "Models" in result:
                 if len(result['Models']) != 1:
@@ -141,7 +143,7 @@ class Util:
         for table_name in tables_to_sync.keys():
             table_type = tables_to_sync.get(table_name)
 
-            query = Path(f'./graphql-queries/{table_name}.gql').read_text()
+            query = Path(f'{BASE_DIR}/graphql-queries/{table_name}.gql').read_text()
 
             if table_type == 'resource':
                 variables = {"filter": {"resource": {"equals": [{"pid": source_cohort_pid}]}}}
@@ -224,7 +226,7 @@ class Util:
     @staticmethod
     def download_target(target: Client):
         """Download target schema as zip, save in case upload fails."""
-        filename = '../TARGET.zip'
+        filename = f'{BASE_DIR}/TARGET.zip'
         if os.path.exists(filename):
             os.remove(filename)
 
