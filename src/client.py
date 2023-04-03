@@ -9,6 +9,8 @@ from requests import Response
 
 log = logging.getLogger(__name__)
 
+BASE_DIR = os.path.abspath(f'{os.path.dirname(__file__)}/..')
+
 
 class Client:
     """
@@ -188,7 +190,7 @@ class Client:
 
             if task_response.json().get('status') == 'COMPLETED':
                 log.info(f"{task_response.json().get('status')}, {task_response.json().get('description')}.")
-                filename = 'TARGET.zip'
+                filename = f'{BASE_DIR}/TARGET.zip'
                 if os.path.exists(filename):
                     os.remove(filename)
                 return
@@ -198,7 +200,7 @@ class Client:
                 # Fall back to TARGET.zip
                 fallback_response = self.session.post(
                     url=f'{self.apiEndpoint}/zip?async=true',
-                    files={'file': open('TARGET.zip', 'rb')},
+                    files={'file': open(f'{BASE_DIR}/TARGET.zip', 'rb')},
                 )
                 log.info(f"TARGET.zip found, upload zip")
                 upload_zip_task_status(_response=fallback_response)  # endless loop ..
