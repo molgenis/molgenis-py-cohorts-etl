@@ -5,6 +5,7 @@ import sys
 from dotenv import load_dotenv
 
 from src import Job, JobStrategy
+from src.exceptions import InvalidJobStrategyError
 
 
 def main():
@@ -15,22 +16,23 @@ def main():
     load_dotenv()
 
     try:
-        source_url = os.getenv('MG_SOURCE_URL')
-        source_username = os.getenv('MG_SOURCE_USERNAME')
-        source_password = os.getenv('MG_SOURCE_PASSWORD')
-        source_database = os.getenv('MG_SOURCE_DATABASE')
+        source_url = os.environ['MG_SOURCE_URL']
+        source_username = os.environ['MG_SOURCE_USERNAME']
+        source_password = os.environ['MG_SOURCE_PASSWORD']
+        source_database = os.environ['MG_SOURCE_DATABASE']
 
-        target_url = os.getenv('MG_TARGET_URL')
-        target_username = os.getenv('MG_TARGET_USERNAME')
-        target_password = os.getenv('MG_TARGET_PASSWORD')
-        target_database = os.getenv('MG_TARGET_DATABASE')
+        target_url = os.environ['MG_TARGET_URL']
+        target_username = os.environ['MG_TARGET_USERNAME']
+        target_password = os.environ['MG_TARGET_PASSWORD']
+        target_database = os.environ['MG_TARGET_DATABASE']
 
-        job_strategy = os.getenv('MG_JOB_STRATEGY')
-
-        isinstance(JobStrategy[job_strategy], JobStrategy)
-    except:
+        job_strategy = os.environ['MG_JOB_STRATEGY']
+    except KeyError:
         log.error('Make sure you filled in all variables in the .env file, script will exit now.')
         sys.exit()
+
+    if job_strategy not in JobStrategy.member_names():
+        raise InvalidJobStrategyError(job_strategy)
 
     log.info('*** START SYNC JOB WITH settings: ***')
     log.info(f'JOB_STRATEGY:       {job_strategy}')
@@ -50,7 +52,7 @@ def main():
 
     for target in targets:
         for source in sources:
-            log.info('START SYNC SOURCE (' + source + ') WITH TARGET (' + target + ')')
+            log.info(f'START SYNC SOURCE ({source}) WITH TARGET ({target})')
             this_job = Job(
                 target_url=target_url,
                 target_email=target_username,
@@ -63,7 +65,7 @@ def main():
                 job_strategy=job_strategy,
             )
             this_job.run_strategy()
-            log.info('END SYNC SOURCE (' + source + ') WITH TARGET (' + target + ')')
+            log.info(f'END SYNC SOURCE ({source}) WITH TARGET ({target})')
 
     log.info('*** JOB COMPLETED ***')
 
