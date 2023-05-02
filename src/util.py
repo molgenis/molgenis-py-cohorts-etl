@@ -191,7 +191,7 @@ class Util:
                              tables_to_sync: dict) -> None:
         """Download molgenis zip from SOURCE and process zip before upload to TARGET."""
 
-        result: bytes = source.download_zip()
+        result: bytes = source.download_zip(include_system_columns=False)
 
         # Setup output zip stream
         zip_stream = BytesIO()
@@ -209,7 +209,7 @@ class Util:
             print(e)
 
         # Uncomment if you need to debug, will write SOURCE.zip that will be uploaded to TARGET
-        # pathlib.Path('SOURCE.ZIP').write_bytes(zip_stream.getvalue())
+        pathlib.Path('SOURCE.zip').write_bytes(zip_stream.getvalue())
 
         if job_strategy == 'NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP':
             target.upload_zip(zip_stream)

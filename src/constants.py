@@ -29,17 +29,17 @@ class TablesToSync:
             'Cohorts': None,
         }
     UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
-            'Publications': None,
             'Documentation': None,
-            'Contributions': None,
-            'CollectionEvents': None,
-            # 'Subcohorts': None,
-            'Partners': None,
+            'Publications': None,
+            'Collection events': None,
             'Subcohort counts': None,
             'Subcohorts': None,
-            'Extended resources': None,
-            'Resources': None,
+            'External identifiers': None,
             'Cohorts': None,
+            'Data resources': None,
+            'Resources': None,
+            'Extended resources': None,
+            'Contacts': None,
         }
     FILL_STAGING = {
             'Publications': None,
