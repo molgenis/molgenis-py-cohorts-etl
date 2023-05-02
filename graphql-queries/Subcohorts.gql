@@ -1,7 +1,7 @@
 query Subcohorts($filter: SubcohortsFilter) {
   Subcohorts(filter: $filter) {
     resource {
-      pid
+      id
     }
     name
   }

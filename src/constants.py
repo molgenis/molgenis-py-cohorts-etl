@@ -35,8 +35,9 @@ class TablesToSync:
             'CollectionEvents': None,
             # 'Subcohorts': None,
             'Partners': None,
-            'SubcohortCounts': None,
+            'Subcohort counts': None,
             'Subcohorts': None,
+            'Extended resources': None,
             'Resources': None,
             'Cohorts': None,
         }
@@ -89,16 +90,14 @@ class TablesToDelete:
             'Cohorts': 'pid',
         }
     UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
-            'Publications': None,
-            'Documentation': None,
-            'Contributions': None,
-            'CollectionEvents': None,
-            # 'Subcohorts': None,
-            'Partners': None,
-            'SubcohortCounts': None,
-            'Subcohorts': None,
-            'Resources': None,
-            'Cohorts': None,
+            'Documentation': 'resource',
+            'Contacts': 'resource',
+            'CollectionEvents': 'resource',
+            'SubcohortCounts': 'subcohort',
+            'Subcohorts': 'resource',
+            'ExternalIdentifiers': 'resource',
+            'Cohorts': 'id',
+
         }
 
 
