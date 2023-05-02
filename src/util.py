@@ -209,7 +209,7 @@ class Util:
             print(e)
 
         # Uncomment if you need to debug, will write SOURCE.zip that will be uploaded to TARGET
-        pathlib.Path('SOURCE.zip').write_bytes(zip_stream.getvalue())
+        # pathlib.Path('SOURCE.zip').write_bytes(zip_stream.getvalue())
 
         if job_strategy == 'NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP':
             target.upload_zip(zip_stream)
