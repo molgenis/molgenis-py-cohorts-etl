@@ -22,7 +22,7 @@ class Sync:
         tables_to_sync = TablesToSync.COHORT_STAGING_TO_DATA_CATALOGUE_ZIP
 
         Util.delete_cohort_from_data_catalogue(source=source, target=target,
-                                               tables_to_sync=tables_to_delete)
+                                               tables_to_delete=tables_to_delete)
         Util.download_zip_process(source=source, target=target, job_strategy=job_strategy,
                                   tables_to_sync=tables_to_sync)
 
@@ -40,7 +40,7 @@ class Sync:
         tables_to_sync = TablesToSync.UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP
 
         Util.delete_cohort_from_data_catalogue(source=source, target=target,
-                                               tables_to_sync=tables_to_delete)
+                                               tables_to_delete=tables_to_delete)
         Util.download_zip_process(source=source, target=target, job_strategy=job_strategy,
                                   tables_to_sync=tables_to_sync)
 

@@ -132,7 +132,7 @@ class Util:
 
     @staticmethod
     def delete_cohort_from_data_catalogue(source: Client, target: Client,
-                                          tables_to_sync: dict) -> None:
+                                          tables_to_delete: dict) -> None:
         """Delete SOURCE Cohort data from TARGET data catalogue before upload."""
 
         source_cohort_id: str = Util.get_source_cohort_id(source)
@@ -140,8 +140,8 @@ class Util:
             log.info("No tables to delete.")
             return
 
-        for table_name in tables_to_sync.keys():
-            table_type = tables_to_sync.get(table_name)
+        for table_name in tables_to_delete.keys():
+            table_type = tables_to_delete.get(table_name)
 
             if table_type == 'resource':
                 variables = {"filter": {"resource": {"equals": [{"id": source_cohort_id}]}}}
