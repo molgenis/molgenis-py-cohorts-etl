@@ -213,9 +213,13 @@ class Client:
 
         upload_zip_task_status(_response=response)
 
-    def download_zip(self) -> bytes:
+    def download_zip(self, include_system_columns: bool = True) -> bytes:
         """Download zip data from database."""
-        resp = self.session.get(f'{self.apiEndpoint}/zip?includeSystemColumns=true', allow_redirects=True)
+        api_zip_url = f'{self.apiEndpoint}/zip'
+        if include_system_columns:
+            api_zip_url += '?includeSystemColumns=true'
+        resp = self.session.get(api_zip_url, allow_redirects=True)
+
         if resp.content:
             return resp.content
         else:

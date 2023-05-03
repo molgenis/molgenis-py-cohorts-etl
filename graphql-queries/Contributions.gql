@@ -1,11 +1,11 @@
-query Contributions($filter: ContributionsFilter) {
-  Contributions(filter: $filter) {
+query Contacts($filter: ContactsFilter) {
+  Contacts(filter: $filter) {
     resource {
-      pid
+      id
     }
     contact {
       firstName
-      surname	
+      lastName
     }
   }
 }

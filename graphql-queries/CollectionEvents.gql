@@ -1,7 +1,7 @@
 query CollectionEvents($filter: CollectionEventsFilter) {
   CollectionEvents(filter: $filter) {
     resource {
-      pid
+      id
     }
     name
   }

@@ -84,8 +84,8 @@ class Util:
             log.info(f'{table} {upload_response.status_code}')
 
     @staticmethod
-    def get_source_cohort_pid(source: Client) -> str | None:
-        """Get PID of SOURCE cohort, expects to get one PID, return pid."""
+    def get_source_cohort_id(source: Client) -> str | None:
+        """Get ID of SOURCE cohort, expects to get one ID, return id."""
         try:
             result: dict = source.query(Path(f'{BASE_DIR}/graphql-queries/Cohorts.gql').read_text())
             if "Cohorts" in result.keys():
@@ -100,7 +100,7 @@ class Util:
                     f' but found none.')
                 return None
 
-            return result['Cohorts'][0]['pid']
+            return result['Cohorts'][0]['id']
         except KeyError:
             log.error(f'Staging area "{source.database}" does not contain a table "Cohorts".')
             return None
@@ -132,31 +132,31 @@ class Util:
 
     @staticmethod
     def delete_cohort_from_data_catalogue(source: Client, target: Client,
-                                          tables_to_sync: dict) -> None:
+                                          tables_to_delete: dict) -> None:
         """Delete SOURCE Cohort data from TARGET data catalogue before upload."""
 
-        source_cohort_pid: str = Util.get_source_cohort_pid(source)
-        if source_cohort_pid is None:
+        source_cohort_id: str = Util.get_source_cohort_id(source)
+        if source_cohort_id is None:
             log.info("No tables to delete.")
             return
 
-        for table_name in tables_to_sync.keys():
-            table_type = tables_to_sync.get(table_name)
-
-            query = Path(f'{BASE_DIR}/graphql-queries/{table_name}.gql').read_text()
+        for table_name in tables_to_delete.keys():
+            table_type = tables_to_delete.get(table_name)
 
             if table_type == 'resource':
-                variables = {"filter": {"resource": {"equals": [{"pid": source_cohort_pid}]}}}
+                variables = {"filter": {"resource": {"equals": [{"id": source_cohort_id}]}}}
             elif table_type == 'mappings':
-                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"pid": source_cohort_pid}]}}}}
+                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"id": source_cohort_id}]}}}}
             elif table_type == 'variables':
-                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"pid": source_cohort_pid}]}}}}
-            elif table_type == 'pid':
-                variables = {"filter": {"equals": [{"pid": source_cohort_pid}]}}
+                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"id": source_cohort_id}]}}}}
+            elif table_type == 'id':
+                variables = {"filter": {"equals": [{"id": source_cohort_id}]}}
             elif table_type == 'subcohort':
-                variables = {"filter": {"subcohort": {"resource": {"equals": [{"pid": source_cohort_pid}]}}}}
+                variables = {"filter": {"subcohort": {"resource": {"equals": [{"id": source_cohort_id}]}}}}
             else:
                 continue
+
+            query = Path(f'{BASE_DIR}/graphql-queries/{table_name}.gql').read_text()
 
             result: dict = target.query(query, variables)
 
@@ -191,7 +191,7 @@ class Util:
                              tables_to_sync: dict) -> None:
         """Download molgenis zip from SOURCE and process zip before upload to TARGET."""
 
-        result: bytes = source.download_zip()
+        result: bytes = source.download_zip(include_system_columns=False)
 
         # Setup output zip stream
         zip_stream = BytesIO()
@@ -209,7 +209,7 @@ class Util:
             print(e)
 
         # Uncomment if you need to debug, will write SOURCE.zip that will be uploaded to TARGET
-        # pathlib.Path('SOURCE.ZIP').write_bytes(zip_stream.getvalue())
+        # pathlib.Path('SOURCE.zip').write_bytes(zip_stream.getvalue())
 
         if job_strategy == 'NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP':
             target.upload_zip(zip_stream)
