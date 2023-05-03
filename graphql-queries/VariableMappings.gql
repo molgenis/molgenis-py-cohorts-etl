@@ -1,50 +1,41 @@
 query VariableMappings($filter: VariableMappingsFilter) {
   VariableMappings(filter: $filter) {
-    fromDataDictionary {
-      resource {
-        pid
-      }
-      version
+    source {
+      id
     }
-    fromTable {
-      dataDictionary {
-        resource {
-          pid
-        }
-        version
+    sourceDataset {
+      resource {
+        id
+        name
       }
+      sinceVersion
+      untilVersion
+    }
+    target {
+      id
       name
     }
-    toDataDictionary {
+    targetDataset {
       resource {
-        pid
+        id
+        name
       }
-      version
+      sinceVersion
+      untilVersion
     }
-    toTable {
-      dataDictionary {
-        resource {
-          pid
-        }
-        version
+    targetVariable {
+      resource {
+        id
+        name
       }
-      name
-    }
-    toVariable {
-      dataDictionary {
-        resource {
-          pid
-        }
-        version
-      }
-      table {
-        dataDictionary {
-          resource {
-            pid
-          }
-          version
+      dataset {
+        resource{
+          id
+          name
         }
         name
+        sinceVersion
+        untilVersion
       }
       name
     }
