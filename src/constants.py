@@ -77,21 +77,17 @@ class TablesToDelete:
     COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'VariableMappings': 'mappings',
             'DatasetMappings': 'mappings',
-            # 'SourceVariableValues': 'variables',
-            # 'RepeatedSourceVariables': 'variables',
-            # 'SourceVariables': 'variables',
             'VariableValues': 'variables',
             'RepeatedVariables': 'variables',
             'Variables': 'variables',
-            #
-            'SourceTables': 'variables',
-            'SourceDataDictionaries': 'resource',
+            # 'SourceTables': 'variables',  # Datasets?
+            # 'SourceDataDictionaries': 'resource',  # Extended resources?
             'Documentation': 'resource',
-            'Contributions': 'resource',
+            'Contributions': 'resource',  # Rename to Contacts
             'CollectionEvents': 'resource',
             'Subcohorts': 'resource',
-            'Partners': 'resource',
-            'Cohorts': 'pid',
+            # 'Partners': 'resource',
+            'Cohorts': 'id',
         }
     UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'Documentation': 'resource',

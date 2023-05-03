@@ -3,9 +3,10 @@ query Contacts($filter: ContactsFilter) {
     resource {
       id
     }
-    contact {
-      firstName
-      lastName
+    firstName
+    lastName
+    role {
+      name
     }
   }
 }
