@@ -148,7 +148,7 @@ class Util:
             elif table_type == 'mappings':
                 variables = {"filter": {"source": {"equals": [{"id": source_cohort_id}]}}}
             elif table_type == 'variables':
-                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"id": source_cohort_id}]}}}}
+                variables = {"filter": {"resource": {"equals": [{"id": source_cohort_id}]}}}
             elif table_type == 'id':
                 variables = {"filter": {"equals": [{"id": source_cohort_id}]}}
             elif table_type == 'subcohort':

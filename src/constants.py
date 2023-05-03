@@ -77,9 +77,13 @@ class TablesToDelete:
     COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'VariableMappings': 'mappings',
             'DatasetMappings': 'mappings',
-            'SourceVariableValues': 'variables',
-            'RepeatedSourceVariables': 'variables',
-            'SourceVariables': 'variables',
+            # 'SourceVariableValues': 'variables',
+            # 'RepeatedSourceVariables': 'variables',
+            # 'SourceVariables': 'variables',
+            'VariableValues': 'variables',
+            'RepeatedVariables': 'variables',
+            'Variables': 'variables',
+            #
             'SourceTables': 'variables',
             'SourceDataDictionaries': 'resource',
             'Documentation': 'resource',

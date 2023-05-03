@@ -1,0 +1,24 @@
+query VariableValues($filter: VariableValuesFilter) {
+  VariableValues(filter: $filter) {
+    resource {
+      id
+      name
+    }
+    variable {
+      resource {
+        id
+        name
+      }
+      dataset {
+        resource {
+          id
+          name
+        }
+        name
+      }
+      name
+    }
+    value
+    label
+  }
+}
