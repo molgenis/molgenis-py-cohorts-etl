@@ -76,7 +76,7 @@ class TablesToSync:
 class TablesToDelete:
     COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'VariableMappings': 'mappings',
-            'TableMappings': 'mappings',
+            'DatasetMappings': 'mappings',
             'SourceVariableValues': 'variables',
             'RepeatedSourceVariables': 'variables',
             'SourceVariables': 'variables',
