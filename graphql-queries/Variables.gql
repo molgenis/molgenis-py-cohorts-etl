@@ -2,19 +2,10 @@ query Variables($filter: VariablesFilter) {
   Variables(filter: $filter) {
     resource {
       id
-      name
     }
     dataset {
-      resource {
-        id
-        name
-      }
       name
-      sinceVersion
-      untilVersion
     }
     name
-    sinceVersion
-    untilVersion
   }
 }

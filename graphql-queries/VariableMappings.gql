@@ -1,43 +1,39 @@
 query VariableMappings($filter: VariableMappingsFilter) {
   VariableMappings(filter: $filter) {
-    source {
+    source{
       id
     }
-    sourceDataset {
-      resource {
-        id
-        name
-      }
-      sinceVersion
-      untilVersion
-    }
-    target {
-      id
+    sourceDataset{
       name
     }
-    targetDataset {
-      resource {
+    sourceVariables{
+      resource{
         id
-        name
       }
-      sinceVersion
-      untilVersion
     }
-    targetVariable {
-      resource {
+    sourceVariablesOtherDatasets{
+      resource{
         id
-        name
       }
-      dataset {
-        resource{
-          id
-          name
-        }
-        name
-        sinceVersion
-        untilVersion
+    }
+    target{
+      id
+    }
+    targetDataset{
+      name
+    }
+    targetVariable{
+      resource{
+        id
       }
       name
     }
+    match{
+      name
+    }
+    status{
+      name
+    }
+
   }
 }

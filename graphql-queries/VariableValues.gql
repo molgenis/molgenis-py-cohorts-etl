@@ -1,24 +1,20 @@
 query VariableValues($filter: VariableValuesFilter) {
   VariableValues(filter: $filter) {
-    resource {
+    resource{
       id
-      name
     }
-    variable {
-      resource {
-        id
-        name
-      }
-      dataset {
-        resource {
-          id
-          name
-        }
+    variable{
+      dataset{
         name
       }
       name
     }
     value
     label
+    order
+    isMissing
+    ontologyTermURI
+    sinceVersion
+    untilVersion
   }
 }

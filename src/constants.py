@@ -13,20 +13,23 @@ class TablesToSync:
             'TargetVariableValues': None,
         }
     COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
-            'Publications': None,
-            'VariableMappings': None,
-            'TableMappings': None,
-            'SourceVariableValues': None,
-            'RepeatedSourceVariables': None,
-            'SourceVariables': None,
-            'SourceTables': None,
-            'SourceDataDictionaries': None,
+            'Variable mappings': None,
+            'Variable values': None,
+            'Repeated variables': None,
+            'Variables': None,
+            'Dataset mappings': None,
+            'Datasets': None,
             'Documentation': None,
-            'Contributions': None,
-            'CollectionEvents': None,
+            'Publications': None,
+            'Collection events': None,
+            'Subcohort counts': None,
             'Subcohorts': None,
-            'Partners': None,
+            'External identifiers': None,
             'Cohorts': None,
+            'Data resources': None,
+            'Resources': None,
+            'Extended resources': None,
+            'Contacts': None,
         }
     UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'Documentation': None,
@@ -80,14 +83,17 @@ class TablesToDelete:
             'VariableValues': 'variables',
             'RepeatedVariables': 'variables',
             'Variables': 'variables',
-            # 'SourceTables': 'variables',  # Datasets?
-            # 'SourceDataDictionaries': 'resource',  # Extended resources?
-            'Documentation': 'resource',
-            'Contributions': 'resource',  # Rename to Contacts
+            'Datasets': 'variables',
             'CollectionEvents': 'resource',
+            'Documentation': 'resource',
+            'Contacts': 'resource',
+            'SubcohortCounts': 'subcohort',
             'Subcohorts': 'resource',
-            # 'Partners': 'resource',
-            'Cohorts': 'id',
+            'ExternalIdentifiers': 'resource',
+           # 'ExtendedResources': 'id',
+            'DataResources': 'id',
+            # 'Publications': None, # doi filter not inplemented
+            'Cohorts': 'id'
         }
     UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'Documentation': 'resource',
@@ -96,8 +102,7 @@ class TablesToDelete:
             'SubcohortCounts': 'subcohort',
             'Subcohorts': 'resource',
             'ExternalIdentifiers': 'resource',
-            'Cohorts': 'id',
-
+            'Cohorts': 'id'
         }
 
 
