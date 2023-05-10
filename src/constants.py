@@ -1,4 +1,6 @@
 class TablesToSync:
+    """The dictionary values are set to None or in case of UMCG cohorts to GDPR.
+    If the value is set to GDPR a specific transformation of the table Contacts is performed (Util.process_table)"""
     NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'AllTargetVariables': None,
             'CollectionEvents': None,
@@ -29,7 +31,7 @@ class TablesToSync:
             'Data resources': None,
             'Resources': None,
             'Extended resources': None,
-            'Contacts': None,
+            'Contacts': None
         }
     UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'Documentation': None,
@@ -42,7 +44,7 @@ class TablesToSync:
             'Data resources': None,
             'Resources': None,
             'Extended resources': None,
-            'Contacts': None,
+            'Contacts': 'GDPR'
         }
     FILL_STAGING = {
             'Publications': None,
