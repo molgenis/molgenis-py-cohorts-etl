@@ -203,8 +203,9 @@ class Util:
                         table_type = tables_to_sync.get(os.path.splitext(name)[0])
 
                         with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
-                            if table_type == 'GDPR':
-                                dataframe = Util.process_table(BytesIO(archive.read(name)).getvalue())
+                            if table_type is not None:
+                                dataframe = Util.process_table(table=BytesIO(archive.read(name)).getvalue(),
+                                                               transformation=table_type)
                                 zip_file.writestr(name, dataframe.to_csv())
                             else:
                                 zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
@@ -258,5 +259,5 @@ class Util:
             # if statement of consent email == false
             # Contacts email is set to NaN
             result['email'] = result['email'].replace(
-                to_replace=result.query('`statement of consent email` == False')['email'].tolist(), value='NaN')
+                to_replace=result.query('`statement of consent email` == False')['email'].tolist(), value='')
         return result
