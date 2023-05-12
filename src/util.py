@@ -204,7 +204,7 @@ class Util:
 
                         with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
                             if table_type is not None:
-                                dataframe = Util.process_table(table=BytesIO(archive.read(name)).getvalue(),
+                                dataframe = Util.transform_table(table=BytesIO(archive.read(name)).getvalue(),
                                                                transformation=table_type)
                                 zip_file.writestr(name, dataframe.to_csv())
                             else:
@@ -242,7 +242,7 @@ class Util:
         log.info(f'Downloaded target schema to "{filename}".')
 
     @staticmethod
-    def process_table(table: bytes, transformation: str) -> pd.DataFrame:
+    def transform_table(table: bytes, transformation: str) -> pd.DataFrame:
         """Process a csv table with pandas, get csv as stream object, transformation refers to the transformation of the
          data that needs to be performed.
 
@@ -257,7 +257,7 @@ class Util:
             result = result.drop(labels=result.query('`statement of consent personal data` == False').index.tolist(),
                                  axis=0)
             # if statement of consent email == false
-            # Contacts email is set to NaN
+            # Contacts email is set to ''
             result['email'] = result['email'].replace(
                 to_replace=result.query('`statement of consent email` == False')['email'].tolist(), value='')
         return result
