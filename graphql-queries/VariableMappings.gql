@@ -1,52 +1,39 @@
 query VariableMappings($filter: VariableMappingsFilter) {
   VariableMappings(filter: $filter) {
-    fromDataDictionary {
-      resource {
-        pid
-      }
-      version
+    source{
+      id
     }
-    fromTable {
-      dataDictionary {
-        resource {
-          pid
-        }
-        version
+    sourceDataset{
+      name
+    }
+    sourceVariables{
+      resource{
+        id
+      }
+    }
+    sourceVariablesOtherDatasets{
+      resource{
+        id
+      }
+    }
+    target{
+      id
+    }
+    targetDataset{
+      name
+    }
+    targetVariable{
+      resource{
+        id
       }
       name
     }
-    toDataDictionary {
-      resource {
-        pid
-      }
-      version
-    }
-    toTable {
-      dataDictionary {
-        resource {
-          pid
-        }
-        version
-      }
+    match{
       name
     }
-    toVariable {
-      dataDictionary {
-        resource {
-          pid
-        }
-        version
-      }
-      table {
-        dataDictionary {
-          resource {
-            pid
-          }
-          version
-        }
-        name
-      }
+    status{
       name
     }
+
   }
 }

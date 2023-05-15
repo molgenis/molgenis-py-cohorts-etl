@@ -1,4 +1,6 @@
 class TablesToSync:
+    """The dictionary values are set to None or in case of UMCG cohorts to GDPR.
+    If the value is set to GDPR a specific transformation of the table Contacts is performed (Util.process_table)"""
     NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'AllTargetVariables': None,
             'CollectionEvents': None,
@@ -13,20 +15,23 @@ class TablesToSync:
             'TargetVariableValues': None,
         }
     COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
-            'Publications': None,
-            'VariableMappings': None,
-            'TableMappings': None,
-            'SourceVariableValues': None,
-            'RepeatedSourceVariables': None,
-            'SourceVariables': None,
-            'SourceTables': None,
-            'SourceDataDictionaries': None,
+            'Variable mappings': None,
+            'Variable values': None,
+            'Repeated variables': None,
+            'Variables': None,
+            'Dataset mappings': None,
+            'Datasets': None,
             'Documentation': None,
-            'Contributions': None,
-            'CollectionEvents': None,
+            'Publications': None,
+            'Collection events': None,
+            'Subcohort counts': None,
             'Subcohorts': None,
-            'Partners': None,
+            'External identifiers': None,
             'Cohorts': None,
+            'Data resources': None,
+            'Resources': None,
+            'Extended resources': None,
+            'Contacts': None
         }
     UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'Documentation': None,
@@ -39,7 +44,7 @@ class TablesToSync:
             'Data resources': None,
             'Resources': None,
             'Extended resources': None,
-            'Contacts': None,
+            'Contacts': 'GDPR'
         }
     FILL_STAGING = {
             'Publications': None,
@@ -76,18 +81,21 @@ class TablesToSync:
 class TablesToDelete:
     COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'VariableMappings': 'mappings',
-            'TableMappings': 'mappings',
-            'SourceVariableValues': 'variables',
-            'RepeatedSourceVariables': 'variables',
-            'SourceVariables': 'variables',
-            'SourceTables': 'variables',
-            'SourceDataDictionaries': 'resource',
-            'Documentation': 'resource',
-            'Contributions': 'resource',
+            'DatasetMappings': 'mappings',
+            'VariableValues': 'variables',
+            'RepeatedVariables': 'variables',
+            'Variables': 'variables',
+            'Datasets': 'variables',
             'CollectionEvents': 'resource',
+            'Documentation': 'resource',
+            'Contacts': 'resource',
+            'SubcohortCounts': 'subcohort',
             'Subcohorts': 'resource',
-            'Partners': 'resource',
-            'Cohorts': 'pid',
+            'ExternalIdentifiers': 'resource',
+           # 'ExtendedResources': 'id',
+            'DataResources': 'id',
+            # 'Publications': None, # doi filter not inplemented
+            'Cohorts': 'id'
         }
     UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP = {
             'Documentation': 'resource',
@@ -96,8 +104,7 @@ class TablesToDelete:
             'SubcohortCounts': 'subcohort',
             'Subcohorts': 'resource',
             'ExternalIdentifiers': 'resource',
-            'Cohorts': 'id',
-
+            'Cohorts': 'id'
         }
 
 

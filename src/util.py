@@ -146,9 +146,9 @@ class Util:
             if table_type == 'resource':
                 variables = {"filter": {"resource": {"equals": [{"id": source_cohort_id}]}}}
             elif table_type == 'mappings':
-                variables = {"filter": {"fromDataDictionary": {"resource": {"equals": [{"id": source_cohort_id}]}}}}
+                variables = {"filter": {"source": {"equals": [{"id": source_cohort_id}]}}}
             elif table_type == 'variables':
-                variables = {"filter": {"dataDictionary": {"resource": {"equals": [{"id": source_cohort_id}]}}}}
+                variables = {"filter": {"resource": {"equals": [{"id": source_cohort_id}]}}}
             elif table_type == 'id':
                 variables = {"filter": {"equals": [{"id": source_cohort_id}]}}
             elif table_type == 'subcohort':
@@ -200,8 +200,15 @@ class Util:
             with zipfile.ZipFile(BytesIO(result), mode='r') as archive:
                 for name in archive.namelist():
                     if os.path.splitext(name)[0] in tables_to_sync.keys():
+                        table_type = tables_to_sync.get(os.path.splitext(name)[0])
+
                         with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
-                            zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
+                            if table_type is not None:
+                                dataframe = Util.transform_table(table=BytesIO(archive.read(name)).getvalue(),
+                                                               transformation=table_type)
+                                zip_file.writestr(name, dataframe.to_csv())
+                            else:
+                                zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
                     if '_files/' in name:
                         with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
                             zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
@@ -233,3 +240,24 @@ class Util:
         result = target.download_zip()
         pathlib.Path(filename).write_bytes(result)
         log.info(f'Downloaded target schema to "{filename}".')
+
+    @staticmethod
+    def transform_table(table: bytes, transformation: str) -> pd.DataFrame:
+        """Process a csv table with pandas, get csv as stream object, transformation refers to the transformation of the
+         data that needs to be performed.
+
+        As an example transformation == GDPR
+        drop Contact if: Contacts.`statement of consent personal data` == FALSE
+        convert to Contact.email NaN if: Contacts.`statement of consent email` == FALSE"""
+
+        result = pd.read_csv(BytesIO(table))
+        if transformation == 'GDPR':
+            # if statement of consent personal data == false
+            # Contacts person data is dropped
+            result = result.drop(labels=result.query('`statement of consent personal data` == False').index.tolist(),
+                                 axis=0)
+            # if statement of consent email == false
+            # Contacts email is set to ''
+            result['email'] = result['email'].replace(
+                to_replace=result.query('`statement of consent email` == False')['email'].tolist(), value='')
+        return result
