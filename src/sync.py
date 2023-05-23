@@ -90,3 +90,10 @@ class Sync:
 
         Util.download_filter_upload(source=source, target=target,
                                     tables_to_sync=tables_to_sync, network=True)
+
+    @staticmethod
+    def ontology_etl() -> None:
+        """ create, update and delete ontology
+
+        """
+        pass

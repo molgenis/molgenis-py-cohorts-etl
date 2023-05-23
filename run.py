@@ -42,30 +42,47 @@ def main():
     log.info(f'TARGET_PASSWORD:    ********')
     log.info(f'TARGET_DATABASE(S): {target_database}')
 
-    log.info(f'SOURCE_URL:         {source_url}')
-    log.info(f'SOURCE_USERNAME:    {source_username}')
-    log.info(f'SOURCE_PASSWORD:    ********')
-    log.info(f'SOURCE_DATABASE:    {source_database}')
+    if source_database:
+        log.info(f'SOURCE_URL:         {source_url}')
+        log.info(f'SOURCE_USERNAME:    {source_username}')
+        log.info(f'SOURCE_PASSWORD:    ********')
+        log.info(f'SOURCE_DATABASE:    {source_database}')
 
     targets = map(str.strip, target_database.split(','))
     sources = map(str.strip, source_database.split(','))
 
     for target in targets:
-        for source in sources:
-            log.info(f'START SYNC SOURCE ({source}) WITH TARGET ({target})')
+        if not source_database:
+            log.info(f'START SYNC WITH TARGET ({target})')
             this_job = Job(
                 target_url=target_url,
                 target_email=target_username,
                 target_password=target_password,
                 target_database=target,
-                source_url=source_url,
-                source_email=source_username,
-                source_password=source_password,
-                source_database=source,
+                source_url=None,
+                source_email=None,
+                source_password=None,
+                source_database=None,
                 job_strategy=job_strategy,
             )
             this_job.run_strategy()
-            log.info(f'END SYNC SOURCE ({source}) WITH TARGET ({target})')
+            log.info(f'END SYNC WITH TARGET ({target})')
+        else:
+            for source in sources:
+                log.info(f'START SYNC SOURCE ({source}) WITH TARGET ({target})')
+                this_job = Job(
+                    target_url=target_url,
+                    target_email=target_username,
+                    target_password=target_password,
+                    target_database=target,
+                    source_url=source_url,
+                    source_email=source_username,
+                    source_password=source_password,
+                    source_database=source,
+                    job_strategy=job_strategy,
+                )
+                this_job.run_strategy()
+                log.info(f'END SYNC SOURCE ({source}) WITH TARGET ({target})')
 
     log.info('*** JOB COMPLETED ***')
 
