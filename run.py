@@ -26,6 +26,8 @@ def main():
         target_password = os.environ['MG_TARGET_PASSWORD']
         target_database = os.environ['MG_TARGET_DATABASE']
 
+        target_ontology = os.environ['MG_TARGET_ONTOLOGY']
+
         job_strategy = os.environ['MG_JOB_STRATEGY']
     except KeyError:
         log.error('Make sure you filled in all variables in the .env file, script will exit now.')
@@ -59,10 +61,11 @@ def main():
                 target_email=target_username,
                 target_password=target_password,
                 target_database=target,
-                source_url=None,
-                source_email=None,
-                source_password=None,
-                source_database=None,
+                target_ontology=target_ontology,
+                source_url='',
+                source_email='',
+                source_password='',
+                source_database='',
                 job_strategy=job_strategy,
             )
             this_job.run_strategy()
@@ -75,6 +78,7 @@ def main():
                     target_email=target_username,
                     target_password=target_password,
                     target_database=target,
+                    target_ontology='',
                     source_url=source_url,
                     source_email=source_username,
                     source_password=source_password,

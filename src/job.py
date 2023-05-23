@@ -18,6 +18,7 @@ class Job:
             target_email: str,
             target_password: str,
             target_database: str,
+            target_ontology: str,
             source_url: str,
             source_email: str,
             source_password: str,
@@ -33,13 +34,21 @@ class Job:
                 password=source_password
             )
 
-        # Set up Client for TARGET
-        self.target = Client(
-            url=target_url,
-            database=target_database,
-            email=target_email,
-            password=target_password
-        )
+            # Set up Client for TARGET
+            self.target = Client(
+                url=target_url,
+                database=target_database,
+                email=target_email,
+                password=target_password
+            )
+        else:
+            self.target = Client(
+                url=target_url,
+                database=target_database,
+                email=target_email,
+                password=target_password,
+                ontology=target_ontology
+            )
 
         self.job_strategy = job_strategy
 
@@ -75,7 +84,7 @@ class Job:
             case JobStrategy.FILL_NETWORK.name:
                 Sync.fill_network(self.source, self.target)
             case JobStrategy.ONTOLOGY_ETL.name:
-                Sync.ontology_etl()
+                Sync.ontology_etl(self.target)
 
 
 class JobStrategy(Enum):

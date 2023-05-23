@@ -17,11 +17,14 @@ class Client:
     
     """
 
-    def __init__(self, url: str, database: str, email: str, password: str) -> None:
+    def __init__(self, url: str, database: str, email: str, password: str, ontology: str) -> None:
         self.url = url
         self.database = database
         self.email = email
         self.password = password
+
+        self.ontology = ontology
+
         self.session = requests.Session()
         self.graphqlEndpoint = f'{self.url}/{self.database}/graphql'
         self.apiEndpoint = f'{self.url}/{self.database}/api'
