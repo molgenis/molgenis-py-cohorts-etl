@@ -236,3 +236,25 @@ class Client:
         if response.status_code != 200:
             log.error(f"Database schema \'{self.database}\' does not exist, status code {response.status_code}.")
             sys.exit()
+
+    def return_schemas(self) -> list:
+        """Return a list of schemas (databases) that are available on the server"""
+        query = '{_session {schemas} }'
+
+        response = self.session.post(url=self.graphqlEndpoint, json={'query': query})
+        if response.status_code != 200:
+            log.error(f"Error while fetching schemas, status code {response.status_code}.")
+            log.error(response)
+
+        return response.json()['data']['_session']['schemas']
+
+    def return_schema_tables(self, schema: str) -> list:
+        """Return a list of tables that are available for a schema"""
+        query = '{_schema {tables {name}}}'
+
+        response = self.session.post(f'{self.url}/{schema}/graphql', json={'query': query})
+        if response.status_code != 200:
+            log.error(f"Error while fetching tables, status code {response.status_code}.")
+            log.error(response)
+
+        return response.json()['data']['_schema']['tables']

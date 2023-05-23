@@ -103,11 +103,17 @@ class Sync:
             print('Ontology create on {} refTable: {}, row: "{}"'.format(target.database, create.get('refTable'),
                                                                          create.get('row')))
 
+        schemas = target.return_schemas()
         # process update ontologies on all Schemas except CatalogueOntologies
-        for update in data['update']:
-            print('Ontology update on (list of schemas) refTable: {}, column-match: {}, replace: "{}", replace-by: "{}"'
-                  .format(update.get('refTable'), update.get('column-match'), update.get('replace'),
-                          update.get('replace-by')))
+        # {_schema{tables{name, externalSchema}}}
+        for schema in schemas:
+            tables = target.return_schema_tables(schema)
+            for update in data['update']:
+                print('Ontology update on {} refTable: {}, column-match: {}, replace: "{}", replace-by: "{}"'
+                      .format(schema, update.get('refTable'), update.get('column-match'), update.get('replace'),
+                              update.get('replace-by')))
+                for table in tables:
+                    print('Schema table: {}'.format(table))
 
         # process delete ontologies on CatalogueOntologies
         for delete in data['delete']:
