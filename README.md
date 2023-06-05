@@ -73,42 +73,58 @@ Edit the env setting in the docker-compose.yml as needed
 
     Add a .env file and fill out the values (see .env-example as a template) or directly setting the values on the system environment.
 
-    | Name                          | Description                                                 | Usage                                                              |
-    |-------------------------------|-------------------------------------------------------------|--------------------------------------------------------------------|
-    | `MG_JOB_STRATEGY`             | see [list](/README.md#job-strategies) below for all options |                                                                    |
-    | `MG_SOURCE_URL`               | full url of source server                                   |                                                                    |
-    | `MG_SOURCE_USERNAME`          | username on source server                                   |                                                                    |
-    | `MG_SOURCE_PASSWORD`          | password on source server                                   |                                                                    |
-    | `MG_SOURCE_DATABASE`          | database name                                               |                                                                    |
-    | `MG_TARGET_URL`               | full url of target server                                   |                                                                    |
-    | `MG_TARGET_USERNAME`          | username on target server                                   |                                                                    |
-    | `MG_TARGET_PASSWORD`          | username on target server                                   |                                                                    |
-    | `MG_TARGET_DATABASE`          | single or comma separated list of database names            |                                                                    |
-    |   `MG_TARGET_ONTOLOGY`        | json object                                                 | see example below                                                  |
+    | Name                         | Description                                                 | Usage                                                              |
+    |------------------------------|-------------------------------------------------------------|--------------------------------------------------------------------|
+    | `MG_JOB_STRATEGY`            | see [list](/README.md#job-strategies) below for all options |                                                                    |
+    | `MG_SOURCE_URL`              | full url of source server                                   |                                                                    |
+    | `MG_SOURCE_USERNAME`         | username on source server                                   |                                                                    |
+    | `MG_SOURCE_PASSWORD`         | password on source server                                   |                                                                    |
+    | `MG_SOURCE_DATABASE`         | database name                                               |                                                                    |
+    | `MG_TARGET_URL`              | full url of target server                                   |                                                                    |
+    | `MG_TARGET_USERNAME`         | username on target server                                   |                                                                    |
+    | `MG_TARGET_PASSWORD`         | username on target server                                   |                                                                    |
+    | `MG_TARGET_DATABASE`         | single or comma separated list of database names            |                                                                    |
+    |  `MG_TARGET_ONTOLOGY`        | json object                                                 | see example below                                                  |
 
 <pre>'{
     "create": [
     {
         "refTable": "Network features",
-        "row": "Non-EU institutional research,,"
+        "rows": {
+            "name": "Non-EU institutional research",
+            "label": "test",
+            "parent": {
+                "name" : "Funding"
+            }
+        },
+        "rows": {
+            "name": "non-EU institutional research programme"
+        }
     },
     {
         "refTable": "Network features",
-        "row": "Infectious diseases,,"
+        "rows": {
+            "name": "Infectious diseases"
+        }
     }
     ],
     "update": [
     {
         "refTable": "Network features",
-        "column-match": "name",
-        "replace": "non-EU institutional research",
-        "replace-by": "Non-EU institutional research"
+        "rows": {
+            "name": "non-EU institutional research programme"
+        },
+        "replace-by": {
+            "name": "Non-EU institutional research"
+        }
     }
     ],
     "delete": [
     {
         "refTable": "Network features",
-        "row": "non-EU institutional research,,"
+        "rows": {
+            "name": "non-EU institutional research programme"
+        }
     }
     ]
 }'</pre>

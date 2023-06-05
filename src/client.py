@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import time
+import json
 from io import BytesIO
 
 import requests
@@ -17,7 +18,7 @@ class Client:
     
     """
 
-    def __init__(self, url: str, database: str, email: str, password: str, ontology: str) -> None:
+    def __init__(self, url: str, database: str, email: str, password: str, ontology: str = '') -> None:
         self.url = url
         self.database = database
         self.email = email
@@ -107,6 +108,7 @@ class Client:
                  "")
 
         data['mg_draft'] = draft
+        data = json.dumps(data)
 
         variables = {"value": [data]}
 

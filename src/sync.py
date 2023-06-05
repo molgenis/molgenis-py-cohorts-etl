@@ -1,7 +1,10 @@
-import json
+import logging
 from src.client import Client
 from src.constants import OntologiesToSync, TablesToSync, TablesToDelete
+from src.ontology import Ontology
 from src.util import Util
+
+log = logging.getLogger(__name__)
 
 
 class Sync:
@@ -93,29 +96,13 @@ class Sync:
                                     tables_to_sync=tables_to_sync, network=True)
 
     @staticmethod
-    def ontology_etl(target: Client) -> None:
+    def ontology_etl(self) -> None:
         """ create, update and delete ontology
 
         """
-        data = json.loads(target.ontology)
         # process create ontologies on CatalogueOntologies
-        for create in data['create']:
-            print('Ontology create on {} refTable: {}, row: "{}"'.format(target.database, create.get('refTable'),
-                                                                         create.get('row')))
-
-        schemas = target.return_schemas()
+        Ontology.create_ontology(self)
         # process update ontologies on all Schemas except CatalogueOntologies
-        # {_schema{tables{name, externalSchema}}}
-        for schema in schemas:
-            tables = target.return_schema_tables(schema)
-            for update in data['update']:
-                print('Ontology update on {} refTable: {}, column-match: {}, replace: "{}", replace-by: "{}"'
-                      .format(schema, update.get('refTable'), update.get('column-match'), update.get('replace'),
-                              update.get('replace-by')))
-                for table in tables:
-                    print('Schema table: {}'.format(table))
-
+        Ontology.update_ontology(self)
         # process delete ontologies on CatalogueOntologies
-        for delete in data['delete']:
-            print('Ontology delete on {} refTable: {}, row: "{}"'.format(target.database, delete.get('refTable'),
-                                                                         delete.get('row')))
+        Ontology.delete_ontology(self)
