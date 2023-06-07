@@ -2,22 +2,11 @@ query RepeatedVariables($filter: RepeatedVariablesFilter) {
   RepeatedVariables(filter: $filter) {
     resource {
       id
-      name
     }
     dataset {
       resource {
         id
-        name
       }
-      name
-      sinceVersion
-      untilVersion
-    }
-    name
-    label
-    sinceVersion
-    untilVersion
-    isRepeatOf {
       name
     }
   }

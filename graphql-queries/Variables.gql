@@ -4,8 +4,10 @@ query Variables($filter: VariablesFilter) {
       id
     }
     dataset {
+      resource{
+        id
+      }
       name
     }
-    name
   }
 }
