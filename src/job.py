@@ -18,6 +18,7 @@ class Job:
             target_email: str,
             target_password: str,
             target_database: str,
+            target_ontology: str,
             source_url: str,
             source_email: str,
             source_password: str,
@@ -25,25 +26,35 @@ class Job:
             job_strategy: str) -> None:
 
         # Set up Client for SOURCE
-        self.source = Client(
-            url=source_url,
-            database=source_database,
-            email=source_email,
-            password=source_password
-        )
+        if source_database:
+            self.source = Client(
+                url=source_url,
+                database=source_database,
+                email=source_email,
+                password=source_password
+            )
 
-        # Set up Client for TARGET
-        self.target = Client(
-            url=target_url,
-            database=target_database,
-            email=target_email,
-            password=target_password
-        )
+            # Set up Client for TARGET
+            self.target = Client(
+                url=target_url,
+                database=target_database,
+                email=target_email,
+                password=target_password
+            )
+        else:
+            self.target = Client(
+                url=target_url,
+                database=target_database,
+                email=target_email,
+                password=target_password,
+                ontology=target_ontology
+            )
 
         self.job_strategy = job_strategy
 
         # Ensure database schemas exist, otherwise exit
-        self.source.check_database_exists()
+        if source_database:
+            self.source.check_database_exists()
         self.target.check_database_exists()
 
     def run_strategy(self) -> None:
@@ -72,6 +83,8 @@ class Job:
                 Sync.ontology_staging_zip_to_datacatalogue(self.source, self.target, self.job_strategy)
             case JobStrategy.FILL_NETWORK.name:
                 Sync.fill_network(self.source, self.target)
+            case JobStrategy.ONTOLOGY_ETL.name:
+                Sync.ontology_etl(self.target)
 
 
 class JobStrategy(Enum):
@@ -83,6 +96,7 @@ class JobStrategy(Enum):
     FILL_STAGING = auto()
     SHARED_STAGING = auto()
     FILL_NETWORK = auto()
+    ONTOLOGY_ETL = auto()
 
     @classmethod
     def member_names(cls):

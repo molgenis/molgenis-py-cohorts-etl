@@ -73,30 +73,75 @@ Edit the env setting in the docker-compose.yml as needed
 
     Add a .env file and fill out the values (see .env-example as a template) or directly setting the values on the system environment.
 
-    | Name        | Description  |
-    | ------------- | ------------- |
-    | MG_JOB_STRATEGY | see [list](/README.md#job-strategies) below for all options |
-    | MG_SOURCE_URL | full url of source server |
-    | MG_SOURCE_USERNAME | username on source server |
-    | MG_SOURCE_PASSWORD | password on source server |
-    | MG_SOURCE_DATABASE | database name |
-    | MG_TARGET_URL | full url of target server |
-    | MG_TARGET_USERNAME | username on target server |
-    | MG_TARGET_PASSWORD | username on target server |
-    | MG_TARGET_DATABASE | single or comma separated list of database names |
+    | Name                         | Description                                                 | Usage                                                              |
+    |------------------------------|-------------------------------------------------------------|--------------------------------------------------------------------|
+    | `MG_JOB_STRATEGY`            | see [list](/README.md#job-strategies) below for all options |                                                                    |
+    | `MG_SOURCE_URL`              | full url of source server                                   |                                                                    |
+    | `MG_SOURCE_USERNAME`         | username on source server                                   |                                                                    |
+    | `MG_SOURCE_PASSWORD`         | password on source server                                   |                                                                    |
+    | `MG_SOURCE_DATABASE`         | database name                                               |                                                                    |
+    | `MG_TARGET_URL`              | full url of target server                                   |                                                                    |
+    | `MG_TARGET_USERNAME`         | username on target server                                   |                                                                    |
+    | `MG_TARGET_PASSWORD`         | username on target server                                   |                                                                    |
+    | `MG_TARGET_DATABASE`         | single or comma separated list of database names            |                                                                    |
+    |  `MG_TARGET_ONTOLOGY`        | json object                                                 | see example below                                                  |
 
-    Job strategies
+<pre>'{
+    "create": [
+    {
+        "refTable": "Network features",
+        "rows": {
+            "name": "Non-EU institutional research",
+            "label": "test",
+            "parent": {
+                "name" : "Funding"
+            }
+        },
+        "rows": {
+            "name": "non-EU institutional research programme"
+        }
+    },
+    {
+        "refTable": "Network features",
+        "rows": {
+            "name": "Infectious diseases"
+        }
+    }
+    ],
+    "update": [
+    {
+        "refTable": "Network features",
+        "rows": {
+            "name": "non-EU institutional research programme"
+        },
+        "replace-by": {
+            "name": "Non-EU institutional research"
+        }
+    }
+    ],
+    "delete": [
+    {
+        "refTable": "Network features",
+        "rows": {
+            "name": "non-EU institutional research programme"
+        }
+    }
+    ]
+}'</pre>
 
-    | Name        | Description | SOURCE | TARGET |
-    | ----------- | ----------- | ------ | ------ |
-    | COHORT_STAGING_TO_DATA_CATALOGUE_ZIP | Delete cohort on the TARGET by  `pid`, download and process SOURCE zip and upload to TARGET (make sure schema name is identical to `pid`)| CohortStaging | Catalogue |
-    | UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP | Delete cohort on the TARGET by  `pid`, download and process SOURCE zip and upload to TARGET (make sure schema name is identical to `pid`) | UMCG CohortStaging | UMCG Catalogue |
-    | UMCG_SHARED_ONTOLOGY_ZIP | Download zip from SOURCE and upload ontology to TARGET (UMCG CatalogueOntologies) | UMCG SharedStaging | UMCG CatalogueOntologies |
-    | ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP | Download zip from SOURCE and upload ontology to TARGET  | CatalogueOntologies | CatalogueOntologies |
-    | NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP | Download zip from SOURCE and upload ontology to TARGET | NetworkStaging | Catalogue |
-    | FILL_STAGING | First create cohort staging area with the correct model, the schema and Cohorts `pid` need to be exactly the same.  Note that files like logo's will not be copied over!| Catalogue | CohortStaging |
-    | SHARED_STAGING | Copy SharedStaging model tables, no deletion.| SharedStaging | Catalogue |
-    | FILL_NETWORK | First create network staging area with the correct model, the schema and Networks `pid` need to be exactly the same.  Note that files like logo's will not be copied over! | Catalogue | NetworkStaging |
+Job strategies
+
+| Name        | Description | SOURCE | TARGET | works with datamodel x.x |
+| ----------- | ----------- | ------ | ------ | ------------------------ |
+| `COHORT_STAGING_TO_DATA_CATALOGUE_ZIP` | Delete cohort on the TARGET by  `pid`, download and process SOURCE zip and upload to TARGET (make sure schema name is identical to `pid`)| CohortStaging | Catalogue | 3.x |
+| `UMCG_COHORT_STAGING_TO_DATA_CATALOGUE_ZIP` | Delete cohort on the TARGET by  `pid`, download and process SOURCE zip and upload to TARGET (make sure schema name is identical to `pid`) | UMCG CohortStaging | UMCG Catalogue | 3.x |
+| `UMCG_SHARED_ONTOLOGY_ZIP` | Download zip from SOURCE and upload ontology to TARGET (UMCG CatalogueOntologies) | UMCG SharedStaging | UMCG CatalogueOntologies | 2.x |
+| `ONTOLOGY_STAGING_TO_DATA_CATALOGUE_ZIP` | Download zip from SOURCE and upload ontology to TARGET  | CatalogueOntologies | CatalogueOntologies | 2.x |
+| `NETWORK_STAGING_TO_DATA_CATALOGUE_ZIP` | Download zip from SOURCE and upload ontology to TARGET | NetworkStaging | Catalogue | 3.x |
+| `FILL_STAGING` | First create cohort staging area with the correct model, the schema and Cohorts `pid` need to be exactly the same.  Note that files like logo's will not be copied over!| Catalogue | CohortStaging | 2.x |
+| `SHARED_STAGING` | Copy SharedStaging model tables, no deletion.| SharedStaging | Catalogue | 2.x |
+| `FILL_NETWORK` | First create network staging area with the correct model, the schema and Networks `pid` need to be exactly the same.  Note that files like logo's will not be copied over! | Catalogue | NetworkStaging | 2.x |
+| `ONTOLOGY_ETL` | Create, Update, Delete Ontologies from given CatalogueOntologies including all linked Schemas that make use of the ontology | Empty, only TARGET information is used | CatalogueOntologies | 3.x |
 
 2. Run the script
 

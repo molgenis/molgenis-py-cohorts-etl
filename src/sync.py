@@ -1,6 +1,10 @@
+import logging
 from src.client import Client
 from src.constants import OntologiesToSync, TablesToSync, TablesToDelete
+from src.ontology import Ontology
 from src.util import Util
+
+log = logging.getLogger(__name__)
 
 
 class Sync:
@@ -90,3 +94,15 @@ class Sync:
 
         Util.download_filter_upload(source=source, target=target,
                                     tables_to_sync=tables_to_sync, network=True)
+
+    @staticmethod
+    def ontology_etl(self) -> None:
+        """ create, update and delete ontology
+
+        """
+        # process create ontologies on CatalogueOntologies
+        Ontology.create_ontology(self)
+        # process update ontologies on all Schemas except CatalogueOntologies
+        Ontology.update_ontology(self)
+        # process delete ontologies on CatalogueOntologies
+        Ontology.delete_ontology(self)
