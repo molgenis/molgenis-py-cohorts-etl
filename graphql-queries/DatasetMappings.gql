@@ -2,30 +2,21 @@ query DatasetMappings($filter: DatasetMappingsFilter) {
   DatasetMappings(filter: $filter) {
     source{
       id
-      name
     }
     sourceDataset {
       resource {
         id
-        name
       }
       name
-      sinceVersion
-      untilVersion
     }
     target {
       id
-			name
     }
     targetDataset {
       resource {
         id
-        name
       }
       name
-      sinceVersion
-      untilVersion
     }
   }
 }
-
