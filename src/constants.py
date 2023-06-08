@@ -89,7 +89,6 @@ class TablesToDelete:
             'VariableValues': 'variables',
             'RepeatedVariables': 'variables',
             'Variables': 'variables',
-            # AllVariables?
             'Datasets': 'variables',
             'CollectionEvents': 'resource',
             'Documentation': 'resource',

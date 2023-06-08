@@ -9,5 +9,6 @@ query Variables($filter: VariablesFilter) {
       }
       name
     }
+    name
   }
 }

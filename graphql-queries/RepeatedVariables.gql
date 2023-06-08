@@ -9,5 +9,6 @@ query RepeatedVariables($filter: RepeatedVariablesFilter) {
       }
       name
     }
+    name
   }
 }
