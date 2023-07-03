@@ -67,8 +67,7 @@ class TablesToSync:
             'VariableMappings': 'fromDataDictionary.resource',
         }
     SHARED_STAGING = {
-            'Institutions': None,
-            'Contacts': None,
+            'Organisations': None
         }
     FILL_NETWORK = {
             'Models': 'pid',
