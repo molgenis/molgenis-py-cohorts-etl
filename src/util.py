@@ -205,7 +205,7 @@ class Util:
                         with zipfile.ZipFile(zip_stream, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
                             if table_type is not None:
                                 dataframe = Util.transform_table(table=BytesIO(archive.read(name)).getvalue(),
-                                                               transformation=table_type)
+                                                                 transformation=table_type)
                                 zip_file.writestr(name, dataframe.to_csv())
                             else:
                                 zip_file.writestr(name, BytesIO(archive.read(name)).getvalue())
